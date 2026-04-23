@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}虚拟币犯罪调查工具集{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Hero section -->
+    <div class="bg-gradient-to-r from-gray-800 to-gray-900 rounded-lg p-8 mb-8 text-white">
+        <h1 class="text-3xl font-bold mb-4">虚拟币犯罪调查工具集</h1>
+        <p class="text-gray-300 mb-2">为虚拟货币犯罪调查初学者构建的本地运行Web工具集</p>
+        <p class="text-gray-400 text-sm">一键本地启动，零配置使用。配合说明书理解结果含义。</p>
+    </div>
+
+    <!-- Tool categories -->
+    <div class="space-y-6">
+        <!-- Category 1: Address Analysis -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                <span class="bg-blue-500 text-white px-3 py-1 rounded mr-3">地址分析</span>
+                区块链地址行为特征分析
+            </h2>
+            <div class="grid grid-cols-3 gap-4">
+                <a href="/tron/suspicious-analyzer" class="block p-4 bg-gray-50 rounded hover:bg-gray-100 transition border border-gray-200">
+                    <h3 class="font-bold text-gray-700">TRON可疑分析</h3>
+                    <p class="text-sm text-gray-500 mt-1">识别诈骗/洗钱可疑特征</p>
+                </a>
+                <a href="/tron/behavior-analyzer" class="block p-4 bg-gray-50 rounded hover:bg-gray-100 transition border border-gray-200">
+                    <h3 class="font-bold text-gray-700">TRON行为分析</h3>
+                    <p class="text-sm text-gray-500 mt-1">分析地址交易行为模式</p>
+                </a>
+                <a href="/eth/transaction-query" class="block p-4 bg-gray-50 rounded hover:bg-gray-100 transition border border-gray-200">
+                    <h3 class="font-bold text-gray-700">ETH交易查询</h3>
+                    <p class="text-sm text-gray-500 mt-1">查询以太坊交易记录</p>
+                </a>
+            </div>
+        </div>
+
+        <!-- Category 2: Transaction Tracking -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                <span class="bg-purple-500 text-white px-3 py-1 rounded mr-3">交易追踪</span>
+                DEX与混币器资金流向追踪
+            </h2>
+            <div class="grid grid-cols-3 gap-4">
+                <a href="/trace/uniswap" class="block p-4 bg-gray-50 rounded hover:bg-gray-100 transition border border-gray-200">
+                    <h3 class="font-bold text-gray-700">Uniswap追踪</h3>
+                    <p class="text-sm text-gray-500 mt-1">还原DEX交易路径</p>
+                </a>
+                <a href="/trace/mixer" class="block p-4 bg-gray-50 rounded hover:bg-gray-100 transition border border-gray-200">
+                    <h3 class="font-bold text-gray-700">混币器追踪</h3>
+                    <p class="text-sm text-gray-500 mt-1">还原洗钱路径</p>
+                </a>
+                <a href="/trace/btc" class="block p-4 bg-gray-50 rounded hover:bg-gray-100 transition border border-gray-200">
+                    <h3 class="font-bold text-gray-700">BTC交易分析</h3>
+                    <p class="text-sm text-gray-500 mt-1">查询比特币流向</p>
+                </a>
+            </div>
+        </div>
+
+        <!-- Category 3: Cross-Chain Analysis -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                <span class="bg-green-500 text-white px-3 py-1 rounded mr-3">跨链分析</span>
+                多地址关联与跨境协查
+            </h2>
+            <div class="grid grid-cols-2 gap-4">
+                <a href="/cross/cluster" class="block p-4 bg-gray-50 rounded hover:bg-gray-100 transition border border-gray-200">
+                    <h3 class="font-bold text-gray-700">地址聚类</h3>
+                    <p class="text-sm text-gray-500 mt-1">关联多个地址</p>
+                </a>
+                <a href="/cross/cross-border" class="block p-4 bg-gray-50 rounded hover:bg-gray-100 transition border border-gray-200">
+                    <h3 class="font-bold text-gray-700">跨境协查</h3>
+                    <p class="text-sm text-gray-500 mt-1">生成国际协作模板</p>
+                </a>
+            </div>
+        </div>
+
+        <!-- Category 4: Case Handling -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                <span class="bg-red-500 text-white px-3 py-1 rounded mr-3">案件处理</span>
+                监控、对抗与资产追回
+            </h2>
+            <div class="grid grid-cols-3 gap-4">
+                <a href="/case/monitor" class="block p-4 bg-gray-50 rounded hover:bg-gray-100 transition border border-gray-200">
+                    <h3 class="font-bold text-gray-700">多链监控</h3>
+                    <p class="text-sm text-gray-500 mt-1">实时监控地址</p>
+                </a>
+                <a href="/case/obfuscation" class="block p-4 bg-gray-50 rounded hover:bg-gray-100 transition border border-gray-200">
+                    <h3 class="font-bold text-gray-700">混淆对抗</h3>
+                    <p class="text-sm text-gray-500 mt-1">识别攻击手法</p>
+                </a>
+                <a href="/case/asset-freeze" class="block p-4 bg-gray-50 rounded hover:bg-gray-100 transition border border-gray-200">
+                    <h3 class="font-bold text-gray-700">资产追回</h3>
+                    <p class="text-sm text-gray-500 mt-1">生成冻结建议</p>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Documentation link -->
+    <div class="mt-8 bg-gray-100 rounded-lg p-6 text-center">
+        <a href="/docs/manuals" class="text-blue-600 hover:text-blue-800 font-bold">
+            查看使用手册与API获取指南
+        </a>
+    </div>
+</div>
+{% endblock %}
