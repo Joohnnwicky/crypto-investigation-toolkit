@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<!--
+    Base Template for Crypto Investigation Toolkit (CIT)
+
+    This template provides the common layout structure for all tool pages:
+    - Fixed sidebar navigation (left, 256px width)
+    - Main content area (flexible width, 256px left margin)
+    - Fixed legal disclaimer footer (bottom, offset for sidebar)
+
+    Child templates should:
+    - Extend this base template: {% extends "base.html" %}
+    - Override the 'title' block for page-specific titles
+    - Override the 'content' block for page-specific content
+    - Optionally override 'sidebar' or 'footer' blocks if needed
+
+    Tailwind CSS v4 is loaded via CDN for zero-build styling.
+    Active navigation state is detected via Jinja2 request.path variable.
+-->
+<head>
+    <!-- Meta and charset configuration for Chinese language support -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Page title with Jinja2 block for child template override -->
+    <title>{% block title %}CIT{% endblock %}</title>
+    <!-- Tailwind CSS v4 via CDN for zero-build styling -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="flex min-h-screen bg-gray-100">
+    <!-- Sidebar navigation with fixed positioning -->
+    {% block sidebar %}
+    <aside class="w-64 bg-gray-900 text-white fixed h-full">
+        <!-- Application title/logo -->
+        <h1 class="text-xl font-bold p-4 border-b border-gray-700">虚拟币犯罪调查工具集</h1>
+        <!-- Navigation menu with active state highlighting via Jinja2 request.path -->
+        <nav class="p-4 space-y-2">
+            <a href="/" class="block py-2 px-4 rounded hover:bg-gray-700 transition{% if request.path == '/' %} bg-gray-700{% endif %}">首页</a>
+            <!-- TRON blockchain analysis tools -->
+            <a href="/tron/suspicious-analyzer" class="block py-2 px-4 rounded hover:bg-gray-700 transition{% if request.path == '/tron/suspicious-analyzer' %} bg-gray-700{% endif %}">TRON可疑分析</a>
+            <a href="/tron/behavior-analyzer" class="block py-2 px-4 rounded hover:bg-gray-700 transition{% if request.path == '/tron/behavior-analyzer' %} bg-gray-700{% endif %}">TRON行为分析</a>
+            <!-- Ethereum blockchain analysis tools -->
+            <a href="/eth/transaction-query" class="block py-2 px-4 rounded hover:bg-gray-700 transition{% if request.path == '/eth/transaction-query' %} bg-gray-700{% endif %}">ETH交易查询</a>
+            <!-- Transaction tracing tools -->
+            <a href="/trace/uniswap" class="block py-2 px-4 rounded hover:bg-gray-700 transition{% if request.path == '/trace/uniswap' %} bg-gray-700{% endif %}">Uniswap追踪</a>
+            <a href="/trace/mixer" class="block py-2 px-4 rounded hover:bg-gray-700 transition{% if request.path == '/trace/mixer' %} bg-gray-700{% endif %}">混币器追踪</a>
+            <a href="/trace/btc" class="block py-2 px-4 rounded hover:bg-gray-700 transition{% if request.path == '/trace/btc' %} bg-gray-700{% endif %}">BTC交易分析</a>
+            <!-- Cross-chain and address analysis tools -->
+            <a href="/cross/cluster" class="block py-2 px-4 rounded hover:bg-gray-700 transition{% if request.path == '/cross/cluster' %} bg-gray-700{% endif %}">地址聚类</a>
+            <a href="/cross/cross-border" class="block py-2 px-4 rounded hover:bg-gray-700 transition{% if request.path == '/cross/cross-border' %} bg-gray-700{% endif %}">跨境协查</a>
+            <!-- Case investigation tools -->
+            <a href="/case/monitor" class="block py-2 px-4 rounded hover:bg-gray-700 transition{% if request.path == '/case/monitor' %} bg-gray-700{% endif %}">多链监控</a>
+            <a href="/case/obfuscation" class="block py-2 px-4 rounded hover:bg-gray-700 transition{% if request.path == '/case/obfuscation' %} bg-gray-700{% endif %}">混淆对抗</a>
+            <a href="/case/asset-freeze" class="block py-2 px-4 rounded hover:bg-gray-700 transition{% if request.path == '/case/asset-freeze' %} bg-gray-700{% endif %}">资产追回</a>
+            <!-- Documentation -->
+            <a href="/docs/manuals" class="block py-2 px-4 rounded hover:bg-gray-700 transition{% if request.path == '/docs/manuals' %} bg-gray-700{% endif %}">使用手册</a>
+        </nav>
+    </aside>
+    {% endblock %}
+    <!-- Main content area with left margin for fixed sidebar -->
+    <main class="flex-1 ml-64 p-6">
+        {% block content %}{% endblock %}
+    </main>
+    <!-- Legal disclaimer footer - fixed at bottom, offset for sidebar -->
+    {% block footer %}
+    <footer class="fixed bottom-0 left-64 right-0 bg-yellow-100 border-t p-3 text-center text-sm">
+        法律声明：本工具仅供合规调查使用，请确保遵守相关法律法规。所有分析结果仅供参考，不构成法律证据。使用者需自行承担使用风险。
+    </footer>
+    {% endblock %}
+</body>
+</html>
