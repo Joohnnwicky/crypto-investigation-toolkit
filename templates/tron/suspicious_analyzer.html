@@ -1,0 +1,286 @@
+{% extends "base.html" %}
+{% block title %}TRON可疑特征分析{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Tool header -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+        <h1 class="text-2xl font-bold text-gray-800 mb-2">TRON地址可疑特征分析</h1>
+        <p class="text-gray-600">识别诈骗/洗钱等可疑行为特征，生成风险评分报告</p>
+    </div>
+
+    <!-- Input section -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 class="text-lg font-bold text-gray-700 mb-4">输入TRON地址</h2>
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">TRON钱包地址</label>
+                <input type="text" id="address-input"
+                       class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                       placeholder="例如：TUtPdo7L45ey2KrpibdNcjNL3ujqXo1NNw">
+            </div>
+            <div class="flex space-x-4">
+                <button onclick="loadSample()"
+                        class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition">
+                    加载样本
+                </button>
+                <button onclick="analyzeAddress()"
+                        class="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition">
+                    开始分析
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading indicator -->
+    <div id="loading" class="hidden bg-white rounded-lg shadow p-6 mb-6">
+        <div class="flex items-center justify-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+            <span class="ml-3 text-gray-600">正在分析地址...</span>
+        </div>
+    </div>
+
+    <!-- Error display -->
+    <div id="error-display" class="hidden bg-red-100 border border-red-400 rounded-lg p-4 mb-6">
+        <p id="error-message" class="text-red-700"></p>
+    </div>
+
+    <!-- Results section -->
+    <div id="results" class="hidden">
+        <!-- Basic info -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-lg font-bold text-gray-700 mb-4">基本信息</h2>
+            <div id="basic-info" class="grid grid-cols-2 gap-4"></div>
+        </div>
+
+        <!-- Score display -->
+        <div id="score-display" class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-lg font-bold text-gray-700 mb-4">风险评分</h2>
+            <div class="flex items-center justify-center">
+                <div id="score-circle" class="w-32 h-32 rounded-full flex items-center justify-center text-3xl font-bold"></div>
+                <div id="score-label" class="ml-4 text-xl font-medium"></div>
+            </div>
+        </div>
+
+        <!-- Red alerts -->
+        <div id="red-alerts" class="hidden bg-red-50 border-l-4 border-red-500 rounded-lg p-6 mb-6">
+            <h2 class="text-lg font-bold text-red-700 mb-4">红色警报（高度可疑）</h2>
+            <div id="red-list" class="space-y-4"></div>
+        </div>
+
+        <!-- Yellow alerts -->
+        <div id="yellow-alerts" class="hidden bg-yellow-50 border-l-4 border-yellow-500 rounded-lg p-6 mb-6">
+            <h2 class="text-lg font-bold text-yellow-700 mb-4">黄色预警（需要关注）</h2>
+            <div id="yellow-list" class="space-y-4"></div>
+        </div>
+
+        <!-- Green alerts -->
+        <div id="green-alerts" class="hidden bg-green-50 border-l-4 border-green-500 rounded-lg p-6 mb-6">
+            <h2 class="text-lg font-bold text-green-700 mb-4">正常范围</h2>
+            <div id="green-list" class="space-y-4"></div>
+        </div>
+
+        <!-- Export buttons -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-lg font-bold text-gray-700 mb-4">导出结果</h2>
+            <div class="flex space-x-4">
+                <button onclick="exportJSON()"
+                        class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">
+                    导出JSON
+                </button>
+                <button onclick="exportCSV()"
+                        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition">
+                    导出CSV
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let analysisResult = null;
+
+function loadSample() {
+    fetch('/tron/api/sample')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('address-input').value = data.address;
+        })
+        .catch(error => {
+            alert('加载样本失败: ' + error.message);
+        });
+}
+
+function analyzeAddress() {
+    const address = document.getElementById('address-input').value.trim();
+
+    if (!address) {
+        alert('请输入TRON地址');
+        return;
+    }
+
+    // Show loading
+    document.getElementById('loading').classList.remove('hidden');
+    document.getElementById('error-display').classList.add('hidden');
+    document.getElementById('results').classList.add('hidden');
+
+    fetch('/tron/api/analyze', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ address: address })
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('loading').classList.add('hidden');
+
+        if (data.success) {
+            analysisResult = data;
+            displayResults(data);
+        } else {
+            showError(data.error || '分析失败');
+        }
+    })
+    .catch(error => {
+        document.getElementById('loading').classList.add('hidden');
+        showError('请求失败: ' + error.message);
+    });
+}
+
+function showError(message) {
+    document.getElementById('error-message').textContent = message;
+    document.getElementById('error-display').classList.remove('hidden');
+}
+
+function displayResults(data) {
+    document.getElementById('results').classList.remove('hidden');
+
+    // Display basic info
+    const basicInfo = document.getElementById('basic-info');
+    basicInfo.innerHTML = `
+        <div class="bg-gray-50 p-3 rounded">
+            <span class="text-sm text-gray-500">TRX余额</span>
+            <p class="font-bold text-gray-800">${data.basic_info.balance.toFixed(6)} TRX</p>
+        </div>
+        <div class="bg-gray-50 p-3 rounded">
+            <span class="text-sm text-gray-500">USDT余额</span>
+            <p class="font-bold text-gray-800">${data.basic_info.usdt_balance.toFixed(2)} USDT</p>
+        </div>
+        <div class="bg-gray-50 p-3 rounded">
+            <span class="text-sm text-gray-500">总交易数</span>
+            <p class="font-bold text-gray-800">${data.basic_info.total_transaction_count}</p>
+        </div>
+        <div class="bg-gray-50 p-3 rounded">
+            <span class="text-sm text-gray-500">分析地址</span>
+            <p class="font-bold text-gray-800 text-sm">${data.address}</p>
+        </div>
+    `;
+
+    // Display score
+    const score = data.alerts.score;
+    const scoreCircle = document.getElementById('score-circle');
+    const scoreLabel = document.getElementById('score-label');
+
+    scoreCircle.textContent = score;
+
+    if (score >= 70) {
+        scoreCircle.className = 'w-32 h-32 rounded-full flex items-center justify-center text-3xl font-bold bg-red-500 text-white';
+        scoreLabel.textContent = '高风险';
+        scoreLabel.className = 'ml-4 text-xl font-medium text-red-600';
+    } else if (score >= 40) {
+        scoreCircle.className = 'w-32 h-32 rounded-full flex items-center justify-center text-3xl font-bold bg-yellow-500 text-white';
+        scoreLabel.textContent = '中等风险';
+        scoreLabel.className = 'ml-4 text-xl font-medium text-yellow-600';
+    } else {
+        scoreCircle.className = 'w-32 h-32 rounded-full flex items-center justify-center text-3xl font-bold bg-green-500 text-white';
+        scoreLabel.textContent = '低风险';
+        scoreLabel.className = 'ml-4 text-xl font-medium text-green-600';
+    }
+
+    // Display alerts
+    displayAlerts('red', data.alerts.red || []);
+    displayAlerts('yellow', data.alerts.yellow || []);
+    displayAlerts('green', data.alerts.green || []);
+}
+
+function displayAlerts(type, alerts) {
+    const container = document.getElementById(`${type}-alerts`);
+    const list = document.getElementById(`${type}-list`);
+
+    if (alerts.length === 0) {
+        container.classList.add('hidden');
+        return;
+    }
+
+    container.classList.remove('hidden');
+    list.innerHTML = alerts.map(alert => `
+        <div class="bg-white rounded p-4 shadow-sm">
+            <p class="font-bold text-gray-800">${alert.feature}</p>
+            <p class="text-sm text-gray-600 mt-1"><strong>详情:</strong> ${alert.detail}</p>
+            <p class="text-sm text-gray-500 mt-1"><strong>意义:</strong> ${alert.meaning}</p>
+        </div>
+    `).join('');
+}
+
+function exportJSON() {
+    if (!analysisResult) {
+        alert('请先进行地址分析');
+        return;
+    }
+
+    fetch('/tron/api/export/json', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ result: analysisResult })
+    })
+    .then(response => {
+        const filename = response.headers.get('Content-Disposition').split('filename=')[1].replace(/"/g, '');
+        return response.blob().then(blob => ({ blob, filename }));
+    })
+    .then(({ blob, filename }) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        window.URL.revokeObjectURL(url);
+    })
+    .catch(error => {
+        alert('导出失败: ' + error.message);
+    });
+}
+
+function exportCSV() {
+    if (!analysisResult) {
+        alert('请先进行地址分析');
+        return;
+    }
+
+    fetch('/tron/api/export/csv', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ result: analysisResult })
+    })
+    .then(response => {
+        const filename = response.headers.get('Content-Disposition').split('filename=')[1].replace(/"/g, '');
+        return response.blob().then(blob => ({ blob, filename }));
+    })
+    .then(({ blob, filename }) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        window.URL.revokeObjectURL(url);
+    })
+    .catch(error => {
+        alert('导出失败: ' + error.message);
+    });
+}
+</script>
+{% endblock %}
