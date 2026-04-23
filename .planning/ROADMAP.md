@@ -42,7 +42,7 @@
 |------|------|-----------|--------------|--------|
 | 1 | [x] 01-01-PLAN.md | Base template with sidebar + footer | CORE-03, CORE-05 | DONE |
 | 1 | [x] 01-02-PLAN.md | Core modules (API client, formatter, exporter) | EXPORT-01, EXPORT-02 | DONE |
-| 2 | [ ] 01-03-PLAN.md | Flask app + homepage with 4 categories | CORE-02 | Pending |
+| 2 | [x] 01-03-PLAN.md | Flask app + homepage with 4 categories | CORE-02 | DONE |
 | 2 | [ ] 01-04-PLAN.md | TRON analyzer backend (alerts + score) | ADDR-01, ADDR-02 | Pending |
 | 3 | [ ] 01-05-PLAN.md | TRON frontend page + sample loading | CORE-04 | Pending |
 | 3 | [ ] 01-06-PLAN.md | Startup scripts (run.bat/run.sh) | CORE-01 | Pending |
