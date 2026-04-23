@@ -21,7 +21,7 @@
 
 **Status:** ○ Pending
 **Requirements:** CORE-01, CORE-02, CORE-03, CORE-04, CORE-05, ADDR-01, ADDR-02, EXPORT-01, EXPORT-02
-**Plans:** 7 (base files, Flask structure, base template, core modules, TRON analyzer, frontend page, final polish)
+**Plans:** 7 plans in 4 waves
 
 **Success Criteria:**
 - [ ] run.bat双击可启动Flask应用
@@ -35,6 +35,18 @@
 - templates/base.html (侧边栏布局)
 - modules/core/ (共享模块)
 - modules/tron/suspicious_analyzer.py (TRON分析)
+
+**Plan Details:**
+
+| Wave | Plan | Objective | Requirements |
+|------|------|-----------|--------------|
+| 1 | [ ] 01-01-PLAN.md | Base template with sidebar + footer | CORE-03, CORE-05 |
+| 1 | [ ] 01-02-PLAN.md | Core modules (API client, formatter, exporter) | EXPORT-01, EXPORT-02 |
+| 2 | [ ] 01-03-PLAN.md | Flask app + homepage with 4 categories | CORE-02 |
+| 2 | [ ] 01-04-PLAN.md | TRON analyzer backend (alerts + score) | ADDR-01, ADDR-02 |
+| 3 | [ ] 01-05-PLAN.md | TRON frontend page + sample loading | CORE-04 |
+| 3 | [ ] 01-06-PLAN.md | Startup scripts (run.bat/run.sh) | CORE-01 |
+| 4 | [ ] 01-07-PLAN.md | Final verification + integration | Verification only |
 
 ---
 
@@ -124,5 +136,18 @@
 - Mapped to Phases: 22
 - Coverage: 100% ✓
 
+## Requirements Traceability
+
+| Phase 1 Plans | Requirements Covered |
+|---------------|---------------------|
+| 01-01-PLAN.md | CORE-03, CORE-05 |
+| 01-02-PLAN.md | EXPORT-01, EXPORT-02 |
+| 01-03-PLAN.md | CORE-02 |
+| 01-04-PLAN.md | ADDR-01, ADDR-02 |
+| 01-05-PLAN.md | CORE-04 |
+| 01-06-PLAN.md | CORE-01 |
+
+**Phase 1 Coverage:** 9/9 requirements ✓
+
 ---
-*Updated: 2026-04-23*
+*Updated: 2026-04-23 after plan creation*
