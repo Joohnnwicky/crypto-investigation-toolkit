@@ -1,8 +1,12 @@
 """Flask application entry point for Crypto Investigation Toolkit"""
 
 from flask import Flask, render_template
+from modules.tron.routes import tron_bp
 
 app = Flask(__name__)
+
+# Register Blueprints
+app.register_blueprint(tron_bp)
 
 
 @app.route('/')
@@ -11,10 +15,9 @@ def index():
     return render_template('index.html')
 
 
-# Placeholder routes for future tools (will be replaced by Blueprints)
 @app.route('/tron/suspicious-analyzer')
 def tron_suspicious_analyzer():
-    """TRON suspicious feature analysis tool (placeholder)"""
+    """TRON suspicious feature analysis tool page"""
     return render_template('tron/suspicious_analyzer.html')
 
 
