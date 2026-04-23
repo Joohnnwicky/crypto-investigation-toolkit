@@ -8,8 +8,8 @@
 ## Status
 
 **Current State:** Executing Phase 1
-**Last Activity:** Completed 01-05-PLAN.md (TRON suspicious analyzer frontend)
-**Current Focus:** Core Framework - next plan 01-06
+**Last Activity:** Completed 01-06-PLAN.md (Startup scripts)
+**Current Focus:** Core Framework - next plan 01-07
 
 ---
 
@@ -17,8 +17,8 @@
 
 **Milestone:** v1
 **Phase:** 1 - Core Framework
-**Phase Status:** ◆ In Progress (5/7 plans complete)
-**Current Plan:** 06
+**Phase Status:** ◆ In Progress (6/7 plans complete)
+**Current Plan:** 07
 
 ---
 
@@ -37,7 +37,7 @@
 
 | Phase | Status | Plans | Progress |
 |-------|--------|-------|----------|
-| 1 | ◆ In Progress | 7 | 71% (5/7) |
+| 1 | ◆ In Progress | 7 | 86% (6/7) |
 | 2 | ○ Pending | 4 | 0% |
 | 3 | ○ Pending | 3 | 0% |
 | 4 | ○ Pending | 2 | 0% |
@@ -50,6 +50,7 @@
 
 | Date | Action | Phase |
 |------|--------|-------|
+| 2026-04-23 | Completed 01-06: Startup scripts (run.bat, run.sh, requirements.txt) | 1 |
 | 2026-04-23 | Completed 01-05: TRON suspicious analyzer frontend (sample loading, analysis display, export) | 1 |
 | 2026-04-23 | Completed 01-04: TRON suspicious analyzer backend (Flask Blueprint + detection logic) | 1 |
 | 2026-04-23 | Completed 01-03: Flask entry point + homepage with 4 categories | 1 |
@@ -69,6 +70,8 @@
 | Fixed yellow footer for legal disclaimer | High visibility for compliance notice | 01-01-SUMMARY |
 | TRON address validation regex r'^T[A-Za-z1-9]{33}$' | Standard TRON format (T prefix, 34 chars, Base58) | 01-04-SUMMARY |
 | Adapted CLI scoring algorithm unchanged (30/25/35/15/20) | Proven detection rules from existing script | 01-04-SUMMARY |
+| Flask exact version 3.1.3 | Stability for web framework dependency | 01-06-SUMMARY |
+| Browser auto-open on Windows | Improved UX for one-click startup | 01-06-SUMMARY |
 
 ---
 
@@ -81,14 +84,15 @@
 | 01-03 | 180s | 2 | 2 | 2026-04-23 |
 | 01-04 | 371s | 2 | 3 | 2026-04-23 |
 | 01-05 | 45s | 2 | 2 | 2026-04-23 |
+| 01-06 | 120s | 3 | 3 | 2026-04-23 |
 
 ---
 
 ## Session Info
 
 **Last Session:** 2026-04-23
-**Stopped At:** Completed 01-05-PLAN.md
-**Resume File:** 01-06-PLAN.md
+**Stopped At:** Completed 01-06-PLAN.md
+**Resume File:** 01-07-PLAN.md
 
 ---
 
@@ -100,6 +104,7 @@ Flask app.py provides entry point with index route and placeholder routes for fu
 Homepage displays 11 tools organized into 4 categories (地址分析, 交易追踪, 跨链分析, 案件处理).
 TRON suspicious analyzer frontend (templates/tron/suspicious_analyzer.html) provides complete UI with sample loading, analysis display, and export buttons. Vanilla JavaScript for frontend logic.
 TRON suspicious analyzer backend (modules/tron/suspicious_analyzer.py + routes.py) provides detection logic and Flask Blueprint API.
+Startup scripts (run.bat, run.sh) enable one-click local Flask startup with auto-dependency installation and browser opening (Windows).
 
 ---
-*Updated: 2026-04-23 after 01-05 completion*
+*Updated: 2026-04-23 after 01-06 completion*
