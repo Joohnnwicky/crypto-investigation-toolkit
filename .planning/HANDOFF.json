@@ -1,41 +1,59 @@
 {
   "version": "1.0",
-  "timestamp": "2026-04-24T10:45:00Z",
-  "phase": "02",
-  "phase_name": "address-analysis",
-  "phase_dir": ".planning/phases/02-address-analysis",
-  "plan": "02-04",
-  "task": "human_verification",
-  "total_tasks": 2,
+  "timestamp": "2026-04-24T04:08:38.535Z",
+  "phase": "03",
+  "phase_name": "transaction-tracking",
+  "phase_dir": ".planning/phases/03-transaction-tracking",
+  "plan": 5,
+  "task": 5,
+  "total_tasks": 5,
   "status": "paused",
   "completed_tasks": [
-    {"id": 1, "name": "Execute 02-01: TRON behavior analyzer", "status": "done", "commit": "8d87af6"},
-    {"id": 2, "name": "Execute 02-02: ETH backend module", "status": "done", "commit": "2a38700"},
-    {"id": 3, "name": "Execute 02-03: ETH frontend UI", "status": "done", "commit": "00656f7"},
-    {"id": 4, "name": "Execute 02-04: Integration", "status": "done", "commit": "a0e4ae0"},
-    {"id": 5, "name": "Code review", "status": "done", "commit": "f9ad3a5"},
-    {"id": 6, "name": "Verification report", "status": "done", "commit": "7d43c29"},
-    {"id": 7, "name": "Fix JavaScript typo WR-01", "status": "done", "commit": "177c08a"},
-    {"id": 8, "name": "Fix Etherscan API V2 issue", "status": "done", "commit": "c951b2a"},
-    {"id": 9, "name": "Integrate original ETH query code with bridge detection", "status": "done", "commit": "21eb91f"},
-    {"id": 10, "name": "Update frontend for bridge_events", "status": "done", "commit": "6c5d2ea"}
+    {"id": 1, "name": "Uniswap tracker backend (eth_rpc_client.py, uniswap_tracker.py)", "status": "done", "commit": "untracked"},
+    {"id": 2, "name": "Tornado Cash mixer tracker (mixer_tracker.py)", "status": "done", "commit": "untracked"},
+    {"id": 3, "name": "BTC analyzer (btc_analyzer.py)", "status": "done", "commit": "untracked"},
+    {"id": 4, "name": "Frontend pages (uniswap.html, mixer.html, btc.html)", "status": "done", "commit": "untracked"},
+    {"id": 5, "name": "Blueprint registration and integration", "status": "done", "commit": "untracked"}
   ],
-  "remaining_tasks": [
-    {"id": 11, "name": "Human verification - test ETH/TRON tools end-to-end", "status": "pending"},
-    {"id": 12, "name": "Mark phase complete after verification passes", "status": "pending"}
+  "remaining_tasks": [],
+  "ux_fixes_applied": [
+    {"id": 1, "description": "Uniswap page now requires Etherscan API key (public RPC doesn't support tx history)", "files": ["modules/trace/uniswap_tracker.py", "templates/trace/uniswap.html", "modules/trace/routes.py"]},
+    {"id": 2, "description": "Mixer tracing integrated into ETH transaction page with auto-linking via URL params", "files": ["modules/eth/eth_analyzer.py", "templates/eth/transaction_query.html", "templates/trace/mixer.html"]}
   ],
   "blockers": [],
   "human_actions_pending": [
-    {"action": "Restart Flask app and test ETH transaction query with real API key", "context": "Etherscan V2 fix applied, need to verify works with user's address", "blocking": false},
-    {"action": "Test TRON behavior analyzer with sample address", "context": "Verify 4 Summary Cards display correctly", "blocking": false},
-    {"action": "Type 'approved' to complete phase verification", "context": "Phase 2 verification passed automated checks, needs human confirmation", "blocking": true}
+    {"action": "Test integrated mixer tracing flow: ETH page → detect Tornado deposit → click '追踪混币提款' → auto-redirect to mixer page", "context": "User requested UX fix to merge mixer into ETH page, needs verification before Phase 3 completion", "blocking": true},
+    {"action": "Install web3 dependency: pip install web3==7.15.0", "context": "Required for Uniswap and mixer tracking", "blocking": false}
   ],
   "decisions": [
-    {"decision": "Use Etherscan API V2 with chainid=1 parameter", "rationale": "V1 API deprecated, returns error message. User's original code already used V2 correctly.", "phase": "02"},
-    {"decision": "Integrate user's original ETH query code from 002-day1", "rationale": "User's code was validated and includes 20+ bridge contract addresses, complete bridge detection logic", "phase": "02"},
-    {"decision": "Return bridge_events instead of stargate_events", "rationale": "Generic bridge detection covers more bridges than just Stargate", "phase": "02"}
+    {"decision": "Add Etherscan API key input to Uniswap page", "rationale": "Public RPC nodes don't support transaction history queries - Etherscan API required", "phase": "03"},
+    {"decision": "Merge Tornado Cash detection into ETH transaction page with auto-linking", "rationale": "User didn't understand standalone mixer page logic - integrated flow is clearer", "phase": "03"},
+    {"decision": "Use 24-hour time window for mixer analysis", "rationale": "Matches Tornado Cash anonymity window pattern", "phase": "03"}
   ],
-  "uncommitted_files": [],
-  "next_action": "User needs to restart Flask app (python app.py) and test ETH transaction query at http://127.0.0.1:5000/eth/transaction-query. Then type 'approved' to complete Phase 2.",
-  "context_notes": "Phase 2 execution complete. All 4 plans executed. Code review found 1 JavaScript typo (fixed). Etherscan V2 API migration issue discovered and fixed by integrating user's original validated code. Human testing required to verify tools work with real blockchain data."
+  "uncommitted_files": [
+    ".planning/ROADMAP.md",
+    ".planning/STATE.md",
+    ".planning/phases/03-transaction-tracking/03-01-PLAN.md",
+    ".planning/phases/03-transaction-tracking/03-01-SUMMARY.md",
+    ".planning/phases/03-transaction-tracking/03-02-PLAN.md",
+    ".planning/phases/03-transaction-tracking/03-02-SUMMARY.md",
+    ".planning/phases/03-transaction-tracking/03-03-PLAN.md",
+    ".planning/phases/03-transaction-tracking/03-03-SUMMARY.md",
+    ".planning/phases/03-transaction-tracking/03-04-PLAN.md",
+    ".planning/phases/03-transaction-tracking/03-04-SUMMARY.md",
+    ".planning/phases/03-transaction-tracking/03-05-PLAN.md",
+    ".planning/phases/03-transaction-tracking/03-05-SUMMARY.md",
+    ".planning/phases/03-transaction-tracking/03-CONTEXT.md",
+    ".planning/phases/03-transaction-tracking/03-DISCUSSION-LOG.md",
+    ".planning/phases/03-transaction-tracking/03-RESEARCH.md",
+    "app.py",
+    "modules/core/eth_rpc_client.py",
+    "modules/eth/eth_analyzer.py",
+    "modules/trace/",
+    "requirements.txt",
+    "templates/eth/transaction_query.html",
+    "templates/trace/"
+  ],
+  "next_action": "Resume with user testing verification: have user test the ETH → Mixer integrated flow and confirm Phase 3 completion",
+  "context_notes": "Phase 3 execution completed with all 5 plans. User tested and identified 2 UX issues which were fixed. User wants to save progress before clearing context, will test and verify later."
 }
