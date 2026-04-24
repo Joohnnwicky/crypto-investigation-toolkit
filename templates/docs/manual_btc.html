@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}BTC交易分析 - 使用手册{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Header card -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+        <h1 class="text-2xl font-bold text-gray-800 mb-2">BTC交易分析 - 使用手册</h1>
+        <p class="text-gray-600">操作步骤、结果解释、API说明与案例演示</p>
+    </div>
+
+    <!-- Section 1: 操作步骤 -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">1. 操作步骤</h2>
+        <ol class="list-decimal list-inside space-y-2 text-gray-700">
+            <li>输入待分析的比特币地址或交易哈希。</li>
+            <li>选择分析模式：地址分析、交易追踪或UTXO分析。</li>
+            <li>点击"开始分析"，系统将通过Blockstream API获取区块链数据。</li>
+            <li>查看分析结果，包括交易历史、余额变化、输入输出详情。</li>
+            <li>选择导出格式（JSON/CSV），保存分析报告。</li>
+        </ol>
+    </div>
+
+    <!-- Section 2: 结果解释 -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">2. 结果解释</h2>
+
+        <h3 class="text-lg font-semibold text-gray-700 mb-2">地址信息</h3>
+        <ul class="list-disc list-inside space-y-1 text-gray-600 mb-4">
+            <li><strong>地址余额：</strong>当前未花费的BTC数量</li>
+            <li><strong>总接收金额：</strong>该地址历史接收的BTC总量</li>
+            <li><strong>总发送金额：</strong>该地址历史发送的BTC总量</li>
+            <li><strong>交易数量：</strong>该地址参与的交易总数</li>
+            <li><strong>首次交易：</strong>地址首次出现的时间</li>
+        </ul>
+
+        <h3 class="text-lg font-semibold text-gray-700 mb-2">交易详情</h3>
+        <ul class="list-disc list-inside space-y-1 text-gray-600 mb-4">
+            <li><strong>交易ID：</strong>交易的唯一标识符</li>
+            <li><strong>输入：</strong>资金的来源地址和金额</li>
+            <li><strong>输出：</strong>资金的目标地址和金额</li>
+            <li><strong>手续费：</strong>矿工费用</li>
+            <li><strong>确认数：</strong>交易被确认的区块数</li>
+        </ul>
+
+        <h3 class="text-lg font-semibold text-gray-700 mb-2">UTXO分析</h3>
+        <ul class="list-disc list-inside space-y-1 text-gray-600">
+            <li><strong>UTXO列表：</strong>未花费的交易输出</li>
+            <li><strong>UTXO数量：</strong>当前可花费的输出数量</li>
+            <li><strong>UTXO总价值：</strong>所有UTXO的BTC总和</li>
+        </ul>
+    </div>
+
+    <!-- Section 3: API密钥说明 -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">3. API密钥说明</h2>
+        <p class="text-gray-700 mb-2">本工具使用<strong>Blockstream API</strong>，无需API密钥。</p>
+        <p class="text-gray-600">Blockstream提供公开的比特币区块链数据查询接口，用户可直接使用本工具进行交易分析，无需注册或获取API密钥。</p>
+        <p class="text-gray-600 mt-2">API文档：<a href="https://blockstream.info/api" class="text-blue-600 hover:underline" target="_blank">https://blockstream.info/api</a></p>
+        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mt-4">
+            <p class="text-blue-700"><strong>提示：</strong>Blockstream API有请求频率限制，如需大量分析建议间隔执行。</p>
+        </div>
+    </div>
+
+    <!-- Section 4: 案例演示 -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">4. 案例演示</h2>
+        <div class="bg-gray-50 rounded p-4 mb-4">
+            <h3 class="font-bold text-gray-700 mb-2">案例背景</h3>
+            <p class="text-gray-600">某网络赌博案件，嫌疑人使用比特币收取赌资，需要分析资金来源和去向。</p>
+        </div>
+
+        <div class="bg-gray-50 rounded p-4 mb-4">
+            <h3 class="font-bold text-gray-700 mb-2">操作过程</h3>
+            <ol class="list-decimal list-inside space-y-1 text-gray-600">
+                <li>输入嫌疑人比特币地址：bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</li>
+                <li>选择地址分析模式</li>
+                <li>查看交易历史：发现该地址接收多笔小额转账</li>
+                <li>分析输入来源：识别出多个打款地址</li>
+                <li>导出CSV报告，包含所有交易记录</li>
+            </ol>
+        </div>
+
+        <div class="bg-gray-50 rounded p-4">
+            <h3 class="font-bold text-gray-700 mb-2">结论</h3>
+            <p class="text-gray-600">通过BTC交易分析，成功获取赌资来源地址列表，为后续调查提供证据支持。</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
