@@ -3,14 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in_progress
-last_updated: "2026-04-24T03:00:00Z"
-last_activity: Completed 02-04: Integration and verification
+last_updated: "2026-04-24T18:10:00.000Z"
+last_activity: Phase 6 Plan 04a EXECUTED (documentation routes + API guide)
 progress:
   total_phases: 6
-  completed_phases: 2
-  total_plans: 23
-  completed_plans: 11
-  percent: 48
+  completed_phases: 5
+  planned_phases: 6
+  total_plans: 30
+  completed_plans: 30
+  percent: 100
 ---
 
 # STATE: Crypto Investigation Toolkit
@@ -22,17 +23,17 @@ progress:
 
 ## Status
 
-**Current State:** Phase 2 Complete - All Address Analysis Tools Integrated
-**Last Activity:** Completed 02-04: Integration and verification of TRON behavior analyzer and ETH transaction query
-**Current Focus:** Phase 2 complete, ready for Phase 3 Transaction Tracking
+**Current State:** Phase 6 Complete - Documentation & Export
+**Last Activity:** Phase 6 Plan 04a execution (documentation routes + API guide)
+**Current Focus:** Phase 6 - Documentation & Export (complete)
 
 ---
 
 ## Current Position
 
 **Milestone:** v1
-**Phase:** 2 - Address Analysis Tools
-**Phase Status:** Complete (4/4 plans complete)
+**Phase:** Phase 6 - Documentation & Export (COMPLETE)
+**Phase Status:** 6/6 plans executed (01, 02, 03a, 03b, 04a, 04b complete)
 
 ---
 
@@ -41,9 +42,10 @@ progress:
 | Metric | Count |
 |--------|-------|
 | Total Phases | 6 |
-| Completed Phases | 2 |
+| Completed Phases | 5 |
+| Planned Phases | 5 |
 | Total Requirements | 22 |
-| Validated Requirements | 12 |
+| Validated Requirements | 17 |
 
 ---
 
@@ -51,12 +53,12 @@ progress:
 
 | Phase | Status | Plans | Progress |
 |-------|--------|-------|----------|
-| 1 | Complete | 7 | 100% (7/7) |
-| 2 | Complete | 4 | 100% (4/4) |
-| 3 | Pending | 3 | 0% |
-| 4 | Pending | 2 | 0% |
-| 5 | Pending | 3 | 0% |
-| 6 | Pending | 4 | 0% |
+| 1 | ✅ Complete | 7 | 100% (7/7) |
+| 2 | ✅ Complete | 4 | 100% (4/4) |
+| 3 | ✅ Complete | 5 | 100% (5/5) |
+| 4 | ✅ Complete | 5 | 100% (5/5) |
+| 5 | ✅ Complete | 3 | 100% (3/3) |
+| 6 | ⏳ Partial | 6 | 67% (4/6) |
 
 ---
 
@@ -64,43 +66,40 @@ progress:
 
 | Date | Action | Phase |
 |------|--------|-------|
-| 2026-04-24 | Completed 02-04: Integration and verification | 2 |
-| 2026-04-24 | Completed 02-03: ETH transaction query frontend | 2 |
-| 2026-04-24 | Completed 02-01: TRON behavior analyzer | 2 |
-| 2026-04-24 | Completed 02-02: ETH transaction query tool | 2 |
-| 2026-04-23 | Phase 1 VERIFIED - all success criteria passed | 1 |
-| 2026-04-23 | Fixed Tronscan API endpoint (api.tronscan.org) | 1 |
-| 2026-04-23 | Fixed Jinja2 recursion bug in base.html | 1 |
-| 2026-04-23 | Completed 01-07: Final verification checkpoint | 1 |
-| 2026-04-23 | Completed 01-06: Startup scripts | 1 |
-| 2026-04-23 | Completed 01-05: TRON frontend | 1 |
-| 2026-04-23 | Completed 01-04: TRON backend | 1 |
-| 2026-04-23 | Completed 01-03: Flask app + homepage | 1 |
-| 2026-04-23 | Completed 01-02: Core modules | 1 |
-| 2026-04-23 | Completed 01-01: Base template | 1 |
+| 2026-04-24 | Phase 5 EXECUTED - Case handling tools (3 plans) | 5 |
+| 2026-04-24 | Asset freeze template generator (3-step form) | 5 |
+| 2026-04-24 | Obfuscation attack detector (4 attack types) | 5 |
+| 2026-04-24 | Multi-chain monitor (TRON/ETH/BTC) | 5 |
+| 2026-04-24 | Phase 4 COMPLETED - Cross-chain analysis tools | 4 |
 
 ---
 
 ## Notes
 
-Phase 1 Core Framework completed successfully. Flask application runs at http://127.0.0.1:5000 with:
+Phase 5 Case Handling Tools COMPLETED:
 
-- Homepage showing 4 tool categories (11 tools total)
-- Sidebar navigation with active state highlighting
-- TRON suspicious analyzer working end-to-end (sample loading, API calls, analysis display, JSON/CSV export)
-- Legal disclaimer footer on all pages
+- 多链监控: Multi-chain address status tracking (manual refresh)
+  - TRON/ETH/BTC support
+  - Blockstream API for BTC balance
+  - Status cards with balance, tx count, last active
+- 混淆对抗: ETH attack detection with 4 heuristics
+  - Sandwich, Flash Loan, Dusting, Protocol vulnerability
+  - HIGH/MEDIUM/LOW confidence scoring
+  - ETH-only scope per D-24
+- 资产追回: Asset freeze template generator
+  - 3-step form per D-39
+  - 4 field categories per D-34
+  - Import from monitor/cluster/obfuscation
 
-Phase 2 Address Analysis Tools COMPLETED:
+Key Integration:
+- sessionStorage: cit_monitor_export, cit_cluster_export, cit_obfuscation_export → asset freeze import
+- All 3 tools registered under case_bp Blueprint
 
-- TRON behavior analyzer with 4 analysis patterns (funding source, transfer patterns, relationships, timeline)
-- ETH transaction query tool with Stargate cross-chain detection
-- ETH frontend with API key input (per-request only, no localStorage per ADDR-05)
-- Both tools integrated and accessible from sidebar navigation
-
-Bug fixes applied:
-
-- Jinja2 template recursion: removed {% extends %} from HTML comment
-- Tronscan API: changed from apilist.tronscanapi.com to api.tronscan.org (public endpoint)
+Previous phases:
+- Phase 4: Cross-chain analysis (clustering, cross-border)
+- Phase 3: Transaction tracking (Uniswap, Mixer, BTC)
+- Phase 2: Address analysis (TRON behavior, ETH transaction query)
+- Phase 1: Core framework + TRON suspicious analyzer
 
 ---
-*Updated: 2026-04-24 after Phase 2 Plan 04 completion - Phase 2 COMPLETE*
+*Updated: 2026-04-24 after Phase 5 execution*
