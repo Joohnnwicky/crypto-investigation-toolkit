@@ -1,7 +1,7 @@
 # ROADMAP: Crypto Investigation Toolkit
 
 **Project:** CIT
-**Updated:** 2026-04-23
+**Updated:** 2026-04-24
 **Status:** Active
 
 ---
@@ -19,16 +19,16 @@
 ### Phase 1: Core Framework
 **Goal:** 构建Flask应用核心框架，包含基础模板、侧边栏导航、共享模块，以及第一个完整工具（TRON可疑特征分析）
 
-**Status:** ○ Pending
+**Status:** ✅ Complete
 **Requirements:** CORE-01, CORE-02, CORE-03, CORE-04, CORE-05, ADDR-01, ADDR-02, EXPORT-01, EXPORT-02
 **Plans:** 7 plans in 4 waves
 
 **Success Criteria:**
-- [ ] run.bat双击可启动Flask应用
-- [ ] 首页显示工具概览和4个分组
-- [ ] 侧边栏导航正常切换
-- [ ] TRON可疑分析工具完整可用（样本填充、API调用、结果展示、导出）
-- [ ] 底部法律声明显示
+- [x] run.bat双击可启动Flask应用
+- [x] 首页显示工具概览和4个分组
+- [x] 侧边栏导航正常切换
+- [x] TRON可疑分析工具完整可用（样本填充、API调用、结果展示、导出）
+- [x] 底部法律声明显示
 
 **Key Files:**
 - app.py (Flask入口)
@@ -45,8 +45,8 @@
 | 2 | [x] 01-03-PLAN.md | Flask app + homepage with 4 categories | CORE-02 | DONE |
 | 2 | [x] 01-04-PLAN.md | TRON analyzer backend (alerts + score) | ADDR-01, ADDR-02 | DONE |
 | 3 | [x] 01-05-PLAN.md | TRON frontend page + sample loading | CORE-04 | DONE |
-| 3 | [ ] 01-06-PLAN.md | Startup scripts (run.bat/run.sh) | CORE-01 | Pending |
-| 4 | [ ] 01-07-PLAN.md | Final verification + integration | Verification only | Pending |
+| 3 | [x] 01-06-PLAN.md | Startup scripts (run.bat/run.sh) | CORE-01 | DONE |
+| 4 | [x] 01-07-PLAN.md | Final verification + integration | Verification only | DONE |
 
 ---
 
@@ -55,7 +55,7 @@
 
 **Status:** ○ Pending
 **Requirements:** ADDR-03, ADDR-04, ADDR-05
-**Plans:** 4
+**Plans:** 4 plans in 3 waves
 
 **Success Criteria:**
 - [ ] TRON地址行为分析工具完整可用
@@ -64,6 +64,15 @@
 - [ ] ETH工具支持API密钥输入
 
 **Dependencies:** Phase 1 complete
+
+**Plan Details:**
+
+| Wave | Plan | Objective | Requirements | Status |
+|------|------|-----------|--------------|--------|
+| 1 | [ ] 02-01-PLAN.md | TRON behavior analyzer backend + frontend | ADDR-03 | Pending |
+| 1 | [ ] 02-02-PLAN.md | ETH backend module (API + Stargate detector) | ADDR-04, ADDR-05 | Pending |
+| 2 | [ ] 02-03-PLAN.md | ETH frontend UI with API key input | ADDR-04, ADDR-05 | Pending |
+| 3 | [ ] 02-04-PLAN.md | Integration + end-to-end verification | ADDR-03, ADDR-04, ADDR-05 | Pending |
 
 ---
 
@@ -149,5 +158,15 @@
 
 **Phase 1 Coverage:** 9/9 requirements ✓
 
+| Phase 2 Plans | Requirements Covered |
+|---------------|---------------------|
+| 02-01-PLAN.md | ADDR-03 |
+| 02-02-PLAN.md | ADDR-04, ADDR-05 |
+| 02-03-PLAN.md | ADDR-04, ADDR-05 |
+| 02-04-PLAN.md | ADDR-03, ADDR-04, ADDR-05 |
+
+**Phase 2 Coverage:** 3/3 requirements ✓
+
 ---
-*Updated: 2026-04-23 after plan creation*
+
+*Updated: 2026-04-24 after Phase 2 plan creation*
