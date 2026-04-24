@@ -60,5 +60,7 @@ def manual_page(tool):
         'obfuscation', 'asset-freeze'
     ]
     if tool not in valid_slugs:
-        return render_template('404.html'), 404
-    return render_template(f'docs/manual_{tool}.html')
+        return "Page not found", 404
+    # Convert slug hyphens to underscores for template filename
+    template_name = tool.replace('-', '_')
+    return render_template(f'docs/manual_{template_name}.html')
