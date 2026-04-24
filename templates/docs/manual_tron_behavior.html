@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}TRON地址行为分析 - 使用手册{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Header card -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+        <h1 class="text-2xl font-bold text-gray-800 mb-2">TRON地址行为分析 - 使用手册</h1>
+        <p class="text-gray-600">操作步骤、结果解释、API说明与案例演示</p>
+    </div>
+
+    <!-- Section 1: 操作步骤 -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">1. 操作步骤</h2>
+        <ol class="list-decimal list-inside space-y-2 text-gray-700">
+            <li>在工具首页输入待分析的TRON钱包地址（以T开头的34位地址）。</li>
+            <li>选择分析的时间范围（可选择最近7天、30天、90天或全部时间）。</li>
+            <li>点击"开始分析"按钮，系统将获取该地址的交易历史和行为模式。</li>
+            <li>分析完成后查看行为统计、交易频率图、资金流向等信息。</li>
+            <li>根据需要导出分析报告（JSON/CSV/PDF格式）。</li>
+        </ol>
+    </div>
+
+    <!-- Section 2: 结果解释 -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">2. 结果解释</h2>
+
+        <h3 class="text-lg font-semibold text-gray-700 mb-2">基本信息 (basic_info)</h3>
+        <ul class="list-disc list-inside space-y-1 text-gray-600 mb-4">
+            <li><strong>地址余额：</strong>TRX及各类TRC-20代币余额</li>
+            <li><strong>交易总数：</strong>历史累计交易笔数</li>
+            <li><strong>首次交易时间：</strong>账户创建或首次活跃时间</li>
+            <li><strong>最近交易时间：</strong>最后一次链上活动时间</li>
+        </ul>
+
+        <h3 class="text-lg font-semibold text-gray-700 mb-2">行为统计 (behavior_stats)</h3>
+        <ul class="list-disc list-inside space-y-1 text-gray-600 mb-4">
+            <li><strong>平均交易金额：</strong>单笔交易的平均转账金额</li>
+            <li><strong>交易频率：</strong>日均交易次数，判断是否异常活跃</li>
+            <li><strong>主要交易对手：</strong>频繁交互的地址列表</li>
+            <li><strong>资金流向：</strong>收入与支出的比例分析</li>
+        </ul>
+
+        <h3 class="text-lg font-semibold text-gray-700 mb-2">风险评分 (score)</h3>
+        <ul class="list-disc list-inside space-y-1 text-gray-600">
+            <li><strong>0-39分（绿色）：</strong>正常行为模式，无明显异常</li>
+            <li><strong>40-69分（黄色）：</strong>行为模式存在可疑特征，需结合其他信息判断</li>
+            <li><strong>70-100分（红色）：</strong>行为模式高度异常，可能涉及洗钱、诈骗等风险</li>
+        </ul>
+    </div>
+
+    <!-- Section 3: API密钥说明 -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">3. API密钥说明</h2>
+        <p class="text-gray-700 mb-2">本工具使用<strong>Tronscan API</strong>，无需API密钥。</p>
+        <p class="text-gray-600">Tronscan提供公开的区块链数据查询接口，用户可直接使用本工具进行地址行为分析，无需注册或获取API密钥。</p>
+        <p class="text-gray-600 mt-2">如需更高频率的API调用，可访问 <a href="https://tronscan.org" class="text-blue-600 hover:underline" target="_blank">Tronscan官网</a> 了解API使用限制详情。</p>
+    </div>
+
+    <!-- Section 4: 案例演示 -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">4. 案例演示</h2>
+        <div class="bg-gray-50 rounded p-4 mb-4">
+            <h3 class="font-bold text-gray-700 mb-2">案例背景</h3>
+            <p class="text-gray-600">某交易所用户申请提币至TRON地址，风控部门需要分析该地址的历史行为模式，判断是否存在风险。</p>
+        </div>
+
+        <div class="bg-gray-50 rounded p-4 mb-4">
+            <h3 class="font-bold text-gray-700 mb-2">操作过程</h3>
+            <ol class="list-decimal list-inside space-y-1 text-gray-600">
+                <li>输入目标地址：TMuA6YqfCeX8EhbfYEg5y7S4DqzSJireTg</li>
+                <li>选择分析时间范围：最近30天</li>
+                <li>查看行为统计：日均交易50笔（异常高频），主要与5个地址交互</li>
+                <li>查看资金流向：收入100万USDT，支出99.5万USDT，留存率极低</li>
+                <li>风险评分：72分（高风险），判断为疑似洗钱地址</li>
+            </ol>
+        </div>
+
+        <div class="bg-gray-50 rounded p-4">
+            <h3 class="font-bold text-gray-700 mb-2">结论</h3>
+            <p class="text-gray-600">该地址行为模式符合洗钱特征（高频交易、资金快进快出），建议加强风控措施或进一步调查。</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
