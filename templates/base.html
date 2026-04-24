@@ -1,69 +1,172 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<!--
-    Base Template for Crypto Investigation Toolkit (CIT)
-
-    This template provides the common layout structure for all tool pages:
-    - Fixed sidebar navigation (left, 256px width)
-    - Main content area (flexible width, 256px left margin)
-    - Fixed legal disclaimer footer (bottom, offset for sidebar)
-
-    Child templates should:
-    - Extend this base using: extends "base.html"
-    - Override the title block for page-specific titles
-    - Override the content block for page-specific content
-    - Optionally override sidebar or footer blocks if needed
-
-    Tailwind CSS v4 is loaded via CDN for zero-build styling.
-    Active navigation state is detected via request.path variable.
--->
 <head>
-    <!-- Meta and charset configuration for Chinese language support -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Page title with Jinja2 block for child template override -->
-    <title>{% block title %}CIT{% endblock %}</title>
-    <!-- Tailwind CSS v4 via CDN for zero-build styling -->
+    <title>{% block title %}BLOCKSHADE{% endblock %}</title>
+    <!-- Tailwind CSS v4 via CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Custom dark theme styles inspired by Tornado Cash -->
+    <style>
+        :root {
+            --bg-dark-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            --bg-sidebar: #0f0f1a;
+            --accent-purple: #667eea;
+            --accent-purple-dark: #764ba2;
+            --text-light: #ecf0f1;
+            --text-muted: #8b8b9a;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: var(--bg-dark-gradient);
+            color: var(--text-light);
+        }
+
+        .sidebar {
+            background: rgba(15, 15, 26, 0.98);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-link {
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(102, 126, 234, 0.15);
+            transform: translateX(4px);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+            border-left: 3px solid var(--accent-purple);
+        }
+
+        .card {
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .card:hover {
+            border-color: rgba(102, 126, 234, 0.4);
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.15);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent-purple-dark) 100%);
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .footer-dark {
+            background: rgba(15, 15, 26, 0.95);
+            border-top: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(102, 126, 234, 0.3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(102, 126, 234, 0.5);
+        }
+    </style>
 </head>
-<body class="flex min-h-screen bg-gray-100">
-    <!-- Sidebar navigation with fixed positioning -->
+<body class="flex min-h-screen">
+    <!-- Sidebar navigation -->
     {% block sidebar %}
-    <aside class="w-64 bg-gray-900 text-white fixed h-full">
-        <!-- Application title/logo -->
-        <h1 class="text-xl font-bold p-4 border-b border-gray-700">虚拟币犯罪调查工具集</h1>
-        <!-- Navigation menu with active state highlighting via Jinja2 request.path -->
-        <nav class="p-4 space-y-2">
-            <a href="/" class="block py-2 px-4 rounded hover:bg-gray-700 transition{% if request.path == '/' %} bg-gray-700{% endif %}">首页</a>
-            <!-- TRON blockchain analysis tools -->
-            <a href="/tron/suspicious-analyzer" class="block py-2 px-4 rounded hover:bg-gray-700 transition{% if request.path == '/tron/suspicious-analyzer' %} bg-gray-700{% endif %}">TRON可疑分析</a>
-            <a href="/tron/behavior-analyzer" class="block py-2 px-4 rounded hover:bg-gray-700 transition{% if request.path == '/tron/behavior-analyzer' %} bg-gray-700{% endif %}">TRON行为分析</a>
-            <!-- Ethereum blockchain analysis tools -->
-            <a href="/eth/transaction-query" class="block py-2 px-4 rounded hover:bg-gray-700 transition{% if request.path == '/eth/transaction-query' %} bg-gray-700{% endif %}">ETH交易查询</a>
-            <!-- Transaction tracing tools -->
-            <a href="/trace/uniswap" class="block py-2 px-4 rounded hover:bg-gray-700 transition{% if request.path == '/trace/uniswap' %} bg-gray-700{% endif %}">Uniswap追踪</a>
-            <a href="/trace/btc" class="block py-2 px-4 rounded hover:bg-gray-700 transition{% if request.path == '/trace/btc' %} bg-gray-700{% endif %}">BTC交易分析</a>
-            <!-- Cross-chain and address analysis tools -->
-            <a href="/cross/cluster" class="block py-2 px-4 rounded hover:bg-gray-700 transition{% if request.path == '/cross/cluster' %} bg-gray-700{% endif %}">地址聚类</a>
-            <a href="/cross/cross-border" class="block py-2 px-4 rounded hover:bg-gray-700 transition{% if request.path == '/cross/cross-border' %} bg-gray-700{% endif %}">跨境协查</a>
-            <!-- Case investigation tools -->
-            <a href="/case/monitor" class="block py-2 px-4 rounded hover:bg-gray-700 transition{% if request.path == '/case/monitor' %} bg-gray-700{% endif %}">多链监控</a>
-            <a href="/case/obfuscation" class="block py-2 px-4 rounded hover:bg-gray-700 transition{% if request.path == '/case/obfuscation' %} bg-gray-700{% endif %}">混淆对抗</a>
-            <a href="/case/asset-freeze" class="block py-2 px-4 rounded hover:bg-gray-700 transition{% if request.path == '/case/asset-freeze' %} bg-gray-700{% endif %}">资产追回</a>
-            <!-- Documentation -->
-            <a href="/docs/manuals" class="block py-2 px-4 rounded hover:bg-gray-700 transition{% if request.path == '/docs/manuals' %} bg-gray-700{% endif %}">使用手册</a>
-            <a href="/docs/api-guide" class="block py-2 px-4 rounded hover:bg-gray-700 transition{% if request.path == '/docs/api-guide' %} bg-gray-700{% endif %}">API获取指南</a>
+    <aside class="sidebar w-64 text-gray-100 fixed h-full overflow-y-auto">
+        <!-- Brand header with gradient accent -->
+        <div class="p-4 border-b border-gray-800/50">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center">
+                    <span class="text-white font-bold text-sm">B</span>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-white tracking-wide">区块猎影</h1>
+                    <p class="text-xs text-gray-400 font-mono">BLOCKSHADE</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation menu -->
+        <nav class="p-4 space-y-1">
+            <a href="/" class="nav-link block py-2 px-4 rounded-lg text-gray-300{% if request.path == '/' %} active{% endif %}">
+                <span class="flex items-center">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    首页
+                </span>
+            </a>
+
+            <!-- Divider -->
+            <div class="py-2">
+                <p class="text-xs text-gray-500 uppercase tracking-wider px-4">地址分析</p>
+            </div>
+
+            <a href="/tron/suspicious-analyzer" class="nav-link block py-2 px-4 rounded-lg text-gray-300{% if request.path == '/tron/suspicious-analyzer' %} active{% endif %}">TRON可疑分析</a>
+            <a href="/tron/behavior-analyzer" class="nav-link block py-2 px-4 rounded-lg text-gray-300{% if request.path == '/tron/behavior-analyzer' %} active{% endif %}">TRON行为分析</a>
+            <a href="/eth/transaction-query" class="nav-link block py-2 px-4 rounded-lg text-gray-300{% if request.path == '/eth/transaction-query' %} active{% endif %}">ETH交易查询</a>
+
+            <!-- Divider -->
+            <div class="py-2">
+                <p class="text-xs text-gray-500 uppercase tracking-wider px-4">交易追踪</p>
+            </div>
+
+            <a href="/trace/uniswap" class="nav-link block py-2 px-4 rounded-lg text-gray-300{% if request.path == '/trace/uniswap' %} active{% endif %}">Uniswap追踪</a>
+            <a href="/trace/btc" class="nav-link block py-2 px-4 rounded-lg text-gray-300{% if request.path == '/trace/btc' %} active{% endif %}">BTC交易分析</a>
+
+            <!-- Divider -->
+            <div class="py-2">
+                <p class="text-xs text-gray-500 uppercase tracking-wider px-4">跨链分析</p>
+            </div>
+
+            <a href="/cross/cluster" class="nav-link block py-2 px-4 rounded-lg text-gray-300{% if request.path == '/cross/cluster' %} active{% endif %}">地址聚类</a>
+            <a href="/cross/cross-border" class="nav-link block py-2 px-4 rounded-lg text-gray-300{% if request.path == '/cross/cross-border' %} active{% endif %}">跨境协查</a>
+
+            <!-- Divider -->
+            <div class="py-2">
+                <p class="text-xs text-gray-500 uppercase tracking-wider px-4">案件处理</p>
+            </div>
+
+            <a href="/case/monitor" class="nav-link block py-2 px-4 rounded-lg text-gray-300{% if request.path == '/case/monitor' %} active{% endif %}">多链监控</a>
+            <a href="/case/obfuscation" class="nav-link block py-2 px-4 rounded-lg text-gray-300{% if request.path == '/case/obfuscation' %} active{% endif %}">混淆对抗</a>
+            <a href="/case/asset-freeze" class="nav-link block py-2 px-4 rounded-lg text-gray-300{% if request.path == '/case/asset-freeze' %} active{% endif %}">资产追回</a>
+
+            <!-- Divider -->
+            <div class="py-2">
+                <p class="text-xs text-gray-500 uppercase tracking-wider px-4">文档</p>
+            </div>
+
+            <a href="/docs/manuals" class="nav-link block py-2 px-4 rounded-lg text-gray-300{% if request.path == '/docs/manuals' %} active{% endif %}">使用手册</a>
+            <a href="/docs/api-guide" class="nav-link block py-2 px-4 rounded-lg text-gray-300{% if request.path == '/docs/api-guide' %} active{% endif %}">API获取指南</a>
         </nav>
     </aside>
     {% endblock %}
-    <!-- Main content area with left margin for fixed sidebar -->
-    <main class="flex-1 ml-64 p-6">
+
+    <!-- Main content area -->
+    <main class="flex-1 ml-64 p-6 min-h-screen">
         {% block content %}{% endblock %}
     </main>
-    <!-- Legal disclaimer footer - fixed at bottom, offset for sidebar -->
+
+    <!-- Legal disclaimer footer -->
     {% block footer %}
-    <footer class="fixed bottom-0 left-64 right-0 bg-yellow-100 border-t p-3 text-center text-sm">
-        法律声明：本工具仅供合规调查使用，请确保遵守相关法律法规。所有分析结果仅供参考，不构成法律证据。使用者需自行承担使用风险。
+    <footer class="footer-dark fixed bottom-0 left-64 right-0 p-3 text-center text-sm text-gray-400">
+        <span class="text-gray-500">⚠</span> 法律声明：本工具仅供合规调查使用，请确保遵守相关法律法规。所有分析结果仅供参考，不构成法律证据。
     </footer>
     {% endblock %}
 </body>
