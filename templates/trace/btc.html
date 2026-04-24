@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+{% block title %}BTC交易分析{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto pb-16">
+    <!-- Tool header -->
+    <div class="card p-6 mb-6">
+        <p class="terminal-header mb-2">btc_transaction_analyzer.sh</p>
+        <p class="text-gray-400">解析比特币交易结构，识别地址类型，计算手续费</p>
+        <p class="text-xs mt-2" style="color: var(--text-muted);">仅分析单笔交易，不追踪后续流向</p>
+    </div>
+
+    <!-- Input section -->
+    <div class="card p-6 mb-6">
+        <h2 class="text-lg font-bold mb-4" style="color: var(--accent-green);">>> 输入查询参数</h2>
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium mb-1" style="color: var(--text-muted);">交易哈希</label>
+                <input type="text" id="tx-hash-input" class="w-full"
+                       placeholder="64位十六进制哈希（例如：a1075db55d...）">
+                <p class="text-xs mt-1" style="color: var(--text-muted);">仅分析单笔交易，不追踪后续流向</p>
+            </div>
+            <div class="flex space-x-4">
+                <button onclick="loadSample()" class="btn-secondary">加载样本</button>
+                <button onclick="analyzeTransaction()" class="btn-primary">开始分析</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading indicator -->
+    <div id="loading" class="hidden card p-6 mb-6">
+        <div class="flex items-center justify-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2" style="border-color: var(--accent-green);"></div>
+            <span class="ml-3 text-gray-400">正在查询交易数据...</span>
+        </div>
+    </div>
+
+    <!-- Error display -->
+    <div id="error-display" class="hidden alert-red rounded-lg p-4 mb-6">
+        <p id="error-message" style="color: var(--alert-red);"></p>
+    </div>
+
+    <!-- Results section -->
+    <div id="results" class="hidden">
+        <!-- Basic info -->
+        <div class="card p-6 mb-6">
+            <h2 class="text-lg font-bold mb-4" style="color: var(--accent-green);">>> 交易基本信息</h2>
+            <div id="basic-info" class="grid grid-cols-3 gap-4"></div>
+        </div>
+
+        <!-- Fee details -->
+        <div class="card p-6 mb-6">
+            <h2 class="text-lg font-bold mb-4" style="color: var(--accent-green);">>> 手续费详情</h2>
+            <div id="fee-info" class="grid grid-cols-2 gap-4"></div>
+        </div>
+
+        <!-- Outputs -->
+        <div id="outputs-section" class="card p-6 mb-6">
+            <h2 class="text-lg font-bold mb-4" style="color: var(--accent-green);">>> 交易输出</h2>
+            <div id="outputs-container" class="space-y-2"></div>
+        </div>
+
+        <!-- ASCII summary -->
+        <div class="card p-6 mb-6">
+            <h2 class="text-lg font-bold mb-4" style="color: var(--accent-green);">>> 交易摘要</h2>
+            <pre id="summary-content" class="card-inner p-4 rounded text-sm font-mono whitespace-pre-wrap" style="color: var(--accent-green);"></pre>
+        </div>
+
+        <!-- Export -->
+        <div class="card p-6 mb-6">
+            <h2 class="text-lg font-bold mb-4" style="color: var(--accent-green);">>> 导出结果</h2>
+            <div class="flex space-x-4">
+                <button onclick="exportJSON()" class="btn-primary">导出JSON</button>
+                <button onclick="exportCSV()" class="btn-secondary">导出CSV</button>
+                <button onclick="exportPDF()" class="btn-secondary">导出PDF</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let queryResult = null;
+const CACHE_KEY = 'cit_btc_query';
+
+window.onload = function() {
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    if (cached) {
+        try {
+            const data = JSON.parse(cached);
+            queryResult = data;
+            const txid = (data.transaction && data.transaction.txid) || '';
+            document.getElementById('tx-hash-input').value = txid;
+            displayResults(data);
+        } catch(e) { console.log('Cache restore failed:', e); }
+    }
+};
+
+function saveToCache(data) { sessionStorage.setItem(CACHE_KEY, JSON.stringify(data)); }
+
+function loadSample() {
+    fetch('/trace/api/btc/sample')
+        .then(response => response.json())
+        .then(data => { document.getElementById('tx-hash-input').value = data.sample_tx_hash; });
+}
+
+function analyzeTransaction() {
+    const txHash = document.getElementById('tx-hash-input').value.trim();
+    if (!txHash) { alert('请输入交易哈希'); return; }
+
+    document.getElementById('loading').classList.remove('hidden');
+    document.getElementById('error-display').classList.add('hidden');
+    document.getElementById('results').classList.add('hidden');
+
+    fetch('/trace/api/btc/query', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({tx_hash: txHash})
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('loading').classList.add('hidden');
+        if (data.success) {
+            queryResult = data;
+            saveToCache(data);
+            displayResults(data);
+        } else { showError(data.error || '分析失败'); }
+    })
+    .catch(error => {
+        document.getElementById('loading').classList.add('hidden');
+        showError('请求失败: ' + error.message);
+    });
+}
+
+function showError(message) {
+    document.getElementById('error-message').textContent = message;
+    document.getElementById('error-display').classList.remove('hidden');
+}
+
+function displayResults(data) {
+    document.getElementById('results').classList.remove('hidden');
+    const tx = data.transaction || {};
+
+    document.getElementById('basic-info').innerHTML = `
+        <div class="card-inner p-3 rounded">
+            <span class="text-sm" style="color: var(--text-muted);">交易ID</span>
+            <p class="font-bold text-white text-xs">${tx.txid ? tx.txid.slice(0, 16) + '...' : '未知'}</p>
+        </div>
+        <div class="card-inner p-3 rounded">
+            <span class="text-sm" style="color: var(--text-muted);">区块高度</span>
+            <p class="font-bold text-white">${tx.block_height || '未确认'}</p>
+        </div>
+        <div class="card-inner p-3 rounded">
+            <span class="text-sm" style="color: var(--text-muted);">状态</span>
+            <p class="font-bold" style="color: ${tx.confirmed ? 'var(--alert-green)' : 'var(--alert-yellow)'};">${tx.confirmed ? '已确认' : '未确认'}</p>
+        </div>
+    `;
+
+    const fee = tx.fee || {};
+    document.getElementById('fee-info').innerHTML = `
+        <div class="card-inner p-3 rounded">
+            <span class="text-sm" style="color: var(--text-muted);">手续费</span>
+            <p class="font-bold text-white">${fee.fee_btc || 0} BTC</p>
+        </div>
+        <div class="card-inner p-3 rounded">
+            <span class="text-sm" style="color: var(--text-muted);">手续费率</span>
+            <p class="font-bold text-white">${fee.fee_rate_sat_vb || 0} sat/vB</p>
+        </div>
+    `;
+
+    displayOutputs(tx.vout || []);
+    document.getElementById('summary-content').textContent = data.summary || '无数据';
+}
+
+function displayOutputs(outputs) {
+    const container = document.getElementById('outputs-container');
+
+    if (outputs.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-muted);">无输出数据</p>';
+        return;
+    }
+
+    const typeColors = {
+        'P2PKH': 'var(--text-muted)',
+        'P2SH': 'var(--link-color)',
+        'P2WPKH': 'var(--accent-green)',
+        'P2TR': 'var(--keyword-color)',
+        'Unknown': 'var(--alert-yellow)'
+    };
+
+    container.innerHTML = outputs.map(out => {
+        const badgeColor = typeColors[out.address_type] || typeColors['Unknown'];
+        const valueBTC = (out.value || 0) / 100000000;
+
+        return `
+            <div class="card-inner rounded p-3 flex justify-between items-center">
+                <div>
+                    <span class="text-xs" style="color: var(--text-muted);">输出 #${out.n || 0}</span>
+                    <p class="text-sm font-medium text-white">${out.address || '未知地址'}</p>
+                    ${out.address_type ? `<span class="text-xs px-1 py-0.5 rounded" style="color: ${badgeColor}; border: 1px dashed ${badgeColor};">${out.address_type}</span>` : ''}
+                    ${out.wallet_hint ? `<span class="text-xs ml-2" style="color: var(--text-muted);">${out.wallet_hint}</span>` : ''}
+                </div>
+                <div class="text-right">
+                    <span class="font-bold text-white">${valueBTC.toFixed(8)} BTC</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function exportJSON() {
+    if (!queryResult) { alert('请先进行分析'); return; }
+    fetch('/trace/api/btc/export/json', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({result: queryResult})
+    })
+    .then(response => {
+        const disposition = response.headers.get('Content-Disposition');
+        const filenameMatch = disposition && disposition.match(/filename="?([^"]+)"?/);
+        const filename = filenameMatch ? filenameMatch[1] : 'btc_analysis.json';
+        return response.blob().then(blob => ({ blob, filename }));
+    })
+    .then(({ blob, filename }) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
+        window.URL.revokeObjectURL(url);
+    })
+    .catch(error => alert('导出失败: ' + error.message));
+}
+
+function exportCSV() {
+    if (!queryResult) { alert('请先进行分析'); return; }
+    fetch('/trace/api/btc/export/csv', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({result: queryResult})
+    })
+    .then(response => {
+        const disposition = response.headers.get('Content-Disposition');
+        const filenameMatch = disposition && disposition.match(/filename="?([^"]+)"?/);
+        const filename = filenameMatch ? filenameMatch[1] : 'btc_analysis.csv';
+        return response.blob().then(blob => ({ blob, filename }));
+    })
+    .then(({ blob, filename }) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
+        window.URL.revokeObjectURL(url);
+    })
+    .catch(error => alert('导出失败: ' + error.message));
+}
+
+function exportPDF() {
+    if (!queryResult) { alert('请先进行分析'); return; }
+    fetch('/docs/api/export/pdf', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ result: queryResult, tool_type: 'btc' })
+    })
+    .then(response => {
+        const filename = response.headers.get('Content-Disposition').split('filename=')[1].replace(/"/g, '');
+        return response.blob().then(blob => ({ blob, filename }));
+    })
+    .then(({ blob, filename }) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
+        window.URL.revokeObjectURL(url);
+    })
+    .catch(error => alert('PDF导出失败: ' + error.message));
+}
+</script>
+{% endblock %}

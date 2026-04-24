@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}使用手册{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto pb-16">
+    <!-- Hero section -->
+    <div class="card p-8 mb-8">
+        <p class="terminal-header mb-4">user_manuals.sh</p>
+        <p class="text-gray-400 mb-2">工具详细说明书与操作指南</p>
+        <p class="text-sm" style="color: var(--text-muted);">点击下方工具卡片查看详细操作步骤、结果解释、API说明与案例演示</p>
+    </div>
+
+    <!-- Tool categories -->
+    <div class="space-y-6">
+        <!-- Category 1: Address Analysis -->
+        <div class="card p-6">
+            <h2 class="text-xl font-bold mb-4 flex items-center" style="color: var(--accent-green);">
+                <span class="px-3 py-1 rounded mr-3" style="color: var(--link-color); border: 1px dashed var(--link-color);">地址分析</span>
+                区块链地址行为特征分析工具说明书
+            </h2>
+            <div class="grid grid-cols-3 gap-4">
+                <a href="/docs/manual/tron-suspicious" class="block p-4 card-inner rounded transition" style="border: 1px dashed var(--accent-green);">
+                    <h3 class="font-bold text-white">TRON可疑分析</h3>
+                    <p class="text-sm mt-1" style="color: var(--text-muted);">说明书与操作指南</p>
+                </a>
+                <a href="/docs/manual/tron-behavior" class="block p-4 card-inner rounded transition" style="border: 1px dashed var(--accent-green);">
+                    <h3 class="font-bold text-white">TRON行为分析</h3>
+                    <p class="text-sm mt-1" style="color: var(--text-muted);">说明书与操作指南</p>
+                </a>
+                <a href="/docs/manual/eth-query" class="block p-4 card-inner rounded transition" style="border: 1px dashed var(--accent-green);">
+                    <h3 class="font-bold text-white">ETH交易查询</h3>
+                    <p class="text-sm mt-1" style="color: var(--text-muted);">说明书与操作指南</p>
+                </a>
+            </div>
+        </div>
+
+        <!-- Category 2: Transaction Tracking -->
+        <div class="card p-6">
+            <h2 class="text-xl font-bold mb-4 flex items-center" style="color: var(--accent-green);">
+                <span class="px-3 py-1 rounded mr-3" style="color: var(--keyword-color); border: 1px dashed var(--keyword-color);">交易追踪</span>
+                DEX与混币器资金流向追踪工具说明书
+            </h2>
+            <div class="grid grid-cols-3 gap-4">
+                <a href="/docs/manual/uniswap" class="block p-4 card-inner rounded transition" style="border: 1px dashed var(--accent-green);">
+                    <h3 class="font-bold text-white">Uniswap追踪</h3>
+                    <p class="text-sm mt-1" style="color: var(--text-muted);">说明书与操作指南</p>
+                </a>
+                <a href="/docs/manual/mixer" class="block p-4 card-inner rounded transition" style="border: 1px dashed var(--accent-green);">
+                    <h3 class="font-bold text-white">混币器追踪</h3>
+                    <p class="text-sm mt-1" style="color: var(--text-muted);">说明书与操作指南</p>
+                </a>
+                <a href="/docs/manual/btc" class="block p-4 card-inner rounded transition" style="border: 1px dashed var(--accent-green);">
+                    <h3 class="font-bold text-white">BTC交易分析</h3>
+                    <p class="text-sm mt-1" style="color: var(--text-muted);">说明书与操作指南</p>
+                </a>
+            </div>
+        </div>
+
+        <!-- Category 3: Cross-Chain Analysis -->
+        <div class="card p-6">
+            <h2 class="text-xl font-bold mb-4 flex items-center" style="color: var(--accent-green);">
+                <span class="px-3 py-1 rounded mr-3" style="color: var(--accent-green); border: 1px dashed var(--accent-green);">跨链分析</span>
+                多地址关联与跨境协查工具说明书
+            </h2>
+            <div class="grid grid-cols-2 gap-4">
+                <a href="/docs/manual/cluster" class="block p-4 card-inner rounded transition" style="border: 1px dashed var(--accent-green);">
+                    <h3 class="font-bold text-white">地址聚类</h3>
+                    <p class="text-sm mt-1" style="color: var(--text-muted);">说明书与操作指南</p>
+                </a>
+                <a href="/docs/manual/cross-border" class="block p-4 card-inner rounded transition" style="border: 1px dashed var(--accent-green);">
+                    <h3 class="font-bold text-white">跨境协查</h3>
+                    <p class="text-sm mt-1" style="color: var(--text-muted);">说明书与操作指南</p>
+                </a>
+            </div>
+        </div>
+
+        <!-- Category 4: Case Handling -->
+        <div class="card p-6">
+            <h2 class="text-xl font-bold mb-4 flex items-center" style="color: var(--accent-green);">
+                <span class="px-3 py-1 rounded mr-3" style="color: var(--alert-red); border: 1px dashed var(--alert-red);">案件处理</span>
+                监控、对抗与资产追回工具说明书
+            </h2>
+            <div class="grid grid-cols-3 gap-4">
+                <a href="/docs/manual/monitor" class="block p-4 card-inner rounded transition" style="border: 1px dashed var(--accent-green);">
+                    <h3 class="font-bold text-white">多链监控</h3>
+                    <p class="text-sm mt-1" style="color: var(--text-muted);">说明书与操作指南</p>
+                </a>
+                <a href="/docs/manual/obfuscation" class="block p-4 card-inner rounded transition" style="border: 1px dashed var(--accent-green);">
+                    <h3 class="font-bold text-white">混淆对抗</h3>
+                    <p class="text-sm mt-1" style="color: var(--text-muted);">说明书与操作指南</p>
+                </a>
+                <a href="/docs/manual/asset-freeze" class="block p-4 card-inner rounded transition" style="border: 1px dashed var(--accent-green);">
+                    <h3 class="font-bold text-white">资产追回</h3>
+                    <p class="text-sm mt-1" style="color: var(--text-muted);">说明书与操作指南</p>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- API Guide link -->
+    <div class="mt-8 card-inner rounded-lg p-6 text-center">
+        <a href="/docs/api-guide" class="underline font-bold" style="color: var(--link-color);">
+            查看API密钥获取指南
+        </a>
+    </div>
+</div>
+{% endblock %}

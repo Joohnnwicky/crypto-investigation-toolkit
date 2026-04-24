@@ -2,95 +2,95 @@
 {% block title %}多链监控 - 使用手册{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto">
+<div class="max-w-4xl mx-auto pb-16">
     <!-- Header card -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h1 class="text-2xl font-bold text-gray-800 mb-2">多链监控 - 使用手册</h1>
-        <p class="text-gray-600">操作步骤、结果解释、API说明与案例演示</p>
+    <div class="card p-6 mb-6">
+        <p class="terminal-header mb-2">multi_chain_monitor_manual.sh</p>
+        <p class="text-gray-400">操作步骤、结果解释、API说明与案例演示</p>
     </div>
 
     <!-- Section 1: 操作步骤 -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">1. 操作步骤</h2>
-        <ol class="list-decimal list-inside space-y-2 text-gray-700">
-            <li>输入待监控的地址列表，可选择TRON、ETH或BTC链。</li>
-            <li>点击"添加地址"，系统将为每个地址创建监控卡片。</li>
-            <li>点击"刷新状态"按钮，获取所有地址的最新链上数据。</li>
-            <li>查看各地址的余额、交易数、最后活跃时间等状态信息。</li>
-            <li>发现异常变化时，点击地址卡片进入详细分析。</li>
-            <li>选择"导出数据"将监控结果保存为JSON或CSV格式。</li>
-        </ol>
+    <div class="card p-6 mb-6">
+        <h2 class="text-xl font-bold mb-4" style="color: var(--accent-green);">>> 1. 操作步骤</h2>
+        <ul class="space-y-2" style="color: var(--text-muted);">
+            <li><span style="color: var(--accent-green);">1.</span> 输入待监控的地址列表，可选择TRON、ETH或BTC链。</li>
+            <li><span style="color: var(--accent-green);">2.</span> 点击"添加地址"，系统将为每个地址创建监控卡片。</li>
+            <li><span style="color: var(--accent-green);">3.</span> 点击"刷新状态"按钮，获取所有地址的最新链上数据。</li>
+            <li><span style="color: var(--accent-green);">4.</span> 查看各地址的余额、交易数、最后活跃时间等状态信息。</li>
+            <li><span style="color: var(--accent-green);">5.</span> 发现异常变化时，点击地址卡片进入详细分析。</li>
+            <li><span style="color: var(--accent-green);">6.</span> 选择"导出数据"将监控结果保存为JSON或CSV格式。</li>
+        </ul>
     </div>
 
     <!-- Section 2: 结果解释 -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">2. 结果解释</h2>
+    <div class="card p-6 mb-6">
+        <h2 class="text-xl font-bold mb-4" style="color: var(--accent-green);">>> 2. 结果解释</h2>
 
-        <h3 class="text-lg font-semibold text-gray-700 mb-2">地址状态卡片</h3>
-        <ul class="list-disc list-inside space-y-1 text-gray-600 mb-4">
-            <li><strong>地址：</strong>显示链类型图标和缩略地址</li>
-            <li><strong>余额：</strong>当前链上余额（TRX/ETH/BTC）</li>
-            <li><strong>交易数：</strong>历史交易总数</li>
-            <li><strong>最后活跃：</strong>最近一次链上活动时间</li>
-            <li><strong>状态标签：</strong>活跃/不活跃/风险</li>
+        <h3 class="text-lg font-semibold mb-2" style="color: var(--link-color);">地址状态卡片</h3>
+        <ul class="space-y-1 mb-4" style="color: var(--text-muted);">
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">地址：</strong>显示链类型图标和缩略地址</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">余额：</strong>当前链上余额（TRX/ETH/BTC）</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">交易数：</strong>历史交易总数</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">最后活跃：</strong>最近一次链上活动时间</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">状态标签：</strong>活跃/不活跃/风险</li>
         </ul>
 
-        <h3 class="text-lg font-semibold text-gray-700 mb-2">状态说明</h3>
-        <ul class="list-disc list-inside space-y-1 text-gray-600 mb-4">
-            <li><strong>活跃（绿色）：</strong>最近24小时内有交易活动</li>
-            <li><strong>不活跃（黄色）：</strong>7天内无交易活动</li>
-            <li><strong>风险（红色）：</strong>检测到可疑行为或与风险地址交互</li>
+        <h3 class="text-lg font-semibold mb-2" style="color: var(--link-color);">状态说明</h3>
+        <ul class="space-y-1 mb-4" style="color: var(--text-muted);">
+            <li><span style="color: var(--accent-green);">>></span> <strong style="color: var(--accent-green);">活跃（绿色）：</strong>最近24小时内有交易活动</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong style="color: var(--alert-yellow);">不活跃（黄色）：</strong>7天内无交易活动</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong style="color: var(--alert-red);">风险（红色）：</strong>检测到可疑行为或与风险地址交互</li>
         </ul>
 
-        <h3 class="text-lg font-semibold text-gray-700 mb-2">刷新说明</h3>
-        <ul class="list-disc list-inside space-y-1 text-gray-600">
-            <li><strong>手动刷新：</strong>点击刷新按钮主动获取最新数据</li>
-            <li><strong>刷新间隔：</strong>建议间隔至少1分钟，避免API限流</li>
-            <li><strong>批量刷新：</strong>一次性刷新所有已添加地址的状态</li>
+        <h3 class="text-lg font-semibold mb-2" style="color: var(--link-color);">刷新说明</h3>
+        <ul class="space-y-1" style="color: var(--text-muted);">
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">手动刷新：</strong>点击刷新按钮主动获取最新数据</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">刷新间隔：</strong>建议间隔至少1分钟，避免API限流</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">批量刷新：</strong>一次性刷新所有已添加地址的状态</li>
         </ul>
     </div>
 
     <!-- Section 3: API密钥说明 -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">3. API密钥说明</h2>
-        <p class="text-gray-700 mb-2">本工具使用<strong>多链API</strong>，部分需要API密钥：</p>
+    <div class="card p-6 mb-6">
+        <h2 class="text-xl font-bold mb-4" style="color: var(--accent-green);">>> 3. API密钥说明</h2>
+        <p class="mb-2 text-white">本工具使用<strong style="color: var(--link-color);">多链API</strong>，部分需要API密钥：</p>
 
-        <h3 class="text-md font-semibold text-gray-700 mt-4 mb-2">TRON链 - Tronscan API</h3>
-        <p class="text-gray-600">无需API密钥，可直接使用。访问 <a href="https://tronscan.org" class="text-blue-600 hover:underline" target="_blank">Tronscan官网</a> 了解详情。</p>
+        <h3 class="text-md font-semibold mt-4 mb-2" style="color: var(--link-color);">TRON链 - Tronscan API</h3>
+        <p style="color: var(--text-muted);">无需API密钥，可直接使用。访问 <a href="https://tronscan.org" class="underline" style="color: var(--link-color);" target="_blank">Tronscan官网</a> 了解详情。</p>
 
-        <h3 class="text-md font-semibold text-gray-700 mt-4 mb-2">以太坊链 - Etherscan API</h3>
-        <p class="text-gray-600">需要API密钥，访问 <a href="https://etherscan.io" class="text-blue-600 hover:underline" target="_blank">Etherscan官网</a> 注册获取。</p>
+        <h3 class="text-md font-semibold mt-4 mb-2" style="color: var(--link-color);">以太坊链 - Etherscan API</h3>
+        <p style="color: var(--text-muted);">需要API密钥，访问 <a href="https://etherscan.io" class="underline" style="color: var(--link-color);" target="_blank">Etherscan官网</a> 注册获取。</p>
 
-        <h3 class="text-md font-semibold text-gray-700 mt-4 mb-2">比特币链 - Blockstream API</h3>
-        <p class="text-gray-600">无需API密钥，可直接使用。API文档：<a href="https://blockstream.info/api" class="text-blue-600 hover:underline" target="_blank">https://blockstream.info/api</a></p>
+        <h3 class="text-md font-semibold mt-4 mb-2" style="color: var(--link-color);">比特币链 - Blockstream API</h3>
+        <p style="color: var(--text-muted);">无需API密钥，可直接使用。API文档：<a href="https://blockstream.info/api" class="underline" style="color: var(--link-color);" target="_blank">https://blockstream.info/api</a></p>
 
-        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mt-4">
-            <p class="text-blue-700"><strong>提示：</strong>ETH监控需要先配置Etherscan API密钥，TRON和BTC可直接使用。</p>
+        <div class="alert-green rounded p-4 mt-4">
+            <p style="color: var(--accent-green);"><strong>提示：</strong>ETH监控需要先配置Etherscan API密钥，TRON和BTC可直接使用。</p>
         </div>
     </div>
 
     <!-- Section 4: 案例演示 -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">4. 案例演示</h2>
-        <div class="bg-gray-50 rounded p-4 mb-4">
-            <h3 class="font-bold text-gray-700 mb-2">案例背景</h3>
-            <p class="text-gray-600">某诈骗案涉及多条链的收款地址，调查人员需要持续监控这些地址的资金变化。</p>
+    <div class="card p-6 mb-6">
+        <h2 class="text-xl font-bold mb-4" style="color: var(--accent-green);">>> 4. 案例演示</h2>
+        <div class="card-inner rounded p-4 mb-4">
+            <h3 class="font-bold mb-2" style="color: var(--link-color);">案例背景</h3>
+            <p style="color: var(--text-muted);">某诈骗案涉及多条链的收款地址，调查人员需要持续监控这些地址的资金变化。</p>
         </div>
 
-        <div class="bg-gray-50 rounded p-4 mb-4">
-            <h3 class="font-bold text-gray-700 mb-2">操作过程</h3>
-            <ol class="list-decimal list-inside space-y-1 text-gray-600">
-                <li>添加3个TRON地址、2个ETH地址、1个BTC地址到监控列表</li>
-                <li>首次刷新获取各地址状态，记录初始余额</li>
-                <li>每日定时刷新，对比余额变化</li>
-                <li>发现某TRON地址余额突然增加，点击进入详细分析</li>
-                <li>导出监控数据作为案件材料</li>
-            </ol>
+        <div class="card-inner rounded p-4 mb-4">
+            <h3 class="font-bold mb-2" style="color: var(--link-color);">操作过程</h3>
+            <ul class="space-y-1" style="color: var(--text-muted);">
+                <li><span style="color: var(--accent-green);">1.</span> 添加3个TRON地址、2个ETH地址、1个BTC地址到监控列表</li>
+                <li><span style="color: var(--accent-green);">2.</span> 首次刷新获取各地址状态，记录初始余额</li>
+                <li><span style="color: var(--accent-green);">3.</span> 每日定时刷新，对比余额变化</li>
+                <li><span style="color: var(--accent-green);">4.</span> 发现某TRON地址余额突然增加，点击进入详细分析</li>
+                <li><span style="color: var(--accent-green);">5.</span> 导出监控数据作为案件材料</li>
+            </ul>
         </div>
 
-        <div class="bg-gray-50 rounded p-4">
-            <h3 class="font-bold text-gray-700 mb-2">结论</h3>
-            <p class="text-gray-600">通过多链监控，成功追踪到诈骗资金的流入和转移，为案件侦破提供实时线索。</p>
+        <div class="card-inner rounded p-4">
+            <h3 class="font-bold mb-2" style="color: var(--link-color);">结论</h3>
+            <p style="color: var(--text-muted);">通过多链监控，成功追踪到诈骗资金的流入和转移，为案件侦破提供实时线索。</p>
         </div>
     </div>
 </div>

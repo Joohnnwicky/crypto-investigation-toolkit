@@ -6,66 +6,296 @@
     <title>{% block title %}BLOCKSHADE{% endblock %}</title>
     <!-- Tailwind CSS v4 via CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- Custom dark theme styles inspired by Tornado Cash -->
+    <!-- Hacker theme styles inspired by terminal aesthetic -->
+    <!-- Chinese font: 字魂凹凸世界体 (商用授权) -->
     <style>
+        @font-face {
+            font-family: 'ZiHunAoTu';
+            src: url('/static/fonts/ZiHunAoTuShiJieTi.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
         :root {
-            --bg-dark-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            --bg-sidebar: #0f0f1a;
-            --accent-purple: #667eea;
-            --accent-purple-dark: #764ba2;
-            --text-light: #ecf0f1;
-            --text-muted: #8b8b9a;
+            --bg-dark: #1A1A1A;
+            --bg-sidebar: #121212;
+            --bg-card: #1E1E1E;
+            --bg-card-inner: #252525;
+            --accent-green: #B5E853;
+            --accent-green-dim: rgba(181, 232, 83, 0.3);
+            --accent-green-bright: rgba(181, 232, 83, 0.15);
+            --text-light: #FFFFFF;
+            --text-muted: #CCCCCC;
+            --link-color: #6CBDEC;
+            --keyword-color: #E867E8;
+            --alert-red: #E86E6E;
+            --alert-yellow: #E8D86E;
+            --alert-green: #6EE86E;
+            --font-chinese: 'ZiHunAoTu', sans-serif;
+            --font-mono: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+            --font-size-base: 18px;
+        }
+
+        * {
+            font-size: inherit;
         }
 
         body {
-            font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-            background: var(--bg-dark-gradient);
+            font-family: var(--font-chinese), var(--font-mono);
+            background: var(--bg-dark);
             color: var(--text-light);
+            font-size: var(--font-size-base);
+            line-height: 1.6;
+        }
+
+        /* Increase all font sizes by 1.25x */
+        h1, h2, h3, h4, h5, h6, p, span, div, li, a, input, textarea, select, button {
+            font-size: 1em;
+        }
+
+        h1 { font-size: 1.5rem; }
+        h2 { font-size: 1.25rem; }
+        h3 { font-size: 1.1rem; }
+        .text-lg { font-size: 1.25rem; }
+        .text-xl { font-size: 1.5rem; }
+        .text-2xl { font-size: 1.75rem; }
+        .text-3xl { font-size: 2rem; }
+        .text-sm { font-size: 0.9rem; }
+        .text-xs { font-size: 0.8rem; }
+
+        /* Address styling - wider letter spacing for readability */
+        .address-text, .font-mono.address-text, [data-address], .address-display {
+            letter-spacing: 0.15em;
+            font-weight: 500;
+            overflow-x: auto;
+            white-space: nowrap;
+            max-width: 100%;
+            scrollbar-width: thin;
+        }
+
+        /* Force full address display with horizontal scroll */
+        .address-full {
+            letter-spacing: 0.12em;
+            white-space: nowrap;
+            overflow-x: auto;
+            text-overflow: clip;
+            max-width: 100%;
+            display: inline-block;
+        }
+
+        /* All gray text becomes white for better readability */
+        .text-gray-400, .text-gray-500, .text-gray-600 {
+            color: var(--text-light) !important;
+        }
+
+        /* Terminal/code elements use monospace */
+        .terminal-header, input, textarea, select, code, pre, .font-mono {
+            font-family: var(--font-mono);
+        }
+
+        /* Chinese title uses Chinese font */
+        .terminal-title {
+            font-family: var(--font-chinese);
         }
 
         .sidebar {
-            background: rgba(15, 15, 26, 0.98);
-            backdrop-filter: blur(10px);
+            background: var(--bg-sidebar);
+            border-right: 2px dashed var(--accent-green);
+            width: 280px;
         }
 
+        .brand-header {
+            padding: 1.25rem;
+            border-bottom: 2px dashed var(--accent-green);
+        }
+
+        .brand-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px dashed var(--accent-green);
+        }
+
+        .brand-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .terminal-title {
+            color: var(--accent-green);
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+
+        .terminal-subtitle {
+            color: var(--accent-green);
+            font-size: 1rem;
+        }
+
+        /* Navigation section divider - full width green dashed line */
+        .nav-section-title {
+            color: var(--accent-green);
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            padding: 12px 16px;
+            margin-top: 16px;
+            border-top: 2px dashed var(--accent-green);
+            border-bottom: 1px dashed var(--accent-green-dim);
+            background: rgba(181, 232, 83, 0.08);
+        }
+
+        /* First section doesn't need top border */
+        .nav-section-title:first-of-type {
+            border-top: none;
+        }
+
+        /* Nav links styling */
         .nav-link {
+            display: block;
+            padding: 10px 16px;
+            color: var(--link-color);
             transition: all 0.2s ease;
+            position: relative;
+            font-size: 1rem;
+        }
+
+        .nav-link::before {
+            content: ">> ";
+            color: var(--accent-green);
+            opacity: 0;
+            transition: opacity 0.2s;
         }
 
         .nav-link:hover {
-            background: rgba(102, 126, 234, 0.15);
-            transform: translateX(4px);
+            color: var(--accent-green);
+            background: rgba(181, 232, 83, 0.1);
+        }
+
+        .nav-link:hover::before {
+            opacity: 1;
         }
 
         .nav-link.active {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
-            border-left: 3px solid var(--accent-purple);
+            color: var(--accent-green);
+            border-left: 2px dashed var(--accent-green);
+            background: rgba(181, 232, 83, 0.15);
+        }
+
+        .nav-link.active::before {
+            opacity: 1;
         }
 
         .card {
-            background: rgba(26, 26, 46, 0.8);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(102, 126, 234, 0.2);
+            background: var(--bg-card);
+            border: 2px dashed var(--accent-green);
+            border-radius: 6px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
         }
 
         .card:hover {
-            border-color: rgba(102, 126, 234, 0.4);
-            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.15);
+            background: var(--accent-green-bright);
+            border-color: var(--accent-green);
+        }
+
+        .card-inner {
+            background: var(--bg-card-inner);
+            border: 1px dashed var(--accent-green);
+            border-radius: 4px;
+            padding: 0.75rem;
+        }
+
+        /* Grid containers - visible green dashed borders */
+        .grid {
+            border-collapse: separate;
+            border-spacing: 0.5rem;
+        }
+
+        .grid > div {
+            border: 1px dashed var(--accent-green);
+            border-radius: 4px;
+            padding: 0.75rem;
+            background: var(--bg-card-inner);
+        }
+
+        /* Form grid - make borders more visible */
+        .grid-cols-2 > div, .grid-cols-3 > div, .grid-cols-4 > div {
+            border: 1px dashed var(--accent-green);
+            background: var(--bg-card-inner);
+            padding: 0.75rem;
+            border-radius: 4px;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent-purple-dark) 100%);
-            transition: all 0.2s ease;
+            background: var(--accent-green);
+            color: var(--bg-dark);
+            font-weight: bold;
+            font-size: 1rem;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            background: #C8F070;
+            box-shadow: 0 0 12px rgba(181, 232, 83, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-sidebar);
+            color: var(--text-light);
+            border: 2px dashed var(--accent-green);
+            font-size: 1rem;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: var(--accent-green-bright);
+            border-color: var(--accent-green);
+            transform: translateY(-1px);
         }
 
         .footer-dark {
-            background: rgba(15, 15, 26, 0.95);
-            border-top: 1px solid rgba(102, 126, 234, 0.2);
+            background: var(--bg-sidebar);
+            border-top: 2px dashed var(--accent-green);
+            color: var(--text-light);
+            font-size: 1rem;
+            padding: 1rem;
+        }
+
+        /* Terminal-style headers */
+        .terminal-header {
+            color: var(--accent-green);
+            font-weight: bold;
+            font-size: 1.25rem;
+        }
+
+        .terminal-header::before {
+            content: "$ ./";
+        }
+
+        /* Input styling - larger and clearer */
+        input[type="text"], textarea, select {
+            background: var(--bg-sidebar);
+            color: var(--text-light);
+            border: 2px dashed var(--accent-green);
+            padding: 10px 14px;
+            font-family: var(--font-mono);
+            font-size: 1rem;
+        }
+
+        input[type="text"]:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-green);
+            box-shadow: 0 0 8px rgba(181, 232, 83, 0.4);
         }
 
         /* Scrollbar styling */
@@ -74,99 +304,134 @@
         }
 
         ::-webkit-scrollbar-track {
-            background: transparent;
+            background: var(--bg-dark);
         }
 
         ::-webkit-scrollbar-thumb {
-            background: rgba(102, 126, 234, 0.3);
+            background: var(--accent-green-dim);
             border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(102, 126, 234, 0.5);
+            background: var(--accent-green);
+        }
+
+        /* Alert sections - more visible */
+        .alert-red {
+            background: rgba(232, 110, 110, 0.15);
+            border: 2px dashed var(--alert-red);
+            border-left: 6px solid var(--alert-red);
+        }
+
+        .alert-yellow {
+            background: rgba(232, 216, 110, 0.15);
+            border: 2px dashed var(--alert-yellow);
+            border-left: 6px solid var(--alert-yellow);
+        }
+
+        .alert-green {
+            background: rgba(110, 232, 110, 0.15);
+            border: 2px dashed var(--alert-green);
+            border-left: 6px solid var(--alert-green);
+        }
+
+        /* Smooth page transitions */
+        main {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Cards animate in smoothly */
+        .card {
+            animation: cardFadeIn 0.4s ease-out;
+        }
+
+        @keyframes cardFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
 <body class="flex min-h-screen">
     <!-- Sidebar navigation -->
     {% block sidebar %}
-    <aside class="sidebar w-64 text-gray-100 fixed h-full overflow-y-auto">
-        <!-- Brand header with gradient accent -->
-        <div class="p-4 border-b border-gray-800/50">
-            <div class="flex items-center space-x-2">
-                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center">
-                    <span class="text-white font-bold text-sm">B</span>
-                </div>
+    <aside class="sidebar fixed h-full overflow-y-auto" style="width: 280px;">
+        <!-- Brand header with terminal style -->
+        <div class="brand-header">
+            <div class="flex items-center space-x-3">
+                <div class="brand-logo rounded"><img src="/static/logo.png" alt="Logo"></div>
                 <div>
-                    <h1 class="text-lg font-bold text-white tracking-wide">区块猎影</h1>
-                    <p class="text-xs text-gray-400 font-mono">BLOCKSHADE</p>
+                    <h1 class="terminal-title">区块猎影</h1>
+                    <p class="terminal-subtitle font-mono">BLOCKSHADE</p>
                 </div>
             </div>
         </div>
 
         <!-- Navigation menu -->
-        <nav class="p-4 space-y-1">
-            <a href="/" class="nav-link block py-2 px-4 rounded-lg text-gray-300{% if request.path == '/' %} active{% endif %}">
+        <nav class="p-2">
+            <a href="/" class="nav-link{% if request.path == '/' %} active{% endif %}">
                 <span class="flex items-center">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                     首页
                 </span>
             </a>
 
-            <!-- Divider -->
-            <div class="py-2">
-                <p class="text-xs text-gray-500 uppercase tracking-wider px-4">地址分析</p>
-            </div>
+            <p class="nav-section-title">地址分析</p>
 
-            <a href="/tron/suspicious-analyzer" class="nav-link block py-2 px-4 rounded-lg text-gray-300{% if request.path == '/tron/suspicious-analyzer' %} active{% endif %}">TRON可疑分析</a>
-            <a href="/tron/behavior-analyzer" class="nav-link block py-2 px-4 rounded-lg text-gray-300{% if request.path == '/tron/behavior-analyzer' %} active{% endif %}">TRON行为分析</a>
-            <a href="/eth/transaction-query" class="nav-link block py-2 px-4 rounded-lg text-gray-300{% if request.path == '/eth/transaction-query' %} active{% endif %}">ETH交易查询</a>
+            <a href="/tron/suspicious-analyzer" class="nav-link{% if request.path == '/tron/suspicious-analyzer' %} active{% endif %}">TRON可疑分析</a>
+            <a href="/tron/behavior-analyzer" class="nav-link{% if request.path == '/tron/behavior-analyzer' %} active{% endif %}">TRON行为分析</a>
+            <a href="/eth/transaction-query" class="nav-link{% if request.path == '/eth/transaction-query' %} active{% endif %}">ETH交易查询</a>
 
-            <!-- Divider -->
-            <div class="py-2">
-                <p class="text-xs text-gray-500 uppercase tracking-wider px-4">交易追踪</p>
-            </div>
+            <p class="nav-section-title">交易追踪</p>
 
-            <a href="/trace/uniswap" class="nav-link block py-2 px-4 rounded-lg text-gray-300{% if request.path == '/trace/uniswap' %} active{% endif %}">Uniswap追踪</a>
-            <a href="/trace/btc" class="nav-link block py-2 px-4 rounded-lg text-gray-300{% if request.path == '/trace/btc' %} active{% endif %}">BTC交易分析</a>
+            <a href="/trace/uniswap" class="nav-link{% if request.path == '/trace/uniswap' %} active{% endif %}">Uniswap追踪</a>
+            <a href="/trace/mixer" class="nav-link{% if request.path == '/trace/mixer' %} active{% endif %}">混币器追踪</a>
+            <a href="/trace/btc" class="nav-link{% if request.path == '/trace/btc' %} active{% endif %}">BTC交易分析</a>
 
-            <!-- Divider -->
-            <div class="py-2">
-                <p class="text-xs text-gray-500 uppercase tracking-wider px-4">跨链分析</p>
-            </div>
+            <p class="nav-section-title">跨链分析</p>
 
-            <a href="/cross/cluster" class="nav-link block py-2 px-4 rounded-lg text-gray-300{% if request.path == '/cross/cluster' %} active{% endif %}">地址聚类</a>
-            <a href="/cross/cross-border" class="nav-link block py-2 px-4 rounded-lg text-gray-300{% if request.path == '/cross/cross-border' %} active{% endif %}">跨境协查</a>
+            <a href="/cross/cluster" class="nav-link{% if request.path == '/cross/cluster' %} active{% endif %}">地址聚类</a>
+            <a href="/cross/cross-border" class="nav-link{% if request.path == '/cross/cross-border' %} active{% endif %}">跨境协查</a>
 
-            <!-- Divider -->
-            <div class="py-2">
-                <p class="text-xs text-gray-500 uppercase tracking-wider px-4">案件处理</p>
-            </div>
+            <p class="nav-section-title">案件处理</p>
 
-            <a href="/case/monitor" class="nav-link block py-2 px-4 rounded-lg text-gray-300{% if request.path == '/case/monitor' %} active{% endif %}">多链监控</a>
-            <a href="/case/obfuscation" class="nav-link block py-2 px-4 rounded-lg text-gray-300{% if request.path == '/case/obfuscation' %} active{% endif %}">混淆对抗</a>
-            <a href="/case/asset-freeze" class="nav-link block py-2 px-4 rounded-lg text-gray-300{% if request.path == '/case/asset-freeze' %} active{% endif %}">资产追回</a>
+            <a href="/case/monitor" class="nav-link{% if request.path == '/case/monitor' %} active{% endif %}">多链监控</a>
+            <a href="/case/obfuscation" class="nav-link{% if request.path == '/case/obfuscation' %} active{% endif %}">混淆对抗</a>
+            <a href="/case/asset-freeze" class="nav-link{% if request.path == '/case/asset-freeze' %} active{% endif %}">资产追回</a>
 
-            <!-- Divider -->
-            <div class="py-2">
-                <p class="text-xs text-gray-500 uppercase tracking-wider px-4">文档</p>
-            </div>
+            <p class="nav-section-title">文档</p>
 
-            <a href="/docs/manuals" class="nav-link block py-2 px-4 rounded-lg text-gray-300{% if request.path == '/docs/manuals' %} active{% endif %}">使用手册</a>
-            <a href="/docs/api-guide" class="nav-link block py-2 px-4 rounded-lg text-gray-300{% if request.path == '/docs/api-guide' %} active{% endif %}">API获取指南</a>
+            <a href="/docs/manuals" class="nav-link{% if request.path == '/docs/manuals' %} active{% endif %}">使用手册</a>
+            <a href="/docs/api-guide" class="nav-link{% if request.path == '/docs/api-guide' %} active{% endif %}">API获取指南</a>
         </nav>
     </aside>
     {% endblock %}
 
-    <!-- Main content area -->
-    <main class="flex-1 ml-64 p-6 min-h-screen">
+    <!-- Main content area - adjusted for wider sidebar -->
+    <main class="flex-1 p-6 min-h-screen" style="margin-left: 280px;">
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Legal disclaimer footer -->
+    <!-- Legal disclaimer footer - adjusted for wider sidebar -->
     {% block footer %}
-    <footer class="footer-dark fixed bottom-0 left-64 right-0 p-3 text-center text-sm text-gray-400">
-        <span class="text-gray-500">⚠</span> 法律声明：本工具仅供合规调查使用，请确保遵守相关法律法规。所有分析结果仅供参考，不构成法律证据。
+    <footer class="footer-dark fixed bottom-0 p-3 text-center" style="left: 280px; right: 0;">
+        <span style="color: var(--alert-yellow);">⚠</span> 法律声明：本工具仅供合规调查使用，请确保遵守相关法律法规。所有分析结果仅供参考，不构成法律证据。
     </footer>
     {% endblock %}
 </body>

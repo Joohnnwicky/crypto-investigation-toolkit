@@ -2,98 +2,91 @@
 {% block title %}ETH交易查询{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto">
+<div class="max-w-4xl mx-auto pb-16">
     <!-- Tool header -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h1 class="text-2xl font-bold text-gray-800 mb-2">ETH交易查询</h1>
-        <p class="text-gray-600">查询以太坊交易历史，识别Stargate跨链桥事件</p>
+    <div class="card p-6 mb-6">
+        <p class="terminal-header mb-2">eth_transaction_query.sh</p>
+        <p class="text-gray-400">查询以太坊交易历史，识别Stargate跨链桥事件</p>
     </div>
 
     <!-- Input section -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 class="text-lg font-bold text-gray-700 mb-4">输入查询参数</h2>
+    <div class="card p-6 mb-6">
+        <h2 class="text-lg font-bold mb-4" style="color: var(--accent-green);">>> 输入查询参数</h2>
         <div class="space-y-4">
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">ETH钱包地址</label>
-                <input type="text" id="address-input"
-                       class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                <label class="block text-sm font-medium mb-1" style="color: var(--text-muted);">ETH钱包地址</label>
+                <input type="text" id="address-input" class="w-full"
                        placeholder="例如：0x1234567890abcdef1234567890abcdef12345678">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Etherscan API密钥</label>
-                <input type="text" id="api-key-input"
-                       class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                <label class="block text-sm font-medium mb-1" style="color: var(--text-muted);">Etherscan API密钥</label>
+                <input type="text" id="api-key-input" class="w-full"
                        placeholder="从 etherscan.io 获取免费API密钥">
             </div>
             <div class="flex space-x-4">
-                <button onclick="queryTransactions()"
-                        class="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition">
-                    开始查询
-                </button>
+                <button onclick="queryTransactions()" class="btn-primary">开始查询</button>
             </div>
         </div>
     </div>
 
     <!-- Loading indicator -->
-    <div id="loading" class="hidden bg-white rounded-lg shadow p-6 mb-6">
+    <div id="loading" class="hidden card p-6 mb-6">
         <div class="flex items-center justify-center">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-            <span class="ml-3 text-gray-600">正在查询交易记录...</span>
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2" style="border-color: var(--accent-green);"></div>
+            <span class="ml-3 text-gray-400">正在查询交易记录...</span>
         </div>
     </div>
 
     <!-- Error display -->
-    <div id="error-display" class="hidden bg-red-100 border border-red-400 rounded-lg p-4 mb-6">
-        <p id="error-message" class="text-red-700"></p>
+    <div id="error-display" class="hidden alert-red rounded-lg p-4 mb-6">
+        <p id="error-message" style="color: var(--alert-red);"></p>
     </div>
 
     <!-- Results section -->
     <div id="results" class="hidden">
         <!-- Basic info -->
-        <div class="bg-white rounded-lg shadow p-6 mb-6">
-            <h2 class="text-lg font-bold text-gray-700 mb-4">基本信息</h2>
+        <div class="card p-6 mb-6">
+            <h2 class="text-lg font-bold mb-4" style="color: var(--accent-green);">>> 基本信息</h2>
             <div id="basic-info" class="grid grid-cols-2 gap-4"></div>
         </div>
 
         <!-- Normal transactions -->
-        <div id="normal-transactions" class="hidden bg-white rounded-lg shadow p-6 mb-6">
-            <h2 class="text-lg font-bold text-gray-700 mb-4">ETH转账记录</h2>
+        <div id="normal-transactions" class="hidden card p-6 mb-6">
+            <h2 class="text-lg font-bold mb-4" style="color: var(--accent-green);">>> ETH转账记录</h2>
             <div id="normal-list" class="overflow-x-auto"></div>
         </div>
 
         <!-- ERC20 transfers -->
-        <div id="erc20-transactions" class="hidden bg-white rounded-lg shadow p-6 mb-6">
-            <h2 class="text-lg font-bold text-gray-700 mb-4">ERC20代币转账</h2>
+        <div id="erc20-transactions" class="hidden card p-6 mb-6">
+            <h2 class="text-lg font-bold mb-4" style="color: var(--accent-green);">>> ERC20代币转账</h2>
             <div id="erc20-list" class="overflow-x-auto"></div>
         </div>
 
         <!-- Stargate events -->
-        <div id="stargate-events" class="hidden bg-blue-50 border-l-4 border-blue-500 rounded-lg p-6 mb-6">
-            <h2 class="text-lg font-bold text-blue-700 mb-4 flex items-center">
-                <span class="mr-2">
-                    <!-- Bridge icon SVG -->
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
-                    </svg>
-                </span>
-                Stargate跨链桥事件
+        <div id="stargate-events" class="hidden rounded-lg p-6 mb-6" style="background: rgba(108, 190, 236, 0.1); border-left: 4px solid var(--link-color);">
+            <h2 class="text-lg font-bold mb-4 flex items-center" style="color: var(--link-color);">
+                <span class="mr-2">></span> Stargate跨链桥事件
             </h2>
-            <p class="text-sm text-blue-600 mb-4">检测到与Stargate跨链桥合约的交互记录，表明该地址可能参与了跨链转账。</p>
+            <p class="text-sm mb-4" style="color: var(--link-color);">检测到与Stargate跨链桥合约的交互记录，表明该地址可能参与了跨链转账。</p>
             <div id="stargate-list" class="space-y-4"></div>
         </div>
 
+        <!-- Mixer status -->
+        <div id="mixer-status" class="hidden card p-6 mb-6">
+            <h2 class="text-lg font-bold mb-4 flex items-center" style="color: var(--text-muted);">
+                <span class="mr-2">></span> 混币器检测结果
+            </h2>
+            <p class="text-sm mb-4" style="color: var(--text-muted);">自动检测与Tornado Cash混币池的交易交互。</p>
+            <div id="mixer-content" class="space-y-4"></div>
+        </div>
+
         <!-- Export buttons -->
-        <div class="bg-white rounded-lg shadow p-6 mb-6">
-            <h2 class="text-lg font-bold text-gray-700 mb-4">导出结果</h2>
+        <div class="card p-6 mb-6">
+            <h2 class="text-lg font-bold mb-4" style="color: var(--accent-green);">>> 导出结果</h2>
             <div class="flex space-x-4">
-                <button onclick="exportJSON()"
-                        class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">
-                    导出JSON
-                </button>
-                <button onclick="exportCSV()"
-                        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition">
-                    导出CSV
-                </button>
+                <button onclick="exportJSON()" class="btn-primary">导出JSON</button>
+                <button onclick="exportCSV()" class="btn-secondary">导出CSV</button>
+                <button onclick="exportPDF()" class="btn-secondary">导出PDF</button>
             </div>
         </div>
     </div>
@@ -101,44 +94,46 @@
 
 <script>
 let queryResult = null;
+const CACHE_KEY = 'cit_eth_query';
+
+window.onload = function() {
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    if (cached) {
+        try {
+            const data = JSON.parse(cached);
+            queryResult = data;
+            document.getElementById('address-input').value = data.address || '';
+            displayResults(data);
+        } catch(e) { console.log('Cache restore failed:', e); }
+    }
+};
+
+function saveToCache(data) { sessionStorage.setItem(CACHE_KEY, JSON.stringify(data)); }
 
 function queryTransactions() {
     const address = document.getElementById('address-input').value.trim();
     const apiKey = document.getElementById('api-key-input').value.trim();
 
-    if (!address) {
-        alert('请输入ETH地址');
-        return;
-    }
+    if (!address) { alert('请输入ETH地址'); return; }
+    if (!apiKey) { alert('请输入Etherscan API密钥'); return; }
 
-    if (!apiKey) {
-        alert('请输入Etherscan API密钥');
-        return;
-    }
-
-    // Show loading
     document.getElementById('loading').classList.remove('hidden');
     document.getElementById('error-display').classList.add('hidden');
     document.getElementById('results').classList.add('hidden');
 
-    // API key is sent per-request only, never stored
     fetch('/eth/api/query', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ address: address, api_key: apiKey })
     })
     .then(response => response.json())
     .then(data => {
         document.getElementById('loading').classList.add('hidden');
-
         if (data.success) {
             queryResult = data;
+            saveToCache(data);
             displayResults(data);
-        } else {
-            showError(data.error || '查询失败');
-        }
+        } else { showError(data.error || '查询失败'); }
     })
     .catch(error => {
         document.getElementById('loading').classList.add('hidden');
@@ -154,99 +149,84 @@ function showError(message) {
 function displayResults(data) {
     document.getElementById('results').classList.remove('hidden');
 
-    // Display basic info
-    const basicInfo = document.getElementById('basic-info');
     const transactions = data.transactions || {};
     const totalCount = transactions.total_count || 0;
     const normalCount = (transactions.normal || []).length;
     const erc20Count = (transactions.erc20 || []).length;
     const bridgeCount = (data.bridge_events || []).length;
 
-    basicInfo.innerHTML = `
-        <div class="bg-gray-50 p-3 rounded">
-            <span class="text-sm text-gray-500">查询地址</span>
-            <p class="font-bold text-gray-800 text-sm">${data.address}</p>
+    document.getElementById('basic-info').innerHTML = `
+        <div class="card-inner p-3 rounded">
+            <span class="text-sm" style="color: var(--text-muted);">查询地址</span>
+            <p class="font-bold text-white text-sm">${data.address}</p>
         </div>
-        <div class="bg-gray-50 p-3 rounded">
-            <span class="text-sm text-gray-500">总交易数</span>
-            <p class="font-bold text-gray-800">${totalCount}</p>
+        <div class="card-inner p-3 rounded">
+            <span class="text-sm" style="color: var(--text-muted);">总交易数</span>
+            <p class="font-bold text-white">${totalCount}</p>
         </div>
-        <div class="bg-gray-50 p-3 rounded">
-            <span class="text-sm text-gray-500">ETH转账</span>
-            <p class="font-bold text-gray-800">${normalCount}</p>
+        <div class="card-inner p-3 rounded">
+            <span class="text-sm" style="color: var(--text-muted);">ETH转账</span>
+            <p class="font-bold text-white">${normalCount}</p>
         </div>
-        <div class="bg-gray-50 p-3 rounded">
-            <span class="text-sm text-gray-500">ERC20转账</span>
-            <p class="font-bold text-gray-800">${erc20Count}</p>
+        <div class="card-inner p-3 rounded">
+            <span class="text-sm" style="color: var(--text-muted);">ERC20转账</span>
+            <p class="font-bold text-white">${erc20Count}</p>
         </div>
-        <div class="bg-gray-50 p-3 rounded">
-            <span class="text-sm text-gray-500">跨链桥事件</span>
-            <p class="font-bold text-gray-800">${bridgeCount}</p>
+        <div class="card-inner p-3 rounded">
+            <span class="text-sm" style="color: var(--text-muted);">跨链桥事件</span>
+            <p class="font-bold text-white">${bridgeCount}</p>
         </div>
     `;
 
-    // Display normal transactions
     displayTransactions('normal', transactions.normal || []);
-
-    // Display ERC20 transfers
     displayERC20Transfers(transactions.erc20 || []);
-
-    // Display bridge events if any
     displayBridgeEvents(data.bridge_events || []);
+    displayMixerStatus(data.tornado_deposits || [], data.address);
 }
 
 function formatTimestamp(ts) {
     if (!ts) return '未知';
-    const date = new Date(parseInt(ts) * 1000);
-    return date.toLocaleString('zh-CN');
+    return new Date(parseInt(ts) * 1000).toLocaleString('zh-CN');
 }
 
 function formatETHValue(valueWei) {
     if (!valueWei) return '0';
-    const eth = parseFloat(valueWei) / 1e18;
-    return eth.toFixed(6);
+    return (parseFloat(valueWei) / 1e18).toFixed(6);
 }
 
 function displayTransactions(type, transactions) {
     const container = document.getElementById('normal-transactions');
     const list = document.getElementById('normal-list');
 
-    if (transactions.length === 0) {
-        container.classList.add('hidden');
-        return;
-    }
-
+    if (transactions.length === 0) { container.classList.add('hidden'); return; }
     container.classList.remove('hidden');
 
-    // Create table
     list.innerHTML = `
         <table class="min-w-full text-sm">
-            <thead class="bg-gray-100">
-                <tr>
-                    <th class="px-4 py-2 text-left">交易哈希</th>
-                    <th class="px-4 py-2 text-left">时间</th>
-                    <th class="px-4 py-2 text-left">发送方</th>
-                    <th class="px-4 py-2 text-left">接收方</th>
-                    <th class="px-4 py-2 text-left">金额(ETH)</th>
+            <thead>
+                <tr style="border-bottom: 1px dashed var(--accent-green);">
+                    <th class="px-4 py-2 text-left" style="color: var(--text-muted);">交易哈希</th>
+                    <th class="px-4 py-2 text-left" style="color: var(--text-muted);">时间</th>
+                    <th class="px-4 py-2 text-left" style="color: var(--text-muted);">发送方</th>
+                    <th class="px-4 py-2 text-left" style="color: var(--text-muted);">接收方</th>
+                    <th class="px-4 py-2 text-left" style="color: var(--text-muted);">金额(ETH)</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200">
+            <tbody>
                 ${transactions.slice(0, 20).map(tx => `
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-2 text-xs text-blue-600">
-                            <a href="https://etherscan.io/tx/${tx.hash}" target="_blank" class="hover:underline">
-                                ${tx.hash ? tx.hash.slice(0, 10) + '...' + tx.hash.slice(-8) : '未知'}
-                            </a>
+                    <tr style="border-bottom: 1px dashed rgba(181,232,83,0.3);">
+                        <td class="px-4 py-2 text-xs" style="color: var(--link-color);">
+                            <a href="https://etherscan.io/tx/${tx.hash}" target="_blank">${tx.hash ? tx.hash.slice(0, 10) + '...' + tx.hash.slice(-8) : '未知'}</a>
                         </td>
-                        <td class="px-4 py-2">${formatTimestamp(tx.timeStamp)}</td>
-                        <td class="px-4 py-2 text-xs">${tx.from ? tx.from.slice(0, 8) + '...' + tx.from.slice(-6) : '未知'}</td>
-                        <td class="px-4 py-2 text-xs">${tx.to ? tx.to.slice(0, 8) + '...' + tx.to.slice(-6) : '未知'}</td>
-                        <td class="px-4 py-2">${formatETHValue(tx.value)}</td>
+                        <td class="px-4 py-2 text-white">${formatTimestamp(tx.timeStamp)}</td>
+                        <td class="px-4 py-2 text-xs text-gray-400">${tx.from ? tx.from.slice(0, 8) + '...' + tx.from.slice(-6) : '未知'}</td>
+                        <td class="px-4 py-2 text-xs text-gray-400">${tx.to ? tx.to.slice(0, 8) + '...' + tx.to.slice(-6) : '未知'}</td>
+                        <td class="px-4 py-2 text-white">${formatETHValue(tx.value)}</td>
                     </tr>
                 `).join('')}
             </tbody>
         </table>
-        ${transactions.length > 20 ? '<p class="text-gray-500 text-xs mt-2">显示前20条记录，共' + transactions.length + '条</p>' : ''}
+        ${transactions.length > 20 ? '<p class="text-xs mt-2" style="color: var(--text-muted);">显示前20条，共' + transactions.length + '条</p>' : ''}
     `;
 }
 
@@ -254,49 +234,42 @@ function displayERC20Transfers(transfers) {
     const container = document.getElementById('erc20-transactions');
     const list = document.getElementById('erc20-list');
 
-    if (transfers.length === 0) {
-        container.classList.add('hidden');
-        return;
-    }
-
+    if (transfers.length === 0) { container.classList.add('hidden'); return; }
     container.classList.remove('hidden');
 
-    // Create table
     list.innerHTML = `
         <table class="min-w-full text-sm">
-            <thead class="bg-gray-100">
-                <tr>
-                    <th class="px-4 py-2 text-left">交易哈希</th>
-                    <th class="px-4 py-2 text-left">时间</th>
-                    <th class="px-4 py-2 text-left">代币</th>
-                    <th class="px-4 py-2 text-left">发送方</th>
-                    <th class="px-4 py-2 text-left">接收方</th>
-                    <th class="px-4 py-2 text-left">金额</th>
+            <thead>
+                <tr style="border-bottom: 1px dashed var(--accent-green);">
+                    <th class="px-4 py-2 text-left" style="color: var(--text-muted);">交易哈希</th>
+                    <th class="px-4 py-2 text-left" style="color: var(--text-muted);">时间</th>
+                    <th class="px-4 py-2 text-left" style="color: var(--text-muted);">代币</th>
+                    <th class="px-4 py-2 text-left" style="color: var(--text-muted);">发送方</th>
+                    <th class="px-4 py-2 text-left" style="color: var(--text-muted);">接收方</th>
+                    <th class="px-4 py-2 text-left" style="color: var(--text-muted);">金额</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200">
+            <tbody>
                 ${transfers.slice(0, 20).map(tx => {
                     const decimals = parseInt(tx.tokenDecimal) || 18;
                     const value = parseFloat(tx.value || 0) / Math.pow(10, decimals);
                     const symbol = tx.tokenSymbol || '未知';
                     return `
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-2 text-xs text-blue-600">
-                                <a href="https://etherscan.io/tx/${tx.hash}" target="_blank" class="hover:underline">
-                                    ${tx.hash ? tx.hash.slice(0, 10) + '...' + tx.hash.slice(-8) : '未知'}
-                                </a>
+                        <tr style="border-bottom: 1px dashed rgba(181,232,83,0.3);">
+                            <td class="px-4 py-2 text-xs" style="color: var(--link-color);">
+                                <a href="https://etherscan.io/tx/${tx.hash}" target="_blank">${tx.hash ? tx.hash.slice(0, 10) + '...' + tx.hash.slice(-8) : '未知'}</a>
                             </td>
-                            <td class="px-4 py-2">${formatTimestamp(tx.timeStamp)}</td>
-                            <td class="px-4 py-2 font-medium">${symbol}</td>
-                            <td class="px-4 py-2 text-xs">${tx.from ? tx.from.slice(0, 8) + '...' + tx.from.slice(-6) : '未知'}</td>
-                            <td class="px-4 py-2 text-xs">${tx.to ? tx.to.slice(0, 8) + '...' + tx.to.slice(-6) : '未知'}</td>
-                            <td class="px-4 py-2">${value.toFixed(4)}</td>
+                            <td class="px-4 py-2 text-white">${formatTimestamp(tx.timeStamp)}</td>
+                            <td class="px-4 py-2 font-medium" style="color: var(--keyword-color);">${symbol}</td>
+                            <td class="px-4 py-2 text-xs text-gray-400">${tx.from ? tx.from.slice(0, 8) + '...' + tx.from.slice(-6) : '未知'}</td>
+                            <td class="px-4 py-2 text-xs text-gray-400">${tx.to ? tx.to.slice(0, 8) + '...' + tx.to.slice(-6) : '未知'}</td>
+                            <td class="px-4 py-2 text-white">${value.toFixed(4)}</td>
                         </tr>
                     `;
                 }).join('')}
             </tbody>
         </table>
-        ${transfers.length > 20 ? '<p class="text-gray-500 text-xs mt-2">显示前20条记录，共' + transfers.length + '条</p>' : ''}
+        ${transfers.length > 20 ? '<p class="text-xs mt-2" style="color: var(--text-muted);">显示前20条，共' + transfers.length + '条</p>' : ''}
     `;
 }
 
@@ -304,65 +277,72 @@ function displayBridgeEvents(events) {
     const container = document.getElementById('stargate-events');
     const list = document.getElementById('stargate-list');
 
-    if (events.length === 0) {
-        container.classList.add('hidden');
-        return;
-    }
-
+    if (events.length === 0) { container.classList.add('hidden'); return; }
     container.classList.remove('hidden');
 
     list.innerHTML = events.map(event => `
-        <div class="bg-white rounded p-4 shadow-sm border border-blue-200">
+        <div class="card-inner rounded p-4">
             <div class="flex justify-between items-start mb-2">
-                <p class="font-bold text-gray-800">${event.bridge || '跨链桥合约交互'}</p>
-                <span class="text-xs text-gray-500">${event.time || '未知'}</span>
+                <p class="font-bold text-white">${event.bridge || '跨链桥合约交互'}</p>
+                <span class="text-xs" style="color: var(--text-muted);">${event.time || '未知'}</span>
             </div>
             <div class="grid grid-cols-2 gap-2 text-sm">
-                <div>
-                    <span class="text-gray-500">交易哈希:</span>
-                    <a href="https://etherscan.io/tx/${event.tx_hash}" target="_blank" class="text-blue-600 hover:underline ml-1 text-xs">
-                        ${event.tx_hash ? event.tx_hash.slice(0, 10) + '...' + event.tx_hash.slice(-8) : '未知'}
-                    </a>
-                </div>
-                <div>
-                    <span class="text-gray-500">跨链桥:</span>
-                    <span class="ml-1 font-medium">${event.bridge || '未知'}</span>
-                </div>
-                <div>
-                    <span class="text-gray-500">发送方:</span>
-                    <span class="ml-1 text-xs">${event.from ? event.from.slice(0, 8) + '...' + event.from.slice(-6) : '未知'}</span>
-                </div>
-                <div>
-                    <span class="text-gray-500">接收方:</span>
-                    <span class="ml-1 text-xs">${event.to ? event.to.slice(0, 8) + '...' + event.to.slice(-6) : '未知'}</span>
-                </div>
-                <div>
-                    <span class="text-gray-500">金额:</span>
-                    <span class="ml-1 font-medium">${event.amount ? event.amount.toFixed(6) : '未知'} ${event.token || 'ETH'}</span>
-                </div>
-                ${event.dest_chain ? `
-                <div>
-                    <span class="text-gray-500">目标链:</span>
-                    <span class="ml-1 font-medium text-blue-600">${event.dest_chain}</span>
-                </div>
-                ` : ''}
+                <div><span style="color: var(--text-muted);">交易哈希:</span> <a href="https://etherscan.io/tx/${event.tx_hash}" target="_blank" class="ml-1 text-xs" style="color: var(--link-color);">${event.tx_hash ? event.tx_hash.slice(0, 10) + '...' : '未知'}</a></div>
+                <div><span style="color: var(--text-muted);">跨链桥:</span> <span class="ml-1 font-medium">${event.bridge || '未知'}</span></div>
+                <div><span style="color: var(--text-muted);">发送方:</span> <span class="ml-1 text-xs">${event.from ? event.from.slice(0, 8) + '...' : '未知'}</span></div>
+                <div><span style="color: var(--text-muted);">接收方:</span> <span class="ml-1 text-xs">${event.to ? event.to.slice(0, 8) + '...' : '未知'}</span></div>
+                <div><span style="color: var(--text-muted);">金额:</span> <span class="ml-1 font-medium">${event.amount ? event.amount.toFixed(6) : '未知'} ${event.token || 'ETH'}</span></div>
+                ${event.dest_chain ? `<div><span style="color: var(--text-muted);">目标链:</span> <span class="ml-1 font-medium" style="color: var(--link-color);">${event.dest_chain}</span></div>` : ''}
             </div>
-            <p class="text-xs text-blue-600 mt-2">此交易与跨链桥合约交互，可能涉及跨链资产转移。</p>
+            <p class="text-xs mt-2" style="color: var(--link-color);">此交易与跨链桥合约交互，可能涉及跨链资产转移。</p>
         </div>
     `).join('');
 }
 
-function exportJSON() {
-    if (!queryResult) {
-        alert('请先进行交易查询');
+function displayMixerStatus(deposits, address) {
+    const container = document.getElementById('mixer-status');
+    const content = document.getElementById('mixer-content');
+    container.classList.remove('hidden');
+
+    if (deposits.length === 0) {
+        content.innerHTML = `
+            <div class="card-inner rounded p-4">
+                <div class="flex items-center">
+                    <span style="color: var(--alert-green);">>> </span>
+                    <p class="text-gray-300">未检测到与Tornado Cash混币池的交互记录</p>
+                </div>
+                <p class="text-xs mt-2" style="color: var(--text-muted);">该地址的交易历史中没有发现混币器存款行为。</p>
+            </div>
+        `;
         return;
     }
 
+    content.innerHTML = deposits.map(deposit => `
+        <div class="card-inner rounded p-4" style="border: 1px dashed var(--keyword-color);">
+            <div class="flex justify-between items-start mb-2">
+                <p class="font-bold" style="color: var(--keyword-color);">混币池存款: ${deposit.pool || '未知'}</p>
+                <span class="text-xs" style="color: var(--text-muted);">${deposit.time || '未知'}</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-sm mb-3">
+                <div><span style="color: var(--text-muted);">交易哈希:</span> <a href="https://etherscan.io/tx/${deposit.tx_hash}" target="_blank" class="ml-1 text-xs" style="color: var(--keyword-color);">${deposit.tx_hash ? deposit.tx_hash.slice(0, 10) + '...' : '未知'}</a></div>
+                <div><span style="color: var(--text-muted);">存款金额:</span> <span class="ml-1 font-medium">${deposit.amount || 0} ETH</span></div>
+            </div>
+            <button onclick="traceMixer('${deposit.time}', '${address}')" class="btn-secondary" style="border-color: var(--keyword-color);">
+                追踪混币提款
+            </button>
+        </div>
+    `).join('');
+}
+
+function traceMixer(depositTime, address) {
+    window.location.href = `/trace/mixer?deposit_time=${encodeURIComponent(depositTime)}&address=${encodeURIComponent(address)}`;
+}
+
+function exportJSON() {
+    if (!queryResult) { alert('请先进行交易查询'); return; }
     fetch('/eth/api/export/json', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ result: queryResult })
     })
     .then(response => {
@@ -373,28 +353,17 @@ function exportJSON() {
     })
     .then(({ blob, filename }) => {
         const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        a.click();
+        const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
         window.URL.revokeObjectURL(url);
     })
-    .catch(error => {
-        alert('导出失败: ' + error.message);
-    });
+    .catch(error => alert('导出失败: ' + error.message));
 }
 
 function exportCSV() {
-    if (!queryResult) {
-        alert('请先进行交易查询');
-        return;
-    }
-
+    if (!queryResult) { alert('请先进行交易查询'); return; }
     fetch('/eth/api/export/csv', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ result: queryResult })
     })
     .then(response => {
@@ -405,15 +374,29 @@ function exportCSV() {
     })
     .then(({ blob, filename }) => {
         const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        a.click();
+        const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
         window.URL.revokeObjectURL(url);
     })
-    .catch(error => {
-        alert('导出失败: ' + error.message);
-    });
+    .catch(error => alert('导出失败: ' + error.message));
+}
+
+function exportPDF() {
+    if (!queryResult) { alert('请先进行交易查询'); return; }
+    fetch('/docs/api/export/pdf', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ result: queryResult, tool_type: 'eth_query' })
+    })
+    .then(response => {
+        const filename = response.headers.get('Content-Disposition').split('filename=')[1].replace(/"/g, '');
+        return response.blob().then(blob => ({ blob, filename }));
+    })
+    .then(({ blob, filename }) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
+        window.URL.revokeObjectURL(url);
+    })
+    .catch(error => alert('PDF导出失败: ' + error.message));
 }
 </script>
 {% endblock %}

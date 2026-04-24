@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+{% block title %}多链地址监控{% endblock %}
+{% block content %}
+<div class="max-w-4xl mx-auto pb-16">
+    <!-- Tool header -->
+    <div class="card p-6 mb-6">
+        <p class="terminal-header mb-2">multi_chain_monitor.sh</p>
+        <p class="text-gray-400">跨链地址状态监控工具，支持TRON/ETH/BTC三链地址，手动刷新查看余额、交易数、最后活跃时间。</p>
+    </div>
+
+    <!-- Input section -->
+    <div class="card p-6 mb-6">
+        <h2 class="text-lg font-bold mb-4" style="color: var(--accent-green);">>> 输入地址</h2>
+
+        <div class="mb-4">
+            <label class="block text-sm font-medium mb-1" style="color: var(--text-muted);">钱包地址（每行一个，最多10个）</label>
+            <textarea id="addresses-input" class="w-full" rows="5"
+                      placeholder="每行一个地址，最多10个地址（支持TRON/ETH/BTC）&#10;TRON格式: T开头的34字符地址&#10;ETH格式: 0x开头的42字符地址&#10;BTC格式: 1/3/bc1开头的地址"></textarea>
+        </div>
+
+        <div id="eth-key-section" class="mb-4 hidden">
+            <label class="block text-sm font-medium mb-1" style="color: var(--text-muted);">Etherscan API密钥</label>
+            <input type="text" id="eth-key-input" class="w-full"
+                   placeholder="从 etherscan.io 获取免费API密钥">
+            <p class="text-sm mt-1" style="color: var(--text-muted);">ETH地址分析需要API密钥</p>
+        </div>
+
+        <div class="flex gap-3">
+            <button onclick="fillSample()" class="btn-secondary">样本填充</button>
+            <button onclick="refreshMonitor()" class="btn-primary">刷新状态</button>
+        </div>
+    </div>
+
+    <!-- Loading indicator -->
+    <div id="loading" class="hidden card p-6 mb-6 text-center">
+        <div class="animate-spin inline-block w-8 h-8 border-4 rounded-full" style="border-color: var(--accent-green); border-top-color: transparent;"></div>
+        <p class="text-gray-400 mt-2">正在查询地址状态...</p>
+    </div>
+
+    <!-- Error display -->
+    <div id="error-display" class="hidden alert-red rounded-lg p-4 mb-6">
+        <p id="error-message" style="color: var(--alert-red);"></p>
+    </div>
+
+    <!-- Results section -->
+    <div id="results" class="hidden"></div>
+</div>
+
+<script>
+const CACHE_KEY = 'cit_monitor_result';
+
+async function fillSample() {
+    try {
+        const response = await fetch('/case/api/monitor/sample');
+        const data = await response.json();
+        document.getElementById('addresses-input').value = data.sample_addresses.join('\n');
+        checkEthAddresses();
+    } catch (error) { console.error('Failed to fetch sample:', error); }
+}
+
+function checkEthAddresses() {
+    const input = document.getElementById('addresses-input').value;
+    const addresses = input.split('\n').filter(a => a.trim());
+    const hasEth = addresses.some(addr => addr.trim().startsWith('0x'));
+    const ethKeySection = document.getElementById('eth-key-section');
+    if (hasEth) { ethKeySection.classList.remove('hidden'); }
+    else { ethKeySection.classList.add('hidden'); }
+}
+
+document.getElementById('addresses-input').addEventListener('input', checkEthAddresses);
+
+async function refreshMonitor() {
+    const input = document.getElementById('addresses-input').value;
+    const addresses = input.split('\n').map(a => a.trim()).filter(a => a);
+    const ethKey = document.getElementById('eth-key-input').value.trim();
+
+    if (addresses.length === 0) { showError('请输入至少一个地址'); return; }
+    if (addresses.length > 10) { showError('地址数量超过10个限制'); return; }
+
+    const hasEth = addresses.some(addr => addr.startsWith('0x'));
+    if (hasEth && !ethKey) { showError('ETH地址需要Etherscan API密钥'); return; }
+
+    showLoading(); hideError(); hideResults();
+
+    try {
+        const response = await fetch('/case/api/monitor/query', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({addresses: addresses, eth_key: ethKey})
+        });
+        const data = await response.json();
+        if (data.success) {
+            sessionStorage.setItem(CACHE_KEY, JSON.stringify(data));
+            displayResults(data);
+        } else { showError(data.error || '查询失败'); }
+    } catch (error) { showError('网络请求失败: ' + error.message); }
+    finally { hideLoading(); }
+}
+
+function displayResults(data) {
+    const resultsDiv = document.getElementById('results');
+    let html = '';
+
+    html += '<div class="card p-6 mb-6">';
+    html += '<h2 class="text-lg font-bold mb-4" style="color: var(--accent-green);">>> 地址状态</h2>';
+    html += `<p class="text-sm mb-4" style="color: var(--text-muted);">共 ${data.total_count} 个地址</p>`;
+    if (data.status_cards && data.status_cards.length > 0) {
+        for (const card of data.status_cards) { html += displayStatusCard(card); }
+    }
+    html += '</div>';
+
+    html += '<div class="card p-6 mb-6">';
+    html += '<h2 class="text-lg font-bold mb-4" style="color: var(--accent-green);">>> 导出结果</h2>';
+    html += '<div class="flex flex-wrap gap-3">';
+    html += `<button onclick="exportJSON()" class="btn-primary">导出JSON</button>`;
+    html += `<button onclick="exportCSV()" class="btn-secondary">导出CSV</button>`;
+    html += `<button onclick="exportPDF()" class="btn-secondary">导出PDF</button>`;
+    html += `<button onclick="exportToTron()" class="btn-secondary" style="border-color: var(--link-color);">导出到TRON分析</button>`;
+    html += `<button onclick="exportToCluster()" class="btn-secondary" style="border-color: var(--keyword-color);">导出到聚类</button>`;
+    html += `<button onclick="exportToFreeze()" class="btn-secondary" style="border-color: var(--alert-red);">导出到资产追回</button>`;
+    html += '</div></div>';
+
+    resultsDiv.innerHTML = html;
+    resultsDiv.classList.remove('hidden');
+}
+
+function displayStatusCard(card) {
+    const chainColors = {
+        'tron': 'var(--link-color)',
+        'eth': 'var(--keyword-color)',
+        'btc': 'var(--alert-yellow)'
+    };
+    const chainColor = chainColors[card.chain] || 'var(--text-muted)';
+
+    let html = `<div class="card-inner rounded-lg p-4 mb-4">`;
+    html += `<div class="flex justify-between items-center mb-2">`;
+    html += `<div>`;
+    html += `<span class="font-mono text-sm text-white">${card.address}</span>`;
+    html += `<span class="ml-2 px-2 py-1 rounded text-xs" style="color: ${chainColor}; border: 1px dashed ${chainColor};">${card.chain.toUpperCase()}</span>`;
+    html += `</div>`;
+    if (card.error) { html += `<span class="text-sm" style="color: var(--alert-red);">⚠ 查询失败</span>`; }
+    html += `</div>`;
+
+    html += `<div class="grid grid-cols-3 gap-4 mt-2">`;
+    html += `<div><span class="text-sm" style="color: var(--text-muted);">余额:</span><p class="font-semibold text-white">${formatBalance(card.balance, card.chain)}</p></div>`;
+    html += `<div><span class="text-sm" style="color: var(--text-muted);">交易数:</span><p class="font-semibold text-white">${card.tx_count}</p></div>`;
+    html += `<div><span class="text-sm" style="color: var(--text-muted);">最后活跃:</span><p class="font-semibold text-sm text-white">${card.last_active}</p></div>`;
+    html += `</div>`;
+    if (card.error) { html += `<p class="text-sm mt-2" style="color: var(--alert-red);">${card.error}</p>`; }
+    html += `</div>`;
+    return html;
+}
+
+function formatBalance(balance, chain) {
+    if (chain === 'tron') return balance.toFixed(2) + ' TRX';
+    if (chain === 'eth') return balance.toFixed(4) + ' ETH';
+    if (chain === 'btc') return balance.toFixed(6) + ' BTC';
+    return balance.toString();
+}
+
+async function exportJSON() {
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    if (!cached) { showError('无缓存结果，请先进行查询'); return; }
+    const result = JSON.parse(cached);
+    const response = await fetch('/case/api/monitor/export/json', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({result: result})
+    });
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = `monitor_result_${new Date().toISOString().slice(0,10)}.json`; a.click();
+}
+
+async function exportCSV() {
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    if (!cached) { showError('无缓存结果，请先进行查询'); return; }
+    const result = JSON.parse(cached);
+    const response = await fetch('/case/api/monitor/export/csv', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({result: result})
+    });
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = `monitor_result_${new Date().toISOString().slice(0,10)}.csv`; a.click();
+}
+
+async function exportPDF() {
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    if (!cached) { showError('无缓存结果，请先进行查询'); return; }
+    const result = JSON.parse(cached);
+    try {
+        const response = await fetch('/docs/api/export/pdf', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ result: result, tool_type: 'monitor' })
+        });
+        const filename = response.headers.get('Content-Disposition').split('filename=')[1].replace(/"/g, '');
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
+    } catch (error) { showError('PDF导出失败: ' + error.message); }
+}
+
+function exportToTron() {
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    if (!cached) { showError('无缓存结果，请先进行查询'); return; }
+    const result = JSON.parse(cached);
+    const tronAddresses = result.status_cards.filter(c => c.chain === 'tron').map(c => c.address);
+    if (tronAddresses.length === 0) { showError('无TRON地址可导出'); return; }
+    sessionStorage.setItem('cit_monitor_to_tron', tronAddresses.join('\n'));
+    window.location.href = '/tron/suspicious-analyzer';
+}
+
+function exportToCluster() {
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    if (!cached) { showError('无缓存结果，请先进行查询'); return; }
+    sessionStorage.setItem('cit_monitor_to_cluster', cached);
+    window.location.href = '/cross/cluster';
+}
+
+function exportToFreeze() {
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    if (!cached) { showError('无缓存结果，请先进行查询'); return; }
+    sessionStorage.setItem('cit_monitor_export', cached);
+    window.location.href = '/case/asset-freeze';
+}
+
+function showLoading() { document.getElementById('loading').classList.remove('hidden'); }
+function hideLoading() { document.getElementById('loading').classList.add('hidden'); }
+function showError(message) { document.getElementById('error-message').textContent = message; document.getElementById('error-display').classList.remove('hidden'); }
+function hideError() { document.getElementById('error-display').classList.add('hidden'); }
+function hideResults() { document.getElementById('results').classList.add('hidden'); }
+
+window.onload = function() {
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    if (cached) { const data = JSON.parse(cached); displayResults(data); }
+};
+</script>
+{% endblock %}

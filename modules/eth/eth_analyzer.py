@@ -66,6 +66,16 @@ BRIDGE_ADDRESSES = {
     "0x66A71Dcef29A0fBFBDB9F0a7b7c7c7c7c7c7c7c7c": "LayerZero Endpoint",
 }
 
+# ============================================
+# Tornado Cash mixer pool addresses
+# ============================================
+TORNADO_POOLS = {
+    "0.1 ETH": "0x12D66f87A04A9E220743712cE6d9bB1B5616B8Fc",
+    "1 ETH": "0x910Cbd523D972eb0a6f4cAe4618aD9491718b368",
+    "10 ETH": "0xA160CdAB225685dA1d56d342E7850264303fed3",
+    "100 ETH": "0xD4B88Df4D29F5CedD6857912842cff3b20C8C0fd",
+}
+
 
 def get_eth_transactions(address: str, api_key: str, limit: int = 100) -> List[Dict]:
     """
@@ -191,6 +201,26 @@ def identify_bridge(tx: Dict) -> tuple:
     return False, None
 
 
+def identify_tornado_deposit(tx: Dict) -> tuple:
+    """
+    Identify if a transaction is a Tornado Cash deposit.
+
+    Args:
+        tx: Single transaction dict from Etherscan
+
+    Returns:
+        tuple: (is_tornado: bool, pool_name: str or None)
+    """
+    to_address = tx.get("to", "").lower()
+
+    # Check if sent to Tornado Cash pool
+    for pool_name, addr in TORNADO_POOLS.items():
+        if to_address == addr.lower():
+            return True, pool_name
+
+    return False, None
+
+
 def parse_stargate_event(logs: List[Dict]) -> Dict:
     """
     Parse Stargate cross-chain event from transaction logs.
@@ -287,6 +317,8 @@ def query_eth_transactions_web(address: str, api_key: str) -> Dict[str, Any]:
 
     # Identify bridge transactions
     bridge_events = []
+    tornado_deposits = []  # Add Tornado Cash deposit tracking
+
     for tx in normal_txs:
         is_bridge, bridge_name = identify_bridge(tx)
         if is_bridge:
@@ -308,6 +340,17 @@ def query_eth_transactions_web(address: str, api_key: str) -> Dict[str, Any]:
                 event["dest_chain"] = stargate_info["dest_chain"]
 
             bridge_events.append(event)
+
+        # Check for Tornado Cash deposit
+        is_tornado, pool_name = identify_tornado_deposit(tx)
+        if is_tornado:
+            tornado_deposits.append({
+                "tx_hash": tx["hash"],
+                "time": datetime.fromtimestamp(int(tx["timeStamp"])).strftime('%Y-%m-%d %H:%M:%S'),
+                "amount": float(tx["value"]) / 1e18,
+                "pool": pool_name,
+                "from": tx.get("from", "")
+            })
 
     # Also check ERC20 transfers for bridge interactions
     for tx in erc20_txs:
@@ -333,5 +376,6 @@ def query_eth_transactions_web(address: str, api_key: str) -> Dict[str, Any]:
             'total_count': len(normal_txs) + len(erc20_txs)
         },
         'bridge_events': bridge_events,
+        'tornado_deposits': tornado_deposits,
         'error': None
     }

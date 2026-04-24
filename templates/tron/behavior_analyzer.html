@@ -2,30 +2,27 @@
 {% block title %}TRON行为分析{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto">
+<div class="max-w-4xl mx-auto pb-16">
     <!-- Tool header -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h1 class="text-2xl font-bold text-gray-800 mb-2">TRON地址行为分析</h1>
-        <p class="text-gray-600">分析地址行为模式：首次资金来源、交易模式、地址关系、活动时间线</p>
+    <div class="card p-6 mb-6">
+        <p class="terminal-header mb-2">tron_behavior_analyzer.sh</p>
+        <p class="text-gray-400">分析地址行为模式：首次资金来源、交易模式、地址关系、活动时间线</p>
     </div>
 
     <!-- Input section -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 class="text-lg font-bold text-gray-700 mb-4">输入TRON地址</h2>
+    <div class="card p-6 mb-6">
+        <h2 class="text-lg font-bold mb-4" style="color: var(--accent-green);">>> 输入TRON地址</h2>
         <div class="space-y-4">
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">TRON钱包地址</label>
-                <input type="text" id="address-input"
-                       class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                <label class="block text-sm font-medium mb-1" style="color: var(--text-muted);">TRON钱包地址</label>
+                <input type="text" id="address-input" class="w-full"
                        placeholder="例如：TUtPdo7L45ey2KrpibdNcjNL3ujqXo1NNw">
             </div>
             <div class="flex space-x-4">
-                <button onclick="loadSample()"
-                        class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition">
+                <button onclick="loadSample()" class="btn-secondary">
                     加载样本
                 </button>
-                <button onclick="analyzeBehavior()"
-                        class="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition">
+                <button onclick="analyzeBehavior()" class="btn-primary">
                     开始分析
                 </button>
             </div>
@@ -33,98 +30,66 @@
     </div>
 
     <!-- Loading indicator -->
-    <div id="loading" class="hidden bg-white rounded-lg shadow p-6 mb-6">
+    <div id="loading" class="hidden card p-6 mb-6">
         <div class="flex items-center justify-center">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-            <span class="ml-3 text-gray-600">正在分析地址行为...</span>
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2" style="border-color: var(--accent-green);"></div>
+            <span class="ml-3 text-gray-400">正在分析地址行为...</span>
         </div>
     </div>
 
     <!-- Error display -->
-    <div id="error-display" class="hidden bg-red-100 border border-red-400 rounded-lg p-4 mb-6">
-        <p id="error-message" class="text-red-700"></p>
+    <div id="error-display" class="hidden alert-red rounded-lg p-4 mb-6">
+        <p id="error-message" style="color: var(--alert-red);"></p>
     </div>
 
-    <!-- Results section with 4 Summary Cards -->
+    <!-- Results section -->
     <div id="results" class="hidden">
         <!-- Card 1: First Funding Source -->
-        <div id="funding-source-card" class="bg-white rounded-lg shadow p-6 mb-6">
-            <h2 class="text-lg font-bold text-gray-700 mb-4 flex items-center">
-                <span class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                </span>
-                首次资金来源
+        <div id="funding-source-card" class="card p-6 mb-6">
+            <h2 class="text-lg font-bold mb-4 flex items-center" style="color: var(--accent-green);">
+                <span style="color: var(--link-color);">></span> 首次资金来源
             </h2>
-            <div id="funding-source-content" class="grid grid-cols-2 gap-4">
-                <!-- Populated by JavaScript -->
-            </div>
+            <div id="funding-source-content" class="grid grid-cols-2 gap-4"></div>
         </div>
 
         <!-- Card 2: Transfer Patterns -->
-        <div id="transfer-patterns-card" class="bg-white rounded-lg shadow p-6 mb-6">
-            <h2 class="text-lg font-bold text-gray-700 mb-4 flex items-center">
-                <span class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
-                    </svg>
-                </span>
-                交易模式
+        <div id="transfer-patterns-card" class="card p-6 mb-6">
+            <h2 class="text-lg font-bold mb-4 flex items-center" style="color: var(--accent-green);">
+                <span style="color: var(--link-color);">></span> 交易模式
             </h2>
-            <div id="transfer-patterns-content" class="grid grid-cols-2 gap-4">
-                <!-- Populated by JavaScript -->
-            </div>
+            <div id="transfer-patterns-content" class="grid grid-cols-2 gap-4"></div>
         </div>
 
         <!-- Card 3: Address Relationships -->
-        <div id="relationships-card" class="bg-white rounded-lg shadow p-6 mb-6">
-            <h2 class="text-lg font-bold text-gray-700 mb-4 flex items-center">
-                <span class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
-                    <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                    </svg>
-                </span>
-                地址关系
+        <div id="relationships-card" class="card p-6 mb-6">
+            <h2 class="text-lg font-bold mb-4 flex items-center" style="color: var(--accent-green);">
+                <span style="color: var(--link-color);">></span> 地址关系
             </h2>
-            <div id="relationships-content">
-                <!-- Populated by JavaScript -->
-            </div>
+            <div id="relationships-content"></div>
         </div>
 
         <!-- Card 4: Activity Timeline -->
-        <div id="timeline-card" class="bg-white rounded-lg shadow p-6 mb-6">
-            <h2 class="text-lg font-bold text-gray-700 mb-4 flex items-center">
-                <span class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center mr-3">
-                    <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                </span>
-                活动时间线
+        <div id="timeline-card" class="card p-6 mb-6">
+            <h2 class="text-lg font-bold mb-4 flex items-center" style="color: var(--accent-green);">
+                <span style="color: var(--link-color);">></span> 活动时间线
             </h2>
-            <div id="timeline-content" class="grid grid-cols-2 gap-4">
-                <!-- Populated by JavaScript -->
-            </div>
+            <div id="timeline-content" class="grid grid-cols-2 gap-4"></div>
         </div>
 
         <!-- Export buttons -->
-        <div class="bg-white rounded-lg shadow p-6 mb-6">
-            <h2 class="text-lg font-bold text-gray-700 mb-4">导出结果</h2>
+        <div class="card p-6 mb-6">
+            <h2 class="text-lg font-bold mb-4" style="color: var(--accent-green);">>> 导出结果</h2>
             <div class="flex space-x-4">
-                <button onclick="exportJSON()"
-                        class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">
-                    导出JSON
-                </button>
-                <button onclick="exportCSV()"
-                        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition">
-                    导出CSV
-                </button>
+                <button onclick="exportJSON()" class="btn-primary">导出JSON</button>
+                <button onclick="exportCSV()" class="btn-secondary">导出CSV</button>
+                <button onclick="exportPDF()" class="btn-secondary">导出PDF</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
+const CACHE_KEY = 'cit_tron_behavior_result';
 let analysisResult = null;
 
 function loadSample() {
@@ -146,16 +111,13 @@ function analyzeBehavior() {
         return;
     }
 
-    // Show loading
     document.getElementById('loading').classList.remove('hidden');
     document.getElementById('error-display').classList.add('hidden');
     document.getElementById('results').classList.add('hidden');
 
     fetch('/tron/api/behavior', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ address: address })
     })
     .then(response => response.json())
@@ -164,6 +126,9 @@ function analyzeBehavior() {
 
         if (data.success) {
             analysisResult = data;
+            // Save to sessionStorage for persistence
+            sessionStorage.setItem(CACHE_KEY, JSON.stringify(data));
+            sessionStorage.setItem(CACHE_KEY + '_address', address);
             displayResults(data);
         } else {
             showError(data.error || '分析失败');
@@ -182,17 +147,9 @@ function showError(message) {
 
 function displayResults(data) {
     document.getElementById('results').classList.remove('hidden');
-
-    // Display funding source
     displayFundingSource(data.behaviors.funding_source);
-
-    // Display transfer patterns
     displayTransferPatterns(data.behaviors.transfer_patterns);
-
-    // Display relationships
     displayRelationships(data.behaviors.relationships);
-
-    // Display timeline
     displayTimeline(data.behaviors.timeline);
 }
 
@@ -200,30 +157,26 @@ function displayFundingSource(funding) {
     const container = document.getElementById('funding-source-content');
 
     if (funding.status) {
-        container.innerHTML = `
-            <div class="col-span-2 bg-gray-50 p-4 rounded text-center">
-                <p class="text-gray-500">${funding.status}</p>
-            </div>
-        `;
+        container.innerHTML = `<div class="col-span-2 card-inner p-4 rounded text-center"><p style="color: var(--text-muted);">${funding.status}</p></div>`;
         return;
     }
 
     container.innerHTML = `
-        <div class="bg-gray-50 p-3 rounded">
-            <span class="text-sm text-gray-500">资助地址</span>
-            <p class="font-bold text-gray-800 text-sm">${funding.funder_address}</p>
+        <div class="card-inner p-3 rounded">
+            <span class="text-sm" style="color: var(--text-muted);">资助地址</span>
+            <p class="font-bold text-white text-sm">${funding.funder_address}</p>
         </div>
-        <div class="bg-gray-50 p-3 rounded">
-            <span class="text-sm text-gray-500">首次转入时间</span>
-            <p class="font-bold text-gray-800">${funding.first_transfer_time_str}</p>
+        <div class="card-inner p-3 rounded">
+            <span class="text-sm" style="color: var(--text-muted);">首次转入时间</span>
+            <p class="font-bold text-white">${funding.first_transfer_time_str}</p>
         </div>
-        <div class="bg-gray-50 p-3 rounded">
-            <span class="text-sm text-gray-500">首次转入金额</span>
-            <p class="font-bold text-gray-800">${funding.first_amount} USDT</p>
+        <div class="card-inner p-3 rounded">
+            <span class="text-sm" style="color: var(--text-muted);">首次转入金额</span>
+            <p class="font-bold text-white">${funding.first_amount} USDT</p>
         </div>
-        <div class="bg-gray-50 p-3 rounded">
-            <span class="text-sm text-gray-500">资助方交易数</span>
-            <p class="font-bold text-gray-800">${funding.funder_tx_count}</p>
+        <div class="card-inner p-3 rounded">
+            <span class="text-sm" style="color: var(--text-muted);">资助方交易数</span>
+            <p class="font-bold text-white">${funding.funder_tx_count}</p>
         </div>
     `;
 }
@@ -232,42 +185,38 @@ function displayTransferPatterns(patterns) {
     const container = document.getElementById('transfer-patterns-content');
 
     if (patterns.status) {
-        container.innerHTML = `
-            <div class="col-span-2 bg-gray-50 p-4 rounded text-center">
-                <p class="text-gray-500">${patterns.status}</p>
-            </div>
-        `;
+        container.innerHTML = `<div class="col-span-2 card-inner p-4 rounded text-center"><p style="color: var(--text-muted);">${patterns.status}</p></div>`;
         return;
     }
 
-    const ratioClass = patterns.in_out_ratio === '无穷大' ? 'text-red-600' :
-                       patterns.in_out_ratio_raw > 5 ? 'text-green-600' :
-                       patterns.in_out_ratio_raw < 0.5 ? 'text-red-600' : 'text-gray-800';
+    const ratioColor = patterns.in_out_ratio === '无穷大' ? 'var(--alert-red)' :
+                       patterns.in_out_ratio_raw > 5 ? 'var(--alert-green)' :
+                       patterns.in_out_ratio_raw < 0.5 ? 'var(--alert-red)' : 'var(--text-light)';
 
     container.innerHTML = `
-        <div class="bg-gray-50 p-3 rounded">
-            <span class="text-sm text-gray-500">转入总额</span>
-            <p class="font-bold text-green-600">${patterns.total_in} USDT</p>
+        <div class="card-inner p-3 rounded">
+            <span class="text-sm" style="color: var(--text-muted);">转入总额</span>
+            <p class="font-bold" style="color: var(--alert-green);">${patterns.total_in} USDT</p>
         </div>
-        <div class="bg-gray-50 p-3 rounded">
-            <span class="text-sm text-gray-500">转出总额</span>
-            <p class="font-bold text-red-600">${patterns.total_out} USDT</p>
+        <div class="card-inner p-3 rounded">
+            <span class="text-sm" style="color: var(--text-muted);">转出总额</span>
+            <p class="font-bold" style="color: var(--alert-red);">${patterns.total_out} USDT</p>
         </div>
-        <div class="bg-gray-50 p-3 rounded">
-            <span class="text-sm text-gray-500">入出比例</span>
-            <p class="font-bold ${ratioClass}">${patterns.in_out_ratio}</p>
+        <div class="card-inner p-3 rounded">
+            <span class="text-sm" style="color: var(--text-muted);">入出比例</span>
+            <p class="font-bold" style="color: ${ratioColor};">${patterns.in_out_ratio}</p>
         </div>
-        <div class="bg-gray-50 p-3 rounded">
-            <span class="text-sm text-gray-500">平均转账间隔</span>
-            <p class="font-bold text-gray-800">${patterns.avg_transfer_interval_hours} 小时</p>
+        <div class="card-inner p-3 rounded">
+            <span class="text-sm" style="color: var(--text-muted);">平均转账间隔</span>
+            <p class="font-bold text-white">${patterns.avg_transfer_interval_hours} 小时</p>
         </div>
-        <div class="bg-gray-50 p-3 rounded">
-            <span class="text-sm text-gray-500">转入次数</span>
-            <p class="font-bold text-gray-800">${patterns.transfer_count_in}</p>
+        <div class="card-inner p-3 rounded">
+            <span class="text-sm" style="color: var(--text-muted);">转入次数</span>
+            <p class="font-bold text-white">${patterns.transfer_count_in}</p>
         </div>
-        <div class="bg-gray-50 p-3 rounded">
-            <span class="text-sm text-gray-500">转出次数</span>
-            <p class="font-bold text-gray-800">${patterns.transfer_count_out}</p>
+        <div class="card-inner p-3 rounded">
+            <span class="text-sm" style="color: var(--text-muted);">转出次数</span>
+            <p class="font-bold text-white">${patterns.transfer_count_out}</p>
         </div>
     `;
 }
@@ -276,88 +225,74 @@ function displayRelationships(relationships) {
     const container = document.getElementById('relationships-content');
 
     if (relationships.status) {
-        container.innerHTML = `
-            <div class="bg-gray-50 p-4 rounded text-center">
-                <p class="text-gray-500">${relationships.status}</p>
-            </div>
-        `;
+        container.innerHTML = `<div class="card-inner p-4 rounded text-center"><p style="color: var(--text-muted);">${relationships.status}</p></div>`;
         return;
     }
 
-    let counterpartiesHtml = `
-        <div class="mb-4 bg-gray-50 p-3 rounded">
-            <span class="text-sm text-gray-500">互动地址数</span>
-            <p class="font-bold text-gray-800">${relationships.unique_addresses_interacted}</p>
+    let html = `
+        <div class="mb-4 card-inner p-3 rounded">
+            <span class="text-sm" style="color: var(--text-muted);">互动地址数</span>
+            <p class="font-bold text-white">${relationships.unique_addresses_interacted}</p>
         </div>
-        <h3 class="text-sm font-medium text-gray-700 mb-2">频繁交易对象（Top 5）</h3>
+        <h3 class="text-sm font-medium mb-2" style="color: var(--text-muted);">频繁交易对象（Top 5）</h3>
         <div class="space-y-2">
     `;
 
     for (const cp of relationships.top_counterparties) {
-        counterpartiesHtml += `
-            <div class="bg-gray-50 p-3 rounded">
+        html += `
+            <div class="card-inner p-3 rounded">
                 <div class="flex justify-between items-center">
-                    <span class="text-sm font-medium text-gray-800">${cp.address_short}</span>
-                    <span class="text-xs text-gray-500">${cp.interaction_count}次互动</span>
+                    <span class="text-sm font-medium text-white address-full" style="letter-spacing: 0.08em; overflow-x: auto; max-width: 70%;">${cp.address}</span>
+                    <span class="text-xs" style="color: var(--text-light);">${cp.interaction_count}次互动</span>
                 </div>
-                <div class="mt-1 text-xs text-gray-500">
+                <div class="mt-1 text-xs" style="color: var(--text-light);">
                     总额: ${cp.total_amount} USDT (入: ${cp.total_in}, 出: ${cp.total_out})
                 </div>
             </div>
         `;
     }
 
-    counterpartiesHtml += '</div>';
-    container.innerHTML = counterpartiesHtml;
+    html += '</div>';
+    container.innerHTML = html;
 }
 
 function displayTimeline(timeline) {
     const container = document.getElementById('timeline-content');
 
     if (timeline.status) {
-        container.innerHTML = `
-            <div class="col-span-2 bg-gray-50 p-4 rounded text-center">
-                <p class="text-gray-500">${timeline.status}</p>
-            </div>
-        `;
+        container.innerHTML = `<div class="col-span-2 card-inner p-4 rounded text-center"><p style="color: var(--text-muted);">${timeline.status}</p></div>`;
         return;
     }
 
     container.innerHTML = `
-        <div class="bg-gray-50 p-3 rounded">
-            <span class="text-sm text-gray-500">首次活动</span>
-            <p class="font-bold text-gray-800">${timeline.first_activity_str}</p>
+        <div class="card-inner p-3 rounded">
+            <span class="text-sm" style="color: var(--text-muted);">首次活动</span>
+            <p class="font-bold text-white">${timeline.first_activity_str}</p>
         </div>
-        <div class="bg-gray-50 p-3 rounded">
-            <span class="text-sm text-gray-500">最后活动</span>
-            <p class="font-bold text-gray-800">${timeline.last_activity_str}</p>
+        <div class="card-inner p-3 rounded">
+            <span class="text-sm" style="color: var(--text-muted);">最后活动</span>
+            <p class="font-bold text-white">${timeline.last_activity_str}</p>
         </div>
-        <div class="bg-gray-50 p-3 rounded">
-            <span class="text-sm text-gray-500">活跃天数</span>
-            <p class="font-bold text-gray-800">${timeline.active_days} 天</p>
+        <div class="card-inner p-3 rounded">
+            <span class="text-sm" style="color: var(--text-muted);">活跃天数</span>
+            <p class="font-bold text-white">${timeline.active_days} 天</p>
         </div>
-        <div class="bg-gray-50 p-3 rounded">
-            <span class="text-sm text-gray-500">总交易数</span>
-            <p class="font-bold text-gray-800">${timeline.total_transfers}</p>
+        <div class="card-inner p-3 rounded">
+            <span class="text-sm" style="color: var(--text-muted);">总交易数</span>
+            <p class="font-bold text-white">${timeline.total_transfers}</p>
         </div>
-        <div class="col-span-2 bg-orange-50 p-3 rounded">
-            <span class="text-sm text-gray-500">高峰活动期</span>
-            <p class="font-bold text-orange-700">${timeline.peak_activity_period.period_str} (${timeline.peak_activity_period.count}笔交易)</p>
+        <div class="col-span-2 card-inner p-3 rounded" style="border: 1px dashed var(--alert-yellow);">
+            <span class="text-sm" style="color: var(--text-muted);">高峰活动期</span>
+            <p class="font-bold" style="color: var(--alert-yellow);">${timeline.peak_activity_period.period_str} (${timeline.peak_activity_period.count}笔交易)</p>
         </div>
     `;
 }
 
 function exportJSON() {
-    if (!analysisResult) {
-        alert('请先进行地址分析');
-        return;
-    }
-
+    if (!analysisResult) { alert('请先进行地址分析'); return; }
     fetch('/tron/api/export/behavior/json', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ result: analysisResult })
     })
     .then(response => {
@@ -368,27 +303,17 @@ function exportJSON() {
     .then(({ blob, filename }) => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        a.click();
+        a.href = url; a.download = filename; a.click();
         window.URL.revokeObjectURL(url);
     })
-    .catch(error => {
-        alert('导出失败: ' + error.message);
-    });
+    .catch(error => alert('导出失败: ' + error.message));
 }
 
 function exportCSV() {
-    if (!analysisResult) {
-        alert('请先进行地址分析');
-        return;
-    }
-
+    if (!analysisResult) { alert('请先进行地址分析'); return; }
     fetch('/tron/api/export/behavior/csv', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ result: analysisResult })
     })
     .then(response => {
@@ -399,14 +324,49 @@ function exportCSV() {
     .then(({ blob, filename }) => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        a.click();
+        a.href = url; a.download = filename; a.click();
         window.URL.revokeObjectURL(url);
     })
-    .catch(error => {
-        alert('导出失败: ' + error.message);
-    });
+    .catch(error => alert('导出失败: ' + error.message));
 }
+
+function exportPDF() {
+    if (!analysisResult) { alert('请先进行地址分析'); return; }
+    fetch('/docs/api/export/pdf', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ result: analysisResult, tool_type: 'tron_behavior' })
+    })
+    .then(response => {
+        const filename = response.headers.get('Content-Disposition').split('filename=')[1].replace(/"/g, '');
+        return response.blob().then(blob => ({ blob, filename }));
+    })
+    .then(({ blob, filename }) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = filename; a.click();
+        window.URL.revokeObjectURL(url);
+    })
+    .catch(error => alert('PDF导出失败: ' + error.message));
+}
+
+// Restore cached results on page load
+window.onload = function() {
+    const cachedAddress = sessionStorage.getItem(CACHE_KEY + '_address');
+    const cachedResult = sessionStorage.getItem(CACHE_KEY);
+
+    if (cachedAddress) {
+        document.getElementById('address-input').value = cachedAddress;
+    }
+
+    if (cachedResult) {
+        try {
+            analysisResult = JSON.parse(cachedResult);
+            displayResults(analysisResult);
+        } catch (e) {
+            console.error('Failed to restore cached result:', e);
+        }
+    }
+};
 </script>
 {% endblock %}

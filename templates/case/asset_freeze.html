@@ -1,0 +1,421 @@
+{% extends "base.html" %}
+{% block title %}资产冻结申请生成{% endblock %}
+{% block content %}
+<div class="max-w-4xl mx-auto pb-16">
+    <!-- Tool header -->
+    <div class="card p-6 mb-6">
+        <p class="terminal-header mb-2">asset_freeze_template_generator.sh</p>
+        <p class="text-gray-400">生成虚拟货币资产冻结申请模板，支持从监控、聚类、攻击检测结果导入地址列表。</p>
+    </div>
+
+    <!-- Step indicators -->
+    <div class="card p-6 mb-6">
+        <div class="flex justify-between items-center">
+            <div id="step1-indicator" class="flex-1 text-center">
+                <div class="w-8 h-8 mx-auto rounded-full text-white flex items-center justify-center font-bold" style="background: var(--link-color);">1</div>
+                <p class="text-sm mt-2 font-medium" style="color: var(--link-color);">案件基本信息</p>
+            </div>
+            <div class="flex-1 text-center" style="border-left: 1px dashed var(--accent-green);">
+                <div id="step2-indicator" class="w-8 h-8 mx-auto rounded-full flex items-center justify-center font-bold" style="background: var(--text-muted); color: var(--bg-dark);">2</div>
+                <p class="text-sm mt-2" style="color: var(--text-muted);">冻结对象选择</p>
+            </div>
+            <div class="flex-1 text-center" style="border-left: 1px dashed var(--accent-green);">
+                <div id="step3-indicator" class="w-8 h-8 mx-auto rounded-full flex items-center justify-center font-bold" style="background: var(--text-muted); color: var(--bg-dark);">3</div>
+                <p class="text-sm mt-2" style="color: var(--text-muted);">冻结理由与条款</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 1: Case Info -->
+    <div id="step1-section" class="card p-6 mb-6">
+        <h2 class="text-lg font-bold mb-4" style="color: var(--accent-green);">>> 案件基本信息</h2>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium mb-1" style="color: var(--text-muted);">案件编号 *</label>
+                <input type="text" id="case-number" class="w-full" placeholder="例如: 冻结申请-2024-001">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1" style="color: var(--text-muted);">调查机构 *</label>
+                <input type="text" id="agency" class="w-full" placeholder="例如: XX市公安局">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1" style="color: var(--text-muted);">联系人 *</label>
+                <input type="text" id="contact-person" class="w-full" placeholder="例如: 张三">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1" style="color: var(--text-muted);">联系方式 *</label>
+                <input type="text" id="contact-method" class="w-full" placeholder="例如: xxx@police.gov.cn">
+            </div>
+        </div>
+
+        <div class="flex justify-end mt-4">
+            <button onclick="navigateToStep(2)" class="btn-primary">下一步 →</button>
+        </div>
+    </div>
+
+    <!-- Step 2: Target Selection -->
+    <div id="step2-section" class="card p-6 mb-6 hidden">
+        <h2 class="text-lg font-bold mb-4" style="color: var(--accent-green);">>> 冻结对象选择</h2>
+
+        <div class="mb-4 flex gap-3">
+            <button onclick="importFromMonitor()" class="btn-secondary" style="border-color: var(--link-color);">从监控结果导入</button>
+            <button onclick="importFromCluster()" class="btn-secondary" style="border-color: var(--accent-green);">从聚类结果导入</button>
+            <button onclick="importFromObfuscation()" class="btn-secondary" style="border-color: var(--keyword-color);">从攻击检测导入</button>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-sm font-medium mb-1" style="color: var(--text-muted);">或手动输入地址</label>
+            <textarea id="manual-addresses" class="w-full" rows="3" placeholder="每行一个地址（支持TRON/ETH/BTC）"></textarea>
+        </div>
+
+        <div id="address-list-display" class="mb-4 hidden">
+            <label class="block text-sm font-medium mb-1" style="color: var(--text-muted);">已添加地址</label>
+            <div id="address-list" class="card-inner rounded p-4"></div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium mb-1" style="color: var(--text-muted);">冻结金额</label>
+                <input type="text" id="freeze-amount" class="w-full" placeholder="例如: 50000 USDT">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1" style="color: var(--text-muted);">资产类型</label>
+                <input type="text" id="asset-type" class="w-full" placeholder="例如: USDT, ETH, BTC">
+            </div>
+        </div>
+
+        <div class="flex justify-between mt-4">
+            <button onclick="navigateToStep(1)" class="btn-secondary">← 上一步</button>
+            <button onclick="navigateToStep(3)" class="btn-primary">下一步 →</button>
+        </div>
+    </div>
+
+    <!-- Step 3: Reason & Terms -->
+    <div id="step3-section" class="card p-6 mb-6 hidden">
+        <h2 class="text-lg font-bold mb-4" style="color: var(--accent-green);">>> 冻结理由与条款</h2>
+
+        <div class="mb-4">
+            <label class="block text-sm font-medium mb-1" style="color: var(--text-muted);">可疑行为描述 *</label>
+            <textarea id="suspicious-behavior" class="w-full" rows="3" placeholder="描述可疑行为..."></textarea>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-sm font-medium mb-1" style="color: var(--text-muted);">资金来源说明</label>
+            <textarea id="fund-source" class="w-full" rows="2" placeholder="资金来源说明..."></textarea>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-sm font-medium mb-1" style="color: var(--text-muted);">冻结必要性 *</label>
+            <textarea id="freeze-necessity" class="w-full" rows="2" placeholder="冻结必要性说明..."></textarea>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-sm font-medium mb-1" style="color: var(--text-muted);">法律依据</label>
+            <input type="text" id="legal-basis" class="w-full" placeholder="例如: 《刑事诉讼法》第XXX条">
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium mb-1" style="color: var(--text-muted);">冻结期限</label>
+                <input type="text" id="freeze-duration" class="w-full" placeholder="例如: 6个月">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1" style="color: var(--text-muted);">解除冻结条件</label>
+                <input type="text" id="unlock-conditions" class="w-full" placeholder="例如: 案件终结或法院判决">
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-sm font-medium mb-1" style="color: var(--text-muted);">后续处理</label>
+            <textarea id="follow-up" class="w-full" rows="2" placeholder="后续处理安排..."></textarea>
+        </div>
+
+        <div class="flex justify-between mt-4">
+            <button onclick="navigateToStep(2)" class="btn-secondary">← 上一步</button>
+            <button onclick="generateTemplate()" class="btn-primary">生成模板</button>
+        </div>
+    </div>
+
+    <!-- Loading indicator -->
+    <div id="loading" class="hidden card p-6 mb-6 text-center">
+        <div class="animate-spin inline-block w-8 h-8 border-4 rounded-full" style="border-color: var(--accent-green); border-top-color: transparent;"></div>
+        <p class="text-gray-400 mt-2">正在生成模板...</p>
+    </div>
+
+    <!-- Error display -->
+    <div id="error-display" class="hidden alert-red rounded-lg p-4 mb-6">
+        <p id="error-message" style="color: var(--alert-red);"></p>
+    </div>
+
+    <!-- Template display -->
+    <div id="template-display" class="hidden card p-6 mb-6">
+        <h2 class="text-lg font-bold mb-4" style="color: var(--accent-green);">>> 冻结申请模板</h2>
+        <div id="template-content" class="card-inner rounded p-6 whitespace-pre-wrap font-mono text-sm" style="color: var(--accent-green);"></div>
+
+        <div class="mt-4">
+            <button onclick="copyTemplate()" class="btn-primary">复制到剪贴板</button>
+            <button onclick="exportPDF()" class="btn-secondary ml-2">导出PDF</button>
+            <span id="copy-success" class="hidden ml-2" style="color: var(--accent-green);">已复制!</span>
+        </div>
+    </div>
+</div>
+
+<script>
+const FORM_CACHE_KEY = 'cit_asset_freeze_form';
+let currentStep = 1;
+let addresses = [];
+let chainTypes = [];
+let templatePlainText = '';
+
+// Save form data to cache
+function saveFormToCache() {
+    const formData = {
+        step: currentStep,
+        case_number: document.getElementById('case-number').value,
+        agency: document.getElementById('agency').value,
+        contact_person: document.getElementById('contact-person').value,
+        contact_method: document.getElementById('contact-method').value,
+        freeze_amount: document.getElementById('freeze-amount').value,
+        asset_type: document.getElementById('asset-type').value,
+        suspicious_behavior: document.getElementById('suspicious-behavior').value,
+        fund_source: document.getElementById('fund-source').value,
+        freeze_necessity: document.getElementById('freeze-necessity').value,
+        legal_basis: document.getElementById('legal-basis').value,
+        freeze_duration: document.getElementById('freeze-duration').value,
+        unlock_conditions: document.getElementById('unlock-conditions').value,
+        follow_up: document.getElementById('follow-up').value,
+        addresses: addresses,
+        chainTypes: chainTypes,
+        templatePlainText: templatePlainText
+    };
+    sessionStorage.setItem(FORM_CACHE_KEY, JSON.stringify(formData));
+}
+
+// Restore form data from cache
+function restoreFormFromCache() {
+    const cached = sessionStorage.getItem(FORM_CACHE_KEY);
+    if (!cached) return;
+    try {
+        const formData = JSON.parse(cached);
+        document.getElementById('case-number').value = formData.case_number || '';
+        document.getElementById('agency').value = formData.agency || '';
+        document.getElementById('contact-person').value = formData.contact_person || '';
+        document.getElementById('contact-method').value = formData.contact_method || '';
+        document.getElementById('freeze-amount').value = formData.freeze_amount || '';
+        document.getElementById('asset-type').value = formData.asset_type || '';
+        document.getElementById('suspicious-behavior').value = formData.suspicious_behavior || '';
+        document.getElementById('fund-source').value = formData.fund_source || '';
+        document.getElementById('freeze-necessity').value = formData.freeze_necessity || '';
+        document.getElementById('legal-basis').value = formData.legal_basis || '';
+        document.getElementById('freeze-duration').value = formData.freeze_duration || '';
+        document.getElementById('unlock-conditions').value = formData.unlock_conditions || '';
+        document.getElementById('follow-up').value = formData.follow_up || '';
+        addresses = formData.addresses || [];
+        chainTypes = formData.chainTypes || [];
+        templatePlainText = formData.templatePlainText || '';
+
+        // Restore step
+        if (formData.step) navigateToStep(formData.step);
+
+        // Restore address list display
+        if (addresses.length > 0) updateAddressListDisplay();
+
+        // Restore template if generated
+        if (templatePlainText) {
+            document.getElementById('template-content').textContent = templatePlainText;
+            document.getElementById('template-display').classList.remove('hidden');
+        }
+    } catch (e) { console.error('Failed to restore form cache:', e); }
+}
+
+function navigateToStep(step) {
+    currentStep = step;
+    saveFormToCache(); // Save on step change
+    document.getElementById('step1-section').classList.add('hidden');
+    document.getElementById('step2-section').classList.add('hidden');
+    document.getElementById('step3-section').classList.add('hidden');
+    document.getElementById(`step${step}-section`).classList.remove('hidden');
+
+    for (let i = 1; i <= 3; i++) {
+        const indicator = document.getElementById(`step${i}-indicator`);
+        if (i <= step) {
+            indicator.style.background = 'var(--link-color)';
+            indicator.style.color = 'white';
+        } else {
+            indicator.style.background = 'var(--text-muted)';
+            indicator.style.color = 'var(--bg-dark)';
+        }
+    }
+}
+
+function importFromMonitor() {
+    const cached = sessionStorage.getItem('cit_monitor_export');
+    if (!cached) { showError('未找到监控结果，请先在多链监控工具进行分析并点击"导出到资产追回"'); return; }
+    try {
+        const monitorResult = JSON.parse(cached);
+        addresses = [];
+        chainTypes = [];
+        if (monitorResult.status_cards) {
+            for (const card of monitorResult.status_cards) {
+                addresses.push(card.address);
+                chainTypes.push(card.chain);
+            }
+        }
+        updateAddressListDisplay();
+    } catch (error) { showError('解析监控结果失败: ' + error.message); }
+}
+
+function importFromCluster() {
+    const cached = sessionStorage.getItem('cit_cluster_export');
+    if (!cached) { showError('未找到聚类结果'); return; }
+    try {
+        const clusterResult = JSON.parse(cached);
+        addresses = [];
+        chainTypes = [];
+        if (clusterResult.clusters) {
+            for (const cluster of clusterResult.clusters) {
+                addresses.push(...cluster.addresses);
+                chainTypes.push(...cluster.chain_types);
+            }
+        }
+        if (clusterResult.unassociated) {
+            for (const addr of clusterResult.unassociated) { addresses.push(addr); chainTypes.push('unknown'); }
+        }
+        updateAddressListDisplay();
+    } catch (error) { showError('解析聚类结果失败: ' + error.message); }
+}
+
+function importFromObfuscation() {
+    const cached = sessionStorage.getItem('cit_obfuscation_export');
+    if (!cached) { showError('未找到攻击检测结果'); return; }
+    try {
+        const obfuscationResult = JSON.parse(cached);
+        addresses = [obfuscationResult.address];
+        chainTypes = ['eth'];
+        updateAddressListDisplay();
+    } catch (error) { showError('解析攻击检测结果失败: ' + error.message); }
+}
+
+function updateAddressListDisplay() {
+    const manualInput = document.getElementById('manual-addresses').value.trim();
+    if (manualInput) {
+        const manualAddrs = manualInput.split('\n').filter(a => a.trim());
+        for (const addr of manualAddrs) {
+            if (!addresses.includes(addr.trim())) { addresses.push(addr.trim()); chainTypes.push('unknown'); }
+        }
+    }
+
+    if (addresses.length === 0) { document.getElementById('address-list-display').classList.add('hidden'); return; }
+
+    const listDiv = document.getElementById('address-list');
+    let html = '';
+    for (let i = 0; i < addresses.length; i++) {
+        const addr = addresses[i];
+        const chain = chainTypes[i] || 'unknown';
+        html += `<p class="text-sm text-white">${addr} <span style="color: var(--text-muted);">(${chain})</span></p>`;
+    }
+    listDiv.innerHTML = html;
+    document.getElementById('address-list-display').classList.remove('hidden');
+}
+
+async function generateTemplate() {
+    const fields = {
+        case_number: document.getElementById('case-number').value.trim(),
+        agency: document.getElementById('agency').value.trim(),
+        contact_person: document.getElementById('contact-person').value.trim(),
+        contact_method: document.getElementById('contact-method').value.trim(),
+        suspicious_behavior: document.getElementById('suspicious-behavior').value.trim(),
+        fund_source: document.getElementById('fund-source').value.trim(),
+        freeze_necessity: document.getElementById('freeze-necessity').value.trim(),
+        legal_basis: document.getElementById('legal-basis').value.trim(),
+        freeze_duration: document.getElementById('freeze-duration').value.trim(),
+        unlock_conditions: document.getElementById('unlock-conditions').value.trim(),
+        follow_up: document.getElementById('follow-up').value.trim(),
+        freeze_amount: document.getElementById('freeze-amount').value.trim(),
+        asset_type: document.getElementById('asset-type').value.trim(),
+        addresses: addresses,
+        chain_types: chainTypes
+    };
+
+    showLoading(); hideError();
+
+    try {
+        const response = await fetch('/case/api/asset-freeze/generate', {
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(fields)
+        });
+        const data = await response.json();
+        if (data.success) {
+            templatePlainText = data.plain_text;
+            displayTemplate(data.template_data, data.plain_text);
+        } else { showError(data.error || '模板生成失败'); }
+    } catch (error) { showError('网络请求失败: ' + error.message); }
+    finally { hideLoading(); }
+}
+
+function displayTemplate(templateData, plainText) {
+    document.getElementById('template-content').textContent = plainText;
+    document.getElementById('template-display').classList.remove('hidden');
+    document.getElementById('copy-success').classList.add('hidden');
+}
+
+async function copyTemplate() {
+    if (!templatePlainText) { showError('请先生成模板'); return; }
+    try {
+        await navigator.clipboard.writeText(templatePlainText);
+        document.getElementById('copy-success').classList.remove('hidden');
+        setTimeout(() => { document.getElementById('copy-success').classList.add('hidden'); }, 2000);
+    } catch (error) { showError('复制失败: ' + error.message); }
+}
+
+async function exportPDF() {
+    if (!templatePlainText) { showError('请先生成模板'); return; }
+    const result = {
+        address: 'asset-freeze-template',
+        template_data: {
+            case_number: document.getElementById('case-number').value.trim(),
+            agency: document.getElementById('agency').value.trim(),
+            plain_text: templatePlainText
+        }
+    };
+    try {
+        const response = await fetch('/docs/api/export/pdf', {
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ result: result, tool_type: 'asset_freeze' })
+        });
+        const filename = response.headers.get('Content-Disposition').split('filename=')[1].replace(/"/g, '');
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
+    } catch (error) { showError('PDF导出失败: ' + error.message); }
+}
+
+function showLoading() { document.getElementById('loading').classList.remove('hidden'); }
+function hideLoading() { document.getElementById('loading').classList.add('hidden'); }
+function showError(message) { document.getElementById('error-message').textContent = message; document.getElementById('error-display').classList.remove('hidden'); }
+function hideError() { document.getElementById('error-display').classList.add('hidden'); }
+
+window.onload = function() {
+    // First restore cached form data
+    restoreFormFromCache();
+
+    // Then check for imported data from other tools
+    const monitorCached = sessionStorage.getItem('cit_monitor_export');
+    const clusterCached = sessionStorage.getItem('cit_cluster_export');
+    const obfuscationCached = sessionStorage.getItem('cit_obfuscation_export');
+
+    if (monitorCached || clusterCached || obfuscationCached) {
+        navigateToStep(2);
+        if (monitorCached) importFromMonitor();
+        else if (clusterCached) importFromCluster();
+        else if (obfuscationCached) importFromObfuscation();
+    }
+};
+
+// Auto-save form inputs on change
+document.querySelectorAll('input, textarea').forEach(el => {
+    el.addEventListener('input', saveFormToCache);
+});
+</script>
+{% endblock %}

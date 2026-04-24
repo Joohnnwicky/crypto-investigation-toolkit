@@ -3,131 +3,106 @@
 
 {% block content %}
 <div class="max-w-4xl mx-auto pb-16">
-    <!-- Hero section with purple gradient -->
-    <div class="relative overflow-hidden rounded-2xl p-8 mb-8">
-        <!-- Background gradient -->
-        <div class="absolute inset-0 bg-gradient-to-br from-purple-600/20 via-violet-500/10 to-transparent"></div>
-        <div class="absolute top-0 left-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+    <!-- Terminal-style hero section -->
+    <div class="card p-8 mb-8">
+        <p class="terminal-header text-xl mb-1">$ ./blockshade.sh</p>
+        <p class="terminal-subtitle text-sm mb-4">虚拟币犯罪调查工具集</p>
 
-        <div class="relative z-10">
-            <!-- Logo and brand -->
-            <div class="flex items-center mb-6">
-                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center mr-4">
-                    <span class="text-white font-bold text-xl">B</span>
-                </div>
-                <div>
-                    <h1 class="text-3xl font-bold text-white tracking-wide">区块猎影</h1>
-                    <p class="text-sm text-gray-400 font-mono">BLOCKSHADE</p>
-                </div>
-            </div>
-
-            <p class="text-gray-300 mb-4 text-lg">为虚拟货币犯罪调查构建的专业分析工具集</p>
-            <p class="text-gray-500 text-sm">
-                <span class="inline-flex items-center mr-4">
-                    <svg class="w-4 h-4 mr-1 text-purple-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
-                    本地运行
-                </span>
-                <span class="inline-flex items-center mr-4">
-                    <svg class="w-4 h-4 mr-1 text-purple-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path></svg>
-                    零配置
-                </span>
-                <span class="inline-flex items-center">
-                    <svg class="w-4 h-4 mr-1 text-purple-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3a2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path></svg>
-                    完整手册
-                </span>
-            </p>
-        </div>
+        <p class="text-gray-300 mb-4">为虚拟货币犯罪调查构建的专业分析工具集</p>
+        <p class="text-gray-500 text-sm">
+            <span class="inline-flex items-center mr-4">
+                <span style="color: var(--accent-green);">>></span> 本地运行
+            </span>
+            <span class="inline-flex items-center mr-4">
+                <span style="color: var(--accent-green);">>></span> 零配置
+            </span>
+            <span class="inline-flex items-center">
+                <span style="color: var(--accent-green);">>></span> 完整手册
+            </span>
+        </p>
     </div>
 
     <!-- Tool categories -->
     <div class="space-y-6">
         <!-- Category 1: Address Analysis -->
-        <div class="card rounded-xl p-6">
-            <h2 class="text-lg font-semibold text-white mb-4 flex items-center">
-                <span class="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center mr-3">
-                    <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                </span>
-                地址分析
+        <div class="card rounded-lg p-6">
+            <h2 class="text-lg font-bold mb-4 flex items-center">
+                <span style="color: var(--accent-green);">>> </span>
+                <span class="text-white">地址分析</span>
             </h2>
             <div class="grid grid-cols-3 gap-4">
-                <a href="/tron/suspicious-analyzer" class="block p-4 rounded-lg bg-gray-800/50 hover:bg-purple-500/10 transition border border-gray-700/50 hover:border-purple-500/30">
-                    <h3 class="font-medium text-white">TRON可疑分析</h3>
+                <a href="/tron/suspicious-analyzer" class="block p-4 card-inner rounded hover:bg-opacity-80 transition" style="border: 1px dashed rgba(181,232,83,0.3);">
+                    <h3 class="font-medium" style="color: var(--link-color);">TRON可疑分析</h3>
                     <p class="text-sm text-gray-500 mt-1">识别诈骗/洗钱可疑特征</p>
                 </a>
-                <a href="/tron/behavior-analyzer" class="block p-4 rounded-lg bg-gray-800/50 hover:bg-purple-500/10 transition border border-gray-700/50 hover:border-purple-500/30">
-                    <h3 class="font-medium text-white">TRON行为分析</h3>
+                <a href="/tron/behavior-analyzer" class="block p-4 card-inner rounded hover:bg-opacity-80 transition" style="border: 1px dashed rgba(181,232,83,0.3);">
+                    <h3 class="font-medium" style="color: var(--link-color);">TRON行为分析</h3>
                     <p class="text-sm text-gray-500 mt-1">分析地址交易行为模式</p>
                 </a>
-                <a href="/eth/transaction-query" class="block p-4 rounded-lg bg-gray-800/50 hover:bg-purple-500/10 transition border border-gray-700/50 hover:border-purple-500/30">
-                    <h3 class="font-medium text-white">ETH交易查询</h3>
+                <a href="/eth/transaction-query" class="block p-4 card-inner rounded hover:bg-opacity-80 transition" style="border: 1px dashed rgba(181,232,83,0.3);">
+                    <h3 class="font-medium" style="color: var(--link-color);">ETH交易查询</h3>
                     <p class="text-sm text-gray-500 mt-1">查询以太坊交易记录</p>
                 </a>
             </div>
         </div>
 
         <!-- Category 2: Transaction Tracking -->
-        <div class="card rounded-xl p-6">
-            <h2 class="text-lg font-semibold text-white mb-4 flex items-center">
-                <span class="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center mr-3">
-                    <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                </span>
-                交易追踪
+        <div class="card rounded-lg p-6">
+            <h2 class="text-lg font-bold mb-4 flex items-center">
+                <span style="color: var(--accent-green);">>> </span>
+                <span class="text-white">交易追踪</span>
             </h2>
             <div class="grid grid-cols-3 gap-4">
-                <a href="/trace/uniswap" class="block p-4 rounded-lg bg-gray-800/50 hover:bg-purple-500/10 transition border border-gray-700/50 hover:border-purple-500/30">
-                    <h3 class="font-medium text-white">Uniswap追踪</h3>
+                <a href="/trace/uniswap" class="block p-4 card-inner rounded hover:bg-opacity-80 transition" style="border: 1px dashed rgba(181,232,83,0.3);">
+                    <h3 class="font-medium" style="color: var(--link-color);">Uniswap追踪</h3>
                     <p class="text-sm text-gray-500 mt-1">还原DEX交易路径</p>
                 </a>
-                <a href="/trace/mixer" class="block p-4 rounded-lg bg-gray-800/50 hover:bg-purple-500/10 transition border border-gray-700/50 hover:border-purple-500/30">
-                    <h3 class="font-medium text-white">混币器追踪</h3>
+                <a href="/trace/mixer" class="block p-4 card-inner rounded hover:bg-opacity-80 transition" style="border: 1px dashed rgba(181,232,83,0.3);">
+                    <h3 class="font-medium" style="color: var(--link-color);">混币器追踪</h3>
                     <p class="text-sm text-gray-500 mt-1">还原洗钱路径</p>
                 </a>
-                <a href="/trace/btc" class="block p-4 rounded-lg bg-gray-800/50 hover:bg-purple-500/10 transition border border-gray-700/50 hover:border-purple-500/30">
-                    <h3 class="font-medium text-white">BTC交易分析</h3>
+                <a href="/trace/btc" class="block p-4 card-inner rounded hover:bg-opacity-80 transition" style="border: 1px dashed rgba(181,232,83,0.3);">
+                    <h3 class="font-medium" style="color: var(--link-color);">BTC交易分析</h3>
                     <p class="text-sm text-gray-500 mt-1">查询比特币流向</p>
                 </a>
             </div>
         </div>
 
         <!-- Category 3: Cross-Chain Analysis -->
-        <div class="card rounded-xl p-6">
-            <h2 class="text-lg font-semibold text-white mb-4 flex items-center">
-                <span class="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center mr-3">
-                    <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
-                </span>
-                跨链分析
+        <div class="card rounded-lg p-6">
+            <h2 class="text-lg font-bold mb-4 flex items-center">
+                <span style="color: var(--accent-green);">>> </span>
+                <span class="text-white">跨链分析</span>
             </h2>
             <div class="grid grid-cols-2 gap-4">
-                <a href="/cross/cluster" class="block p-4 rounded-lg bg-gray-800/50 hover:bg-purple-500/10 transition border border-gray-700/50 hover:border-purple-500/30">
-                    <h3 class="font-medium text-white">地址聚类</h3>
+                <a href="/cross/cluster" class="block p-4 card-inner rounded hover:bg-opacity-80 transition" style="border: 1px dashed rgba(181,232,83,0.3);">
+                    <h3 class="font-medium" style="color: var(--link-color);">地址聚类</h3>
                     <p class="text-sm text-gray-500 mt-1">关联多个地址</p>
                 </a>
-                <a href="/cross/cross-border" class="block p-4 rounded-lg bg-gray-800/50 hover:bg-purple-500/10 transition border border-gray-700/50 hover:border-purple-500/30">
-                    <h3 class="font-medium text-white">跨境协查</h3>
+                <a href="/cross/cross-border" class="block p-4 card-inner rounded hover:bg-opacity-80 transition" style="border: 1px dashed rgba(181,232,83,0.3);">
+                    <h3 class="font-medium" style="color: var(--link-color);">跨境协查</h3>
                     <p class="text-sm text-gray-500 mt-1">生成国际协作模板</p>
                 </a>
             </div>
         </div>
 
         <!-- Category 4: Case Handling -->
-        <div class="card rounded-xl p-6">
-            <h2 class="text-lg font-semibold text-white mb-4 flex items-center">
-                <span class="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center mr-3">
-                    <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                </span>
-                案件处理
+        <div class="card rounded-lg p-6">
+            <h2 class="text-lg font-bold mb-4 flex items-center">
+                <span style="color: var(--accent-green);">>> </span>
+                <span class="text-white">案件处理</span>
             </h2>
             <div class="grid grid-cols-3 gap-4">
-                <a href="/case/monitor" class="block p-4 rounded-lg bg-gray-800/50 hover:bg-purple-500/10 transition border border-gray-700/50 hover:border-purple-500/30">
-                    <h3 class="font-medium text-white">多链监控</h3>
+                <a href="/case/monitor" class="block p-4 card-inner rounded hover:bg-opacity-80 transition" style="border: 1px dashed rgba(181,232,83,0.3);">
+                    <h3 class="font-medium" style="color: var(--link-color);">多链监控</h3>
                     <p class="text-sm text-gray-500 mt-1">实时监控地址状态</p>
                 </a>
-                <a href="/case/obfuscation" class="block p-4 rounded-lg bg-gray-800/50 hover:bg-purple-500/10 transition border border-gray-700/50 hover:border-purple-500/30">
-                    <h3 class="font-medium text-white">混淆对抗</h3>
+                <a href="/case/obfuscation" class="block p-4 card-inner rounded hover:bg-opacity-80 transition" style="border: 1px dashed rgba(181,232,83,0.3);">
+                    <h3 class="font-medium" style="color: var(--link-color);">混淆对抗</h3>
                     <p class="text-sm text-gray-500 mt-1">识别攻击手法</p>
                 </a>
-                <a href="/case/asset-freeze" class="block p-4 rounded-lg bg-gray-800/50 hover:bg-purple-500/10 transition border border-gray-700/50 hover:border-purple-500/30">
-                    <h3 class="font-medium text-white">资产追回</h3>
+                <a href="/case/asset-freeze" class="block p-4 card-inner rounded hover:bg-opacity-80 transition" style="border: 1px dashed rgba(181,232,83,0.3);">
+                    <h3 class="font-medium" style="color: var(--link-color);">资产追回</h3>
                     <p class="text-sm text-gray-500 mt-1">生成冻结建议模板</p>
                 </a>
             </div>
@@ -136,7 +111,7 @@
 
     <!-- Documentation link -->
     <div class="mt-8 text-center">
-        <a href="/docs/manuals" class="inline-flex items-center px-6 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-violet-600 text-white font-medium hover:opacity-90 transition">
+        <a href="/docs/manuals" class="btn-primary inline-flex items-center px-6 py-3 rounded-lg font-bold hover:opacity-90 transition">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
             使用手册与API获取指南
         </a>

@@ -2,95 +2,95 @@
 {% block title %}混淆对抗 - 使用手册{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto">
+<div class="max-w-4xl mx-auto pb-16">
     <!-- Header card -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h1 class="text-2xl font-bold text-gray-800 mb-2">混淆对抗 - 使用手册</h1>
-        <p class="text-gray-600">操作步骤、结果解释、API说明与案例演示</p>
+    <div class="card p-6 mb-6">
+        <p class="terminal-header mb-2">obfuscation_detector_manual.sh</p>
+        <p class="text-gray-400">操作步骤、结果解释、API说明与案例演示</p>
     </div>
 
     <!-- Section 1: 操作步骤 -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">1. 操作步骤</h2>
-        <ol class="list-decimal list-inside space-y-2 text-gray-700">
-            <li>配置Etherscan API密钥（首次使用必须配置）。</li>
-            <li>输入待分析的以太坊地址或交易哈希。</li>
-            <li>选择检测类型：三明治攻击、闪电贷攻击、粉尘攻击、协议漏洞利用。</li>
-            <li>点击"开始检测"，系统将分析地址的交易行为模式。</li>
-            <li>查看检测结果，包括攻击类型、置信度、涉及交易。</li>
-            <li>导出检测报告（JSON/CSV/PDF），包含详细证据链。</li>
-        </ol>
+    <div class="card p-6 mb-6">
+        <h2 class="text-xl font-bold mb-4" style="color: var(--accent-green);">>> 1. 操作步骤</h2>
+        <ul class="space-y-2" style="color: var(--text-muted);">
+            <li><span style="color: var(--accent-green);">1.</span> 配置Etherscan API密钥（首次使用必须配置）。</li>
+            <li><span style="color: var(--accent-green);">2.</span> 输入待分析的以太坊地址或交易哈希。</li>
+            <li><span style="color: var(--accent-green);">3.</span> 选择检测类型：三明治攻击、闪电贷攻击、粉尘攻击、协议漏洞利用。</li>
+            <li><span style="color: var(--accent-green);">4.</span> 点击"开始检测"，系统将分析地址的交易行为模式。</li>
+            <li><span style="color: var(--accent-green);">5.</span> 滚动查看检测结果，包括攻击类型、置信度、涉及交易。</li>
+            <li><span style="color: var(--accent-green);">6.</span> 导出检测报告（JSON/CSV/PDF），包含详细证据链。</li>
+        </ul>
     </div>
 
     <!-- Section 2: 结果解释 -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">2. 结果解释</h2>
+    <div class="card p-6 mb-6">
+        <h2 class="text-xl font-bold mb-4" style="color: var(--accent-green);">>> 2. 结果解释</h2>
 
-        <h3 class="text-lg font-semibold text-gray-700 mb-2">攻击类型说明</h3>
-        <ul class="list-disc list-inside space-y-1 text-gray-600 mb-4">
-            <li><strong>三明治攻击：</strong>在用户交易前后插入交易获利，影响交易价格</li>
-            <li><strong>闪电贷攻击：</strong>利用无抵押借贷在同一交易内完成攻击</li>
-            <li><strong>粉尘攻击：</strong>发送微小金额到目标地址以追踪其活动</li>
-            <li><strong>协议漏洞利用：</strong>利用智能合约漏洞进行攻击</li>
+        <h3 class="text-lg font-semibold mb-2" style="color: var(--link-color);">攻击类型说明</h3>
+        <ul class="space-y-1 mb-4" style="color: var(--text-muted);">
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">三明治攻击：</strong>在用户交易前后插入交易获利，影响交易价格</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">闪电贷攻击：</strong>利用无抵押借贷在同一交易内完成攻击</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">粉尘攻击：</strong>发送微小金额到目标地址以追踪其活动</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">协议漏洞利用：</strong>利用智能合约漏洞进行攻击</li>
         </ul>
 
-        <h3 class="text-lg font-semibold text-gray-700 mb-2">置信度说明</h3>
-        <ul class="list-disc list-inside space-y-1 text-gray-600 mb-4">
-            <li><strong>高置信度（HIGH）：</strong>检测到明确的攻击特征模式</li>
-            <li><strong>中置信度（MEDIUM）：</strong>存在可疑特征，需要进一步验证</li>
-            <li><strong>低置信度（LOW）：</strong>特征不明显，可能为误判</li>
+        <h3 class="text-lg font-semibold mb-2" style="color: var(--link-color);">置信度说明</h3>
+        <ul class="space-y-1 mb-4" style="color: var(--text-muted);">
+            <li><span style="color: var(--accent-green);">>></span> <strong style="color: var(--alert-red);">高置信度（HIGH）：</strong>检测到明确的攻击特征模式</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong style="color: var(--alert-yellow);">中置信度（MEDIUM）：</strong>存在可疑特征，需要进一步验证</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong style="color: var(--link-color);">低置信度（LOW）：</strong>特征不明显，可能为误判</li>
         </ul>
 
-        <h3 class="text-lg font-semibold text-gray-700 mb-2">检测结果</h3>
-        <ul class="list-disc list-inside space-y-1 text-gray-600">
-            <li><strong>攻击类型：</strong>识别出的攻击种类</li>
-            <li><strong>涉及交易：</strong>参与攻击的交易的哈希列表</li>
-            <li><strong>攻击金额：</strong>估算的攻击获利或影响金额</li>
-            <li><strong>时间线：</strong>攻击发生的时间顺序</li>
+        <h3 class="text-lg font-semibold mb-2" style="color: var(--link-color);">检测结果</h3>
+        <ul class="space-y-1" style="color: var(--text-muted);">
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">攻击类型：</strong>识别出的攻击种类</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">涉及交易：</strong>参与攻击的交易的哈希列表</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">攻击金额：</strong>估算的攻击获利或影响金额</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">时间线：</strong>攻击发生的时间顺序</li>
         </ul>
     </div>
 
     <!-- Section 3: API密钥说明 -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">3. API密钥说明</h2>
-        <p class="text-gray-700 mb-2"><strong>需要Etherscan API密钥</strong>，ETH链检测专用。</p>
-        <p class="text-gray-600 mb-2">本工具仅支持以太坊链上的混淆攻击检测，需要Etherscan API获取交易数据。</p>
+    <div class="card p-6 mb-6">
+        <h2 class="text-xl font-bold mb-4" style="color: var(--accent-green);">>> 3. API密钥说明</h2>
+        <p class="mb-2 text-white"><strong style="color: var(--alert-red);">需要Etherscan API密钥</strong>，ETH链检测专用。</p>
+        <p class="mb-2" style="color: var(--text-muted);">本工具仅支持以太坊链上的混淆攻击检测，需要Etherscan API获取交易数据。</p>
 
-        <h3 class="text-md font-semibold text-gray-700 mt-4 mb-2">Etherscan API获取</h3>
-        <ol class="list-decimal list-inside space-y-1 text-gray-600">
-            <li>访问 <a href="https://etherscan.io" class="text-blue-600 hover:underline" target="_blank">Etherscan官网</a> 并注册账户</li>
-            <li>登录后进入API-KEYs管理页面</li>
-            <li>点击"Add"创建新的API密钥</li>
-            <li>复制生成的API Key并配置到本工具</li>
-        </ol>
+        <h3 class="text-md font-semibold mt-4 mb-2" style="color: var(--link-color);">Etherscan API获取</h3>
+        <ul class="space-y-1" style="color: var(--text-muted);">
+            <li><span style="color: var(--accent-green);">1.</span> 访问 <a href="https://etherscan.io" class="underline" style="color: var(--link-color);" target="_blank">Etherscan官网</a> 并注册账户</li>
+            <li><span style="color: var(--accent-green);">2.</span> 登录后进入API-KEYs管理页面</li>
+            <li><span style="color: var(--accent-green);">3.</span> 点击"Add"创建新的API密钥</li>
+            <li><span style="color: var(--accent-green);">4.</span> 复制生成的API Key并配置到本工具</li>
+        </ul>
 
-        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mt-4">
-            <p class="text-yellow-700"><strong>注意：</strong>本工具目前仅支持以太坊链（ETH）的攻击检测，暂不支持其他链。</p>
+        <div class="alert-yellow rounded p-4 mt-4">
+            <p style="color: var(--alert-yellow);"><strong>注意：</strong>本工具目前仅支持以太坊链（ETH）的攻击检测，暂不支持其他链。</p>
         </div>
     </div>
 
     <!-- Section 4: 案例演示 -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">4. 案例演示</h2>
-        <div class="bg-gray-50 rounded p-4 mb-4">
-            <h3 class="font-bold text-gray-700 mb-2">案例背景</h3>
-            <p class="text-gray-600">某DEX用户报告交易滑点异常，怀疑遭遇三明治攻击，需要分析交易行为。</p>
+    <div class="card p-6 mb-6">
+        <h2 class="text-xl font-bold mb-4" style="color: var(--accent-green);">>> 4. 案例演示</h2>
+        <div class="card-inner rounded p-4 mb-4">
+            <h3 class="font-bold mb-2" style="color: var(--link-color);">案例背景</h3>
+            <p style="color: var(--text-muted);">某DEX用户报告交易滑点异常，怀疑遭遇三明治攻击，需要分析交易行为。</p>
         </div>
 
-        <div class="bg-gray-50 rounded p-4 mb-4">
-            <h3 class="font-bold text-gray-700 mb-2">操作过程</h3>
-            <ol class="list-decimal list-inside space-y-1 text-gray-600">
-                <li>输入可疑攻击者地址：0x1234...5678</li>
-                <li>选择"三明治攻击"检测类型</li>
-                <li>系统分析该地址的MEV相关交易</li>
-                <li>检测结果：高置信度检测到15次三明治攻击</li>
-                <li>导出详细报告，包含攻击交易列表和获利金额</li>
-            </ol>
+        <div class="card-inner rounded p-4 mb-4">
+            <h3 class="font-bold mb-2" style="color: var(--link-color);">操作过程</h3>
+            <ul class="space-y-1" style="color: var(--text-muted);">
+                <li><span style="color: var(--accent-green);">1.</span> 输入可疑攻击者地址：0x1234...5678</li>
+                <li><span style="color: var(--accent-green);">2.</span> 选择"三明治攻击"检测类型</li>
+                <li><span style="color: var(--accent-green);">3.</span> 系统分析该地址的MEV相关交易</li>
+                <li><span style="color: var(--accent-green);">4.</span> 检测结果：高置信度检测到15次三明治攻击</li>
+                <li><span style="color: var(--accent-green);">5.</span> 导出详细报告，包含攻击交易列表和获利金额</li>
+            </ul>
         </div>
 
-        <div class="bg-gray-50 rounded p-4">
-            <h3 class="font-bold text-gray-700 mb-2">结论</h3>
-            <p class="text-gray-600">成功识别出MEV攻击者的攻击行为，为用户投诉提供了技术证据支持。</p>
+        <div class="card-inner rounded p-4">
+            <h3 class="font-bold mb-2" style="color: var(--link-color);">结论</h3>
+            <p style="color: var(--text-muted);">成功识别出MEV攻击者的攻击行为，为用户投诉提供了技术证据支持。</p>
         </div>
     </div>
 </div>

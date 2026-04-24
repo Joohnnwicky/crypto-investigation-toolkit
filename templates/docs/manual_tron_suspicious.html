@@ -2,82 +2,82 @@
 {% block title %}TRON可疑特征分析 - 使用手册{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto">
+<div class="max-w-4xl mx-auto pb-16">
     <!-- Header card -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h1 class="text-2xl font-bold text-gray-800 mb-2">TRON地址可疑特征分析 - 使用手册</h1>
-        <p class="text-gray-600">操作步骤、结果解释、API说明与案例演示</p>
+    <div class="card p-6 mb-6">
+        <p class="terminal-header mb-2">tron_suspicious_analyzer_manual.sh</p>
+        <p class="text-gray-400">操作步骤、结果解释、API说明与案例演示</p>
     </div>
 
     <!-- Section 1: 操作步骤 -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">1. 操作步骤</h2>
-        <ol class="list-decimal list-inside space-y-2 text-gray-700">
-            <li>在工具首页输入待分析的TRON钱包地址（以T开头的34位地址）。</li>
-            <li>点击"加载样本"按钮可自动填充示例地址，方便快速体验功能。</li>
-            <li>点击"开始分析"按钮，系统将自动获取链上数据并进行分析。</li>
-            <li>等待分析完成，页面将展示基本信息、风险评分和警报详情。</li>
-            <li>分析完成后可选择导出JSON、CSV或PDF格式的报告，用于证据保全。</li>
-        </ol>
+    <div class="card p-6 mb-6">
+        <h2 class="text-xl font-bold mb-4" style="color: var(--accent-green);">>> 1. 操作步骤</h2>
+        <ul class="space-y-2" style="color: var(--text-muted);">
+            <li><span style="color: var(--accent-green);">1.</span> 在工具首页输入待分析的TRON钱包地址（以T开头的34位地址）。</li>
+            <li><span style="color: var(--accent-green);">2.</span> 点击"加载样本"按钮可自动填充示例地址，方便快速体验功能。</li>
+            <li><span style="color: var(--accent-green);">3.</span> 点击"开始分析"按钮，系统将自动获取链上数据并进行分析。</li>
+            <li><span style="color: var(--accent-green);">4.</span> 等待分析完成，页面将展示基本信息、风险评分和警报详情。</li>
+            <li><span style="color: var(--accent-green);">5.</span> 分析完成后可选择导出JSON、CSV或PDF格式的报告，用于证据保全。</li>
+        </ul>
     </div>
 
     <!-- Section 2: 结果解释 -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">2. 结果解释</h2>
+    <div class="card p-6 mb-6">
+        <h2 class="text-xl font-bold mb-4" style="color: var(--accent-green);">>> 2. 结果解释</h2>
 
-        <h3 class="text-lg font-semibold text-gray-700 mb-2">基本信息 (basic_info)</h3>
-        <ul class="list-disc list-inside space-y-1 text-gray-600 mb-4">
-            <li><strong>TRX余额：</strong>地址持有的TRX代币数量</li>
-            <li><strong>USDT余额：</strong>地址持有的TRC-20 USDT数量</li>
-            <li><strong>总交易数：</strong>该地址发起和接收的总交易次数</li>
-            <li><strong>分析地址：</strong>当前分析的TRON地址</li>
+        <h3 class="text-lg font-semibold mb-2" style="color: var(--link-color);">基本信息 (basic_info)</h3>
+        <ul class="space-y-1 mb-4" style="color: var(--text-muted);">
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">TRX余额：</strong>地址持有的TRX代币数量</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">USDT余额：</strong>地址持有的TRC-20 USDT数量</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">总交易数：</strong>该地址发起和接收的总交易次数</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">分析地址：</strong>当前分析的TRON地址</li>
         </ul>
 
-        <h3 class="text-lg font-semibold text-gray-700 mb-2">风险评分 (score)</h3>
-        <ul class="list-disc list-inside space-y-1 text-gray-600 mb-4">
-            <li><strong>0-39分（绿色）：</strong>低风险，地址行为正常</li>
-            <li><strong>40-69分（黄色）：</strong>中等风险，存在可疑特征需关注</li>
-            <li><strong>70-100分（红色）：</strong>高风险，地址具有明显的可疑行为特征</li>
+        <h3 class="text-lg font-semibold mb-2" style="color: var(--link-color);">风险评分 (score)</h3>
+        <ul class="space-y-1 mb-4" style="color: var(--text-muted);">
+            <li><span style="color: var(--accent-green);">>></span> <strong style="color: var(--accent-green);">0-39分：</strong>低风险，地址行为正常</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong style="color: var(--alert-yellow);">40-69分：</strong>中等风险，存在可疑特征需关注</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong style="color: var(--alert-red);">70-100分：</strong>高风险，地址具有明显的可疑行为特征</li>
         </ul>
 
-        <h3 class="text-lg font-semibold text-gray-700 mb-2">警报分类 (alerts)</h3>
-        <ul class="list-disc list-inside space-y-1 text-gray-600">
-            <li><strong>红色警报：</strong>高度可疑特征，如超大额转账、频繁小额交易、与已知黑名单地址交互等</li>
-            <li><strong>黄色预警：</strong>需要关注的特征，如账户创建时间短、交易频率异常等</li>
-            <li><strong>正常范围：</strong>地址行为在正常范围内的特征</li>
+        <h3 class="text-lg font-semibold mb-2" style="color: var(--link-color);">警报分类 (alerts)</h3>
+        <ul class="space-y-1" style="color: var(--text-muted);">
+            <li><span style="color: var(--accent-green);">>></span> <strong style="color: var(--alert-red);">红色警报：</strong>高度可疑特征，如超大额转账、频繁小额交易、与已知黑名单地址交互等</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong style="color: var(--alert-yellow);">黄色预警：</strong>需要关注的特征，如账户创建时间短、交易频率异常等</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong style="color: var(--accent-green);">正常范围：</strong>地址行为在正常范围内的特征</li>
         </ul>
     </div>
 
     <!-- Section 3: API密钥说明 -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">3. API密钥说明</h2>
-        <p class="text-gray-700 mb-2">本工具使用<strong>Tronscan API</strong>，无需API密钥。</p>
-        <p class="text-gray-600">Tronscan提供公开的区块链数据查询接口，用户可直接使用本工具进行地址分析，无需注册或获取API密钥。</p>
-        <p class="text-gray-600 mt-2">如需更高频率的API调用，可访问 <a href="https://tronscan.org" class="text-blue-600 hover:underline" target="_blank">Tronscan官网</a> 了解API使用限制详情。</p>
+    <div class="card p-6 mb-6">
+        <h2 class="text-xl font-bold mb-4" style="color: var(--accent-green);">>> 3. API密钥说明</h2>
+        <p class="mb-2 text-white">本工具使用<strong style="color: var(--link-color);">Tronscan API</strong>，无需API密钥。</p>
+        <p style="color: var(--text-muted);">Tronscan提供公开的区块链数据查询接口，用户可直接使用本工具进行地址分析，无需注册或获取API密钥。</p>
+        <p class="mt-2" style="color: var(--text-muted);">如需更高频率的API调用，可访问 <a href="https://tronscan.org" class="underline" style="color: var(--link-color);" target="_blank">Tronscan官网</a> 了解API使用限制详情。</p>
     </div>
 
     <!-- Section 4: 案例演示 -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">4. 案例演示</h2>
-        <div class="bg-gray-50 rounded p-4 mb-4">
-            <h3 class="font-bold text-gray-700 mb-2">案例背景</h3>
-            <p class="text-gray-600">调查人员收到举报，某TRON地址涉嫌参与网络诈骗资金转移，需要分析该地址的可疑特征。</p>
+    <div class="card p-6 mb-6">
+        <h2 class="text-xl font-bold mb-4" style="color: var(--accent-green);">>> 4. 案例演示</h2>
+        <div class="card-inner rounded p-4 mb-4">
+            <h3 class="font-bold mb-2" style="color: var(--link-color);">案例背景</h3>
+            <p style="color: var(--text-muted);">调查人员收到举报，某TRON地址涉嫌参与网络诈骗资金转移，需要分析该地址的可疑特征。</p>
         </div>
 
-        <div class="bg-gray-50 rounded p-4 mb-4">
-            <h3 class="font-bold text-gray-700 mb-2">操作过程</h3>
-            <ol class="list-decimal list-inside space-y-1 text-gray-600">
-                <li>输入被举报地址：TUtPdo7L45ey2KrpibdNcjNL3ujqXo1NNw</li>
-                <li>点击"开始分析"，等待约5-10秒获取链上数据</li>
-                <li>查看风险评分：85分（高风险）</li>
-                <li>查看红色警报：发现与已知黑名单地址有交互、大额资金快速转出</li>
-                <li>导出PDF报告作为调查证据</li>
-            </ol>
+        <div class="card-inner rounded p-4 mb-4">
+            <h3 class="font-bold mb-2" style="color: var(--link-color);">操作过程</h3>
+            <ul class="space-y-1" style="color: var(--text-muted);">
+                <li><span style="color: var(--accent-green);">1.</span> 输入被举报地址：TUtPdo7L45ey2KrpibdNcjNL3ujqXo1NNw</li>
+                <li><span style="color: var(--accent-green);">2.</span> 点击"开始分析"，等待约5-10秒获取链上数据</li>
+                <li><span style="color: var(--accent-green);">3.</span> 查看风险评分：85分（高风险）</li>
+                <li><span style="color: var(--accent-green);">4.</span> 查看红色警报：发现与已知黑名单地址有交互、大额资金快速转出</li>
+                <li><span style="color: var(--accent-green);">5.</span> 导出PDF报告作为调查证据</li>
+            </ul>
         </div>
 
-        <div class="bg-gray-50 rounded p-4">
-            <h3 class="font-bold text-gray-700 mb-2">结论</h3>
-            <p class="text-gray-600">该地址呈现高风险特征，建议进一步追踪资金流向，结合其他分析工具进行综合研判。</p>
+        <div class="card-inner rounded p-4">
+            <h3 class="font-bold mb-2" style="color: var(--link-color);">结论</h3>
+            <p style="color: var(--text-muted);">该地址呈现高风险特征，建议进一步追踪资金流向，结合其他分析工具进行综合研判。</p>
         </div>
     </div>
 </div>

@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+{% block title %}地址聚类分析{% endblock %}
+{% block content %}
+<div class="max-w-4xl mx-auto pb-16">
+    <!-- Tool header -->
+    <div class="card p-6 mb-6">
+        <p class="terminal-header mb-2">address_cluster_analyzer.sh</p>
+        <p class="text-gray-400">多地址关联分析，支持TRON/ETH/BTC三链地址，识别首次资金来源、频繁互转账、时间窗口重叠、共享存款地址等关联关系。</p>
+    </div>
+
+    <!-- Input section -->
+    <div class="card p-6 mb-6">
+        <h2 class="text-lg font-bold mb-4" style="color: var(--accent-green);">>> 输入地址</h2>
+
+        <div class="mb-4">
+            <label class="block text-sm font-medium mb-1" style="color: var(--text-muted);">钱包地址（每行一个，最多10个）</label>
+            <textarea id="addresses-input" class="w-full" rows="5"
+                      placeholder="每行一个地址，最多10个地址（支持TRON/ETH/BTC）"></textarea>
+        </div>
+
+        <div id="eth-key-section" class="mb-4 hidden">
+            <label class="block text-sm font-medium mb-1" style="color: var(--text-muted);">Etherscan API密钥</label>
+            <input type="text" id="eth-key-input" class="w-full"
+                   placeholder="从 etherscan.io 获取免费API密钥">
+            <p class="text-sm mt-1" style="color: var(--text-muted);">ETH地址分析需要API密钥</p>
+        </div>
+
+        <div class="flex gap-3">
+            <button onclick="fillSample()" class="btn-secondary">样本填充</button>
+            <button onclick="analyzeCluster()" class="btn-primary">开始分析</button>
+        </div>
+    </div>
+
+    <!-- Loading indicator -->
+    <div id="loading" class="hidden card p-6 mb-6 text-center">
+        <div class="animate-spin inline-block w-8 h-8 border-4 rounded-full" style="border-color: var(--accent-green); border-top-color: transparent;"></div>
+        <p class="text-gray-400 mt-2">正在分析地址关联...</p>
+    </div>
+
+    <!-- Error display -->
+    <div id="error-display" class="hidden alert-red rounded-lg p-4 mb-6">
+        <p id="error-message" style="color: var(--alert-red);"></p>
+    </div>
+
+    <!-- Results section -->
+    <div id="results" class="hidden"></div>
+</div>
+
+<script>
+const CACHE_KEY = 'cit_cluster_result';
+
+async function fillSample() {
+    try {
+        const response = await fetch('/cross/api/cluster/sample');
+        const data = await response.json();
+        document.getElementById('addresses-input').value = data.sample_addresses.join('\n');
+        checkEthAddresses();
+    } catch (error) { console.error('Failed to fetch sample:', error); }
+}
+
+function checkEthAddresses() {
+    const input = document.getElementById('addresses-input').value;
+    const addresses = input.split('\n').filter(a => a.trim());
+    const hasEth = addresses.some(addr => addr.trim().startsWith('0x'));
+    const ethKeySection = document.getElementById('eth-key-section');
+    if (hasEth) { ethKeySection.classList.remove('hidden'); }
+    else { ethKeySection.classList.add('hidden'); }
+}
+
+document.getElementById('addresses-input').addEventListener('input', checkEthAddresses);
+
+async function analyzeCluster() {
+    const input = document.getElementById('addresses-input').value;
+    const addresses = input.split('\n').map(a => a.trim()).filter(a => a);
+    const ethKey = document.getElementById('eth-key-input').value.trim();
+
+    if (addresses.length === 0) { showError('请输入至少一个地址'); return; }
+    if (addresses.length > 10) { showError('地址数量超过10个限制'); return; }
+
+    const hasEth = addresses.some(addr => addr.startsWith('0x'));
+    if (hasEth && !ethKey) { showError('ETH地址需要Etherscan API密钥'); return; }
+
+    showLoading(); hideError(); hideResults();
+
+    try {
+        const response = await fetch('/cross/api/cluster/query', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({addresses: addresses, eth_key: ethKey})
+        });
+        const data = await response.json();
+        if (data.success) {
+            sessionStorage.setItem(CACHE_KEY, JSON.stringify(data));
+            displayResults(data);
+        } else { showError(data.error || '分析失败'); }
+    } catch (error) { showError('网络请求失败: ' + error.message); }
+    finally { hideLoading(); }
+}
+
+function displayResults(data) {
+    const resultsDiv = document.getElementById('results');
+    let html = '';
+
+    if (data.clusters && data.clusters.length > 0) {
+        html += '<div class="card p-6 mb-6">';
+        html += '<h2 class="text-lg font-bold mb-4" style="color: var(--accent-green);">>> 聚类结果</h2>';
+        for (const cluster of data.clusters) { html += displayClusterCard(cluster); }
+        html += '</div>';
+    }
+
+    if (data.unassociated && data.unassociated.length > 0) {
+        html += '<div class="card p-6 mb-6">';
+        html += '<h2 class="text-lg font-bold mb-4" style="color: var(--text-muted);">>> 无关联地址</h2>';
+        html += '<div class="card-inner rounded p-4">';
+        for (const addr of data.unassociated) { html += `<p class="text-gray-400">${addr}</p>`; }
+        html += '</div></div>';
+    }
+
+    html += '<div class="card p-6 mb-6">';
+    html += '<h2 class="text-lg font-bold mb-4" style="color: var(--accent-green);">>> 导出结果</h2>';
+    html += '<div class="flex gap-3">';
+    html += `<button onclick="exportJSON()" class="btn-primary">导出JSON</button>`;
+    html += `<button onclick="exportCSV()" class="btn-secondary">导出CSV</button>`;
+    html += `<button onclick="exportPDF()" class="btn-secondary">导出PDF</button>`;
+    html += `<button onclick="exportToCrossBorder()" class="btn-secondary" style="border-color: var(--link-color);">导出到跨境协查</button>`;
+    html += '</div></div>';
+
+    resultsDiv.innerHTML = html;
+    resultsDiv.classList.remove('hidden');
+}
+
+function displayClusterCard(cluster) {
+    let html = `<div class="card-inner rounded-lg p-4 mb-4">`;
+    html += `<div class="flex justify-between items-center mb-2">`;
+    html += `<span class="font-semibold" style="color: var(--link-color);">聚类 ${cluster.cluster_id}</span>`;
+    html += `<span style="color: var(--text-muted);">${cluster.addresses.length} 个地址</span>`;
+    html += `</div>`;
+
+    html += `<div class="mb-2"><span class="text-sm" style="color: var(--text-muted);">地址列表:</span>`;
+    for (let i = 0; i < cluster.addresses.length; i++) {
+        const addr = cluster.addresses[i];
+        const chain = cluster.chain_types[i] || 'unknown';
+        html += `<p class="text-sm ml-2 text-white">${addr} <span style="color: var(--text-muted);">(${chain})</span></p>`;
+    }
+    html += `</div>`;
+
+    html += `<div class="mb-2"><span class="text-sm" style="color: var(--text-muted);">关联原因:</span>`;
+    for (const reason of cluster.reasons) {
+        html += `<p class="text-sm ml-2" style="color: var(--accent-green);">>> ${reason}</p>`;
+    }
+    html += `</div>`;
+
+    if (cluster.stats) {
+        html += `<div class="text-sm" style="color: var(--text-muted);">交易总数: ${cluster.stats.total_transactions || '未知'}</div>`;
+    }
+
+    html += `</div>`;
+    return html;
+}
+
+async function exportJSON() {
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    if (!cached) { showError('无缓存结果，请先进行分析'); return; }
+    const result = JSON.parse(cached);
+    const response = await fetch('/cross/api/cluster/export/json', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({result: result})
+    });
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = `cluster_result_${new Date().toISOString().slice(0,10)}.json`; a.click();
+}
+
+async function exportCSV() {
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    if (!cached) { showError('无缓存结果，请先进行分析'); return; }
+    const result = JSON.parse(cached);
+    const response = await fetch('/cross/api/cluster/export/csv', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({result: result})
+    });
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = `cluster_result_${new Date().toISOString().slice(0,10)}.csv`; a.click();
+}
+
+async function exportPDF() {
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    if (!cached) { showError('无缓存结果，请先进行分析'); return; }
+    const result = JSON.parse(cached);
+    try {
+        const response = await fetch('/docs/api/export/pdf', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ result: result, tool_type: 'cluster' })
+        });
+        const filename = response.headers.get('Content-Disposition').split('filename=')[1].replace(/"/g, '');
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
+    } catch (error) { showError('PDF导出失败: ' + error.message); }
+}
+
+function exportToCrossBorder() {
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    if (!cached) { showError('无缓存结果，请先进行分析'); return; }
+    sessionStorage.setItem('cit_cluster_export', cached);
+    window.location.href = '/cross/cross-border';
+}
+
+function showLoading() { document.getElementById('loading').classList.remove('hidden'); }
+function hideLoading() { document.getElementById('loading').classList.add('hidden'); }
+function showError(message) { document.getElementById('error-message').textContent = message; document.getElementById('error-display').classList.remove('hidden'); }
+function hideError() { document.getElementById('error-display').classList.add('hidden'); }
+function hideResults() { document.getElementById('results').classList.add('hidden'); }
+
+window.onload = function() {
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    if (cached) { const data = JSON.parse(cached); displayResults(data); }
+};
+</script>
+{% endblock %}

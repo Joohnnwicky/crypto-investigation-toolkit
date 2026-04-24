@@ -2,96 +2,96 @@
 {% block title %}跨境协查 - 使用手册{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto">
+<div class="max-w-4xl mx-auto pb-16">
     <!-- Header card -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h1 class="text-2xl font-bold text-gray-800 mb-2">跨境协查 - 使用手册</h1>
-        <p class="text-gray-600">操作步骤、结果解释、API说明与案例演示</p>
+    <div class="card p-6 mb-6">
+        <p class="terminal-header mb-2">cross_border_template_manual.sh</p>
+        <p class="text-gray-400">操作步骤、结果解释、API说明与案例演示</p>
     </div>
 
     <!-- Section 1: 操作步骤 -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">1. 操作步骤</h2>
-        <ol class="list-decimal list-inside space-y-2 text-gray-700">
-            <li>输入案件基本信息：案件名称、涉案金额、币种类型。</li>
-            <li>填写涉案地址列表：支持手动输入或从其他工具导入。</li>
-            <li>选择协查文档类型：协查请求函、资金流向报告、证据清单。</li>
-            <li>填写协查机构信息：目标交易所、司法管辖区、联系方式。</li>
-            <li>点击"生成文档"，系统将自动生成标准格式的协查文书。</li>
-            <li>预览、编辑并导出最终文档（PDF/Word格式）。</li>
-        </ol>
+    <div class="card p-6 mb-6">
+        <h2 class="text-xl font-bold mb-4" style="color: var(--accent-green);">>> 1. 操作步骤</h2>
+        <ul class="space-y-2" style="color: var(--text-muted);">
+            <li><span style="color: var(--accent-green);">1.</span> 输入案件基本信息：案件名称、涉案金额、币种类型。</li>
+            <li><span style="color: var(--accent-green);">2.</span> 填写涉案地址列表：支持手动输入或从其他工具导入。</li>
+            <li><span style="color: var(--accent-green);">3.</span> 选择协查文档类型：协查请求函、资金流向报告、证据清单。</li>
+            <li><span style="color: var(--accent-green);">4.</span> 填写协查机构信息：目标交易所、司法管辖区、联系方式。</li>
+            <li><span style="color: var(--accent-green);">5.</span> 点击"生成文档"，系统将自动生成标准格式的协查文书。</li>
+            <li><span style="color: var(--accent-green);">6.</span> 预览、编辑并导出最终文档（PDF/Word格式）。</li>
+        </ul>
     </div>
 
     <!-- Section 2: 结果解释 -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">2. 结果解释</h2>
+    <div class="card p-6 mb-6">
+        <h2 class="text-xl font-bold mb-4" style="color: var(--accent-green);">>> 2. 结果解释</h2>
 
-        <h3 class="text-lg font-semibold text-gray-700 mb-2">协查请求函</h3>
-        <ul class="list-disc list-inside space-y-1 text-gray-600 mb-4">
-            <li><strong>案件概述：</strong>简要描述案件背景和涉案情况</li>
-            <li><strong>请求事项：</strong>明确需要协查的具体内容</li>
-            <li><strong>涉案地址：</strong>列出需要调证的区块链地址</li>
-            <li><strong>时间范围：</strong>指定调证的交易时间区间</li>
+        <h3 class="text-lg font-semibold mb-2" style="color: var(--link-color);">协查请求函</h3>
+        <ul class="space-y-1 mb-4" style="color: var(--text-muted);">
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">案件概述：</strong>简要描述案件背景和涉案情况</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">请求事项：</strong>明确需要协查的具体内容</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">涉案地址：</strong>列出需要调证的区块链地址</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">时间范围：</strong>指定调证的交易时间区间</li>
         </ul>
 
-        <h3 class="text-lg font-semibold text-gray-700 mb-2">资金流向报告</h3>
-        <ul class="list-disc list-inside space-y-1 text-gray-600 mb-4">
-            <li><strong>资金来源：</strong>初始资金的来源地址和时间</li>
-            <li><strong>流转路径：</strong>资金经过的中间地址和交易</li>
-            <li><strong>资金去向：</strong>最终接收地址和提现情况</li>
-            <li><strong>金额统计：</strong>各阶段资金流转金额汇总</li>
+        <h3 class="text-lg font-semibold mb-2" style="color: var(--link-color);">资金流向报告</h3>
+        <ul class="space-y-1 mb-4" style="color: var(--text-muted);">
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">资金来源：</strong>初始资金的来源地址和时间</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">流转路径：</strong>资金经过的中间地址和交易</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">资金去向：</strong>最终接收地址和提现情况</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">金额统计：</strong>各阶段资金流转金额汇总</li>
         </ul>
 
-        <h3 class="text-lg font-semibold text-gray-700 mb-2">证据清单</h3>
-        <ul class="list-disc list-inside space-y-1 text-gray-600">
-            <li><strong>交易记录：</strong>相关交易的哈希和时间戳</li>
-            <li><strong>地址信息：</strong>涉案地址的链上数据快照</li>
-            <li><strong>关联证据：</strong>地址之间的关联性分析</li>
-            <li><strong>附件列表：</strong>需要附带的补充材料</li>
+        <h3 class="text-lg font-semibold mb-2" style="color: var(--link-color);">证据清单</h3>
+        <ul class="space-y-1" style="color: var(--text-muted);">
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">交易记录：</strong>相关交易的哈希和时间戳</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">地址信息：</strong>涉案地址的链上数据快照</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">关联证据：</strong>地址之间的关联性分析</li>
+            <li><span style="color: var(--accent-green);">>></span> <strong class="text-white">附件列表：</strong>需要附带的补充材料</li>
         </ul>
     </div>
 
     <!-- Section 3: API密钥说明 -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">3. API密钥说明</h2>
-        <p class="text-gray-700 mb-2"><strong>无需API密钥</strong>，本地生成模板。</p>
-        <p class="text-gray-600 mb-2">跨境协查工具是一个文档生成工具，不需要调用任何外部API。所有数据由用户手动输入或从其他分析工具导入。</p>
+    <div class="card p-6 mb-6">
+        <h2 class="text-xl font-bold mb-4" style="color: var(--accent-green);">>> 3. API密钥说明</h2>
+        <p class="mb-2 text-white"><strong style="color: var(--accent-green);">无需API密钥</strong>，本地生成模板。</p>
+        <p class="mb-2" style="color: var(--text-muted);">跨境协查工具是一个文档生成工具，不需要调用任何外部API。所有数据由用户手动输入或从其他分析工具导入。</p>
 
-        <h3 class="text-md font-semibold text-gray-700 mt-4 mb-2">数据导入来源</h3>
-        <p class="text-gray-600">本工具可从以下工具导入分析结果：</p>
-        <ul class="list-disc list-inside space-y-1 text-gray-600">
-            <li>多链监控工具 - 地址状态数据</li>
-            <li>地址聚类工具 - 聚类分析结果</li>
-            <li>混淆对抗工具 - 攻击检测结果</li>
+        <h3 class="text-md font-semibold mt-4 mb-2" style="color: var(--link-color);">数据导入来源</h3>
+        <p style="color: var(--text-muted);">本工具可从以下工具导入分析结果：</p>
+        <ul class="space-y-1" style="color: var(--text-muted);">
+            <li><span style="color: var(--accent-green);">>></span> 多链监控工具 - 地址状态数据</li>
+            <li><span style="color: var(--accent-green);">>></span> 地址聚类工具 - 聚类分析结果</li>
+            <li><span style="color: var(--accent-green);">>></span> 混淆对抗工具 - 攻击检测结果</li>
         </ul>
 
-        <div class="bg-green-50 border-l-4 border-green-400 p-4 mt-4">
-            <p class="text-green-700"><strong>优势：</strong>完全本地生成，数据不外传，符合保密要求。</p>
+        <div class="alert-green rounded p-4 mt-4">
+            <p style="color: var(--accent-green);"><strong>优势：</strong>完全本地生成，数据不外传，符合保密要求。</p>
         </div>
     </div>
 
     <!-- Section 4: 案例演示 -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">4. 案例演示</h2>
-        <div class="bg-gray-50 rounded p-4 mb-4">
-            <h3 class="font-bold text-gray-700 mb-2">案例背景</h3>
-            <p class="text-gray-600">某跨境网络诈骗案，资金流向涉及海外交易所，需要向境外交易所发起协查请求。</p>
+    <div class="card p-6 mb-6">
+        <h2 class="text-xl font-bold mb-4" style="color: var(--accent-green);">>> 4. 案例演示</h2>
+        <div class="card-inner rounded p-4 mb-4">
+            <h3 class="font-bold mb-2" style="color: var(--link-color);">案例背景</h3>
+            <p style="color: var(--text-muted);">某跨境网络诈骗案，资金流向涉及海外交易所，需要向境外交易所发起协查请求。</p>
         </div>
 
-        <div class="bg-gray-50 rounded p-4 mb-4">
-            <h3 class="font-bold text-gray-700 mb-2">操作过程</h3>
-            <ol class="list-decimal list-inside space-y-1 text-gray-600">
-                <li>输入案件名称："2024-XXX跨境诈骗案"</li>
-                <li>导入多链监控工具的分析结果，自动填充涉案地址</li>
-                <li>选择生成"协查请求函"</li>
-                <li>填写目标交易所信息和协查事项</li>
-                <li>生成标准格式文档，导出PDF用于正式发函</li>
-            </ol>
+        <div class="card-inner rounded p-4 mb-4">
+            <h3 class="font-bold mb-2" style="color: var(--link-color);">操作过程</h3>
+            <ul class="space-y-1" style="color: var(--text-muted);">
+                <li><span style="color: var(--accent-green);">1.</span> 输入案件名称："2024-XXX跨境诈骗案"</li>
+                <li><span style="color: var(--accent-green);">2.</span> 导入多链监控工具的分析结果，自动填充涉案地址</li>
+                <li><span style="color: var(--accent-green);">3.</span> 选择生成"协查请求函"</li>
+                <li><span style="color: var(--accent-green);">4.</span> 填写目标交易所信息和协查事项</li>
+                <li><span style="color: var(--accent-green);">5.</span> 生成标准格式文档，导出PDF用于正式发函</li>
+            </ul>
         </div>
 
-        <div class="bg-gray-50 rounded p-4">
-            <h3 class="font-bold text-gray-700 mb-2">结论</h3>
-            <p class="text-gray-600">成功生成符合司法协作标准的协查文书，提高了跨境取证工作效率。</p>
+        <div class="card-inner rounded p-4">
+            <h3 class="font-bold mb-2" style="color: var(--link-color);">结论</h3>
+            <p style="color: var(--text-muted);">成功生成符合司法协作标准的协查文书，提高了跨境取证工作效率。</p>
         </div>
     </div>
 </div>

@@ -631,17 +631,17 @@ def cross_border_page():
 - A2: Tunable threshold per discretion — adjust based on user feedback
 - A3: Verify Blockstream API coverage during implementation testing
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **BTC API Key Requirement**
-   - What we know: Blockstream API is free (no key required), but D-03 mentions BTC needs API key
-   - What's unclear: Whether BTC should use Blockstream (free) or Blockcypher (requires key)
-   - Recommendation: Use Blockstream for free access, align with btc_analyzer.py pattern (no key required)
+1. **BTC API Key Requirement** — RESOLVED: Use Blockstream free API (no key required)
+   - Original question: Blockstream API is free but D-03 said BTC needs key
+   - Resolution: D-03 updated to specify ETH needs key, BTC uses free Blockstream API
+   - Decision: Aligns with btc_analyzer.py pattern, simpler for beginners
 
-2. **Template Localization**
-   - What we know: Standard template only (D-21), no multi-locale
-   - What's unclear: Whether template should support English for international requests
-   - Recommendation: Chinese only per requirement, user can manually translate if needed
+2. **Template Localization** — RESOLVED: Chinese only (standard template)
+   - Original question: Should template support English for international requests?
+   - Resolution: D-21 specifies standard template (单一格式), Chinese language confirmed
+   - Decision: User can manually translate if needed for specific jurisdictions
 
 ## Environment Availability
 

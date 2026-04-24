@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+{% block title %}混淆攻击检测{% endblock %}
+{% block content %}
+<div class="max-w-4xl mx-auto pb-16">
+    <!-- Tool header -->
+    <div class="card p-6 mb-6">
+        <p class="terminal-header mb-2">obfuscation_attack_detector.sh</p>
+        <p class="text-gray-400">检测ETH链上的混淆攻击手法，包括三明治攻击、闪电贷攻击、粉尘攻击、协议漏洞攻击（ETH链上专用工具）。</p>
+    </div>
+
+    <!-- Input section -->
+    <div class="card p-6 mb-6">
+        <h2 class="text-lg font-bold mb-4" style="color: var(--accent-green);">>> 输入地址</h2>
+
+        <div class="mb-4">
+            <label class="block text-sm font-medium mb-1" style="color: var(--text-muted);">ETH钱包地址</label>
+            <input type="text" id="address-input" class="w-full" placeholder="0x开头的42字符ETH地址">
+            <p class="text-sm mt-1" style="color: var(--text-muted);">仅支持ETH地址（检测DEX攻击、混币器等ETH链上行为）</p>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-sm font-medium mb-1" style="color: var(--text-muted);">Etherscan API密钥 *</label>
+            <input type="text" id="eth-key-input" class="w-full" placeholder="从 etherscan.io 获取免费API密钥">
+            <p class="text-sm mt-1" style="color: var(--text-muted);">ETH交易查询需要API密钥</p>
+        </div>
+
+        <div class="flex gap-3">
+            <button onclick="fillSample()" class="btn-secondary">样本填充</button>
+            <button onclick="analyzeAttacks()" class="btn-primary">开始分析</button>
+        </div>
+    </div>
+
+    <!-- Loading indicator -->
+    <div id="loading" class="hidden card p-6 mb-6 text-center">
+        <div class="animate-spin inline-block w-8 h-8 border-4 rounded-full" style="border-color: var(--accent-green); border-top-color: transparent;"></div>
+        <p class="text-gray-400 mt-2">正在分析攻击痕迹...</p>
+    </div>
+
+    <!-- Error display -->
+    <div id="error-display" class="hidden alert-red rounded-lg p-4 mb-6">
+        <p id="error-message" style="color: var(--alert-red);"></p>
+    </div>
+
+    <!-- Results section -->
+    <div id="results" class="hidden"></div>
+</div>
+
+<script>
+const CACHE_KEY = 'cit_obfuscation_result';
+
+async function fillSample() {
+    try {
+        const response = await fetch('/case/api/obfuscation/sample');
+        const data = await response.json();
+        document.getElementById('address-input').value = data.sample_address;
+    } catch (error) { console.error('Failed to fetch sample:', error); }
+}
+
+async function analyzeAttacks() {
+    const address = document.getElementById('address-input').value.trim();
+    const ethKey = document.getElementById('eth-key-input').value.trim();
+
+    if (!address) { showError('请输入ETH地址'); return; }
+    if (!address.startsWith('0x')) { showError('请输入有效的ETH地址（0x开头）'); return; }
+    if (address.length !== 42) { showError('ETH地址长度应为42字符'); return; }
+    if (!ethKey) { showError('请输入Etherscan API密钥'); return; }
+
+    showLoading(); hideError(); hideResults();
+
+    try {
+        const response = await fetch('/case/api/obfuscation/detect', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({address: address, eth_key: ethKey})
+        });
+        const data = await response.json();
+        if (data.success) {
+            sessionStorage.setItem(CACHE_KEY, JSON.stringify(data));
+            displayResults(data);
+        } else { showError(data.error || '分析失败'); }
+    } catch (error) { showError('网络请求失败: ' + error.message); }
+    finally { hideLoading(); }
+}
+
+function displayResults(data) {
+    const resultsDiv = document.getElementById('results');
+    let html = '';
+
+    html += '<div class="card p-6 mb-6">';
+    html += '<h2 class="text-lg font-bold mb-4" style="color: var(--accent-green);">>> 攻击检测结果</h2>';
+    html += `<p class="text-sm mb-4" style="color: var(--text-muted);">分析地址: ${data.address}</p>`;
+
+    if (data.attack_cards && data.attack_cards.length > 0) {
+        html += `<p class="text-sm mb-4" style="color: var(--alert-yellow);">发现 ${data.attack_cards.length} 个可疑攻击痕迹</p>`;
+        for (const card of data.attack_cards) { html += displayAttackCard(card); }
+    } else {
+        html += '<div class="alert-green rounded p-4">';
+        html += '<p class="font-medium" style="color: var(--alert-green);">>> 未发现攻击痕迹</p>';
+        html += '<p class="text-sm mt-2" style="color: var(--text-muted);">该地址的交易记录未显示明显的攻击模式</p>';
+        html += '</div>';
+    }
+    html += '</div>';
+
+    html += '<div class="card p-6 mb-6">';
+    html += '<h2 class="text-lg font-bold mb-4" style="color: var(--accent-green);">>> 导出结果</h2>';
+    html += '<div class="flex flex-wrap gap-3">';
+    html += `<button onclick="exportJSON()" class="btn-primary">导出JSON</button>`;
+    html += `<button onclick="exportCSV()" class="btn-secondary">导出CSV</button>`;
+    html += `<button onclick="exportPDF()" class="btn-secondary">导出PDF</button>`;
+    html += `<button onclick="exportToEth()" class="btn-secondary" style="border-color: var(--keyword-color);">导出到ETH查询</button>`;
+    html += `<button onclick="exportToFreeze()" class="btn-secondary" style="border-color: var(--alert-red);">导出到资产追回</button>`;
+    html += '</div></div>';
+
+    resultsDiv.innerHTML = html;
+    resultsDiv.classList.remove('hidden');
+}
+
+function displayAttackCard(card) {
+    let borderColor = 'var(--text-muted)';
+    let bgColor = 'card-inner';
+    if (card.confidence === 'HIGH') { borderColor = 'var(--alert-red)'; bgColor = 'alert-red'; }
+    else if (card.confidence === 'MEDIUM') { borderColor = 'var(--alert-yellow)'; bgColor = 'alert-yellow'; }
+    else { borderColor = 'var(--link-color)'; }
+
+    let html = `<div class="${bgColor} rounded-lg p-4 mb-4" style="border-left: 4px solid ${borderColor};">`;
+    html += `<div class="flex justify-between items-center mb-2">`;
+    html += `<span class="text-sm" style="color: var(--text-muted);">攻击类型: </span><span class="font-semibold text-white">${card.type}</span>`;
+    html += `<span class="px-2 py-1 rounded text-xs font-bold" style="color: ${borderColor}; border: 1px dashed ${borderColor};">${card.confidence}置信度</span>`;
+    html += `</div>`;
+
+    html += `<p class="text-sm mb-2 text-gray-300">${card.details}</p>`;
+
+    if (card.tx_hash) { html += `<p class="text-xs font-mono" style="color: var(--link-color);">交易: ${card.tx_hash}</p>`; }
+    if (card.block) { html += `<p class="text-xs" style="color: var(--text-muted);">区块: ${card.block}</p>`; }
+    if (card.tx_count) { html += `<p class="text-xs" style="color: var(--text-muted);">涉及交易数: ${card.tx_count}</p>`; }
+    if (card.recipients) { html += `<p class="text-xs" style="color: var(--text-muted);">涉及地址数: ${card.recipients}</p>`; }
+    if (card.value) { html += `<p class="text-xs" style="color: var(--text-muted);">金额: ${card.value.toFixed(2)} ETH</p>`; }
+
+    html += `</div>`;
+    return html;
+}
+
+async function exportJSON() {
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    if (!cached) { showError('无缓存结果，请先进行分析'); return; }
+    const result = JSON.parse(cached);
+    const response = await fetch('/case/api/obfuscation/export/json', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({result: result})
+    });
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = `obfuscation_result_${new Date().toISOString().slice(0,10)}.json`; a.click();
+}
+
+async function exportCSV() {
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    if (!cached) { showError('无缓存结果，请先进行分析'); return; }
+    const result = JSON.parse(cached);
+    const response = await fetch('/case/api/obfuscation/export/csv', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({result: result})
+    });
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = `obfuscation_result_${new Date().toISOString().slice(0,10)}.csv`; a.click();
+}
+
+async function exportPDF() {
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    if (!cached) { showError('无缓存结果，请先进行分析'); return; }
+    const result = JSON.parse(cached);
+    try {
+        const response = await fetch('/docs/api/export/pdf', {
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ result: result, tool_type: 'obfuscation' })
+        });
+        const filename = response.headers.get('Content-Disposition').split('filename=')[1].replace(/"/g, '');
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
+    } catch (error) { showError('PDF导出失败: ' + error.message); }
+}
+
+function exportToEth() {
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    if (!cached) { showError('无缓存结果，请先进行分析'); return; }
+    const result = JSON.parse(cached);
+    sessionStorage.setItem('cit_obfuscation_to_eth', result.address);
+    window.location.href = '/eth/transaction-query';
+}
+
+function exportToFreeze() {
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    if (!cached) { showError('无缓存结果，请先进行分析'); return; }
+    sessionStorage.setItem('cit_obfuscation_export', cached);
+    window.location.href = '/case/asset-freeze';
+}
+
+function showLoading() { document.getElementById('loading').classList.remove('hidden'); }
+function hideLoading() { document.getElementById('loading').classList.add('hidden'); }
+function showError(message) { document.getElementById('error-message').textContent = message; document.getElementById('error-display').classList.remove('hidden'); }
+function hideError() { document.getElementById('error-display').classList.add('hidden'); }
+function hideResults() { document.getElementById('results').classList.add('hidden'); }
+
+window.onload = function() {
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    if (cached) { const data = JSON.parse(cached); displayResults(data); }
+};
+</script>
+{% endblock %}

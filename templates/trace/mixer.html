@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+{% block title %}混币器追踪{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto pb-16">
+    <!-- Tool header -->
+    <div class="card p-6 mb-6">
+        <p class="terminal-header mb-2">tornado_cash_trace.sh</p>
+        <p class="text-gray-400">基于存款时间的时间窗口分析，追踪可疑提款记录</p>
+    </div>
+
+    <!-- Input section -->
+    <div class="card p-6 mb-6">
+        <h2 class="text-lg font-bold mb-4" style="color: var(--accent-green);">>> 输入查询参数</h2>
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium mb-1" style="color: var(--text-muted);">存款时间</label>
+                <input type="text" id="deposit-time-input" class="w-full"
+                       placeholder="格式：YYYY-MM-DD HH:MM:SS">
+                <p class="text-xs mt-1" style="color: var(--text-muted);">系统将自动搜索所有混币池（时间窗口：24小时）</p>
+            </div>
+            <div class="flex space-x-4">
+                <button onclick="loadSample()" class="btn-secondary">加载样本</button>
+                <button onclick="analyzeMixer()" class="btn-primary">开始分析</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading indicator -->
+    <div id="loading" class="hidden card p-6 mb-6">
+        <div class="flex items-center justify-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2" style="border-color: var(--accent-green);"></div>
+            <span class="ml-3 text-gray-400">正在分析混币池提款记录...</span>
+        </div>
+    </div>
+
+    <!-- Error display -->
+    <div id="error-display" class="hidden alert-red rounded-lg p-4 mb-6">
+        <p id="error-message" style="color: var(--alert-red);"></p>
+    </div>
+
+    <!-- Results section -->
+    <div id="results" class="hidden">
+        <!-- Summary -->
+        <div class="card p-6 mb-6">
+            <h2 class="text-lg font-bold mb-4" style="color: var(--accent-green);">>> 分析结果</h2>
+            <div id="basic-info" class="grid grid-cols-3 gap-4"></div>
+        </div>
+
+        <!-- Suspicious withdrawals -->
+        <div id="withdrawals-section" class="card p-6 mb-6">
+            <h2 class="text-lg font-bold mb-4" style="color: var(--accent-green);">>> 可疑提款记录</h2>
+            <div id="withdrawals-container" class="space-y-4"></div>
+        </div>
+
+        <!-- Flow diagram -->
+        <div id="flow-diagram" class="card p-6 mb-6">
+            <h2 class="text-lg font-bold mb-4" style="color: var(--accent-green);">>> 追踪流程图</h2>
+            <pre id="diagram-content" class="card-inner p-4 rounded text-sm font-mono whitespace-pre-wrap" style="color: var(--accent-green);"></pre>
+        </div>
+
+        <!-- Export buttons -->
+        <div class="card p-6 mb-6">
+            <h2 class="text-lg font-bold mb-4" style="color: var(--accent-green);">>> 导出结果</h2>
+            <div class="flex space-x-4">
+                <button onclick="exportJSON()" class="btn-primary">导出JSON</button>
+                <button onclick="exportPDF()" class="btn-secondary">导出PDF</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let queryResult = null;
+const CACHE_KEY = 'cit_mixer_query';
+
+window.onload = function() {
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    if (cached) {
+        try {
+            const data = JSON.parse(cached);
+            queryResult = data;
+            document.getElementById('deposit-time-input').value = data.deposit_time || '';
+            displayResults(data);
+        } catch(e) { console.log('Cache restore failed:', e); }
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const depositTime = params.get('deposit_time');
+    if (depositTime) {
+        document.getElementById('deposit-time-input').value = depositTime;
+        setTimeout(() => analyzeMixer(), 500);
+    }
+};
+
+function saveToCache(data) { sessionStorage.setItem(CACHE_KEY, JSON.stringify(data)); }
+
+function loadSample() {
+    fetch('/trace/api/mixer/sample')
+        .then(response => response.json())
+        .then(data => { document.getElementById('deposit-time-input').value = data.sample_deposit_time; });
+}
+
+function analyzeMixer() {
+    const depositTime = document.getElementById('deposit-time-input').value.trim();
+    if (!depositTime) { alert('请输入存款时间'); return; }
+
+    document.getElementById('loading').classList.remove('hidden');
+    document.getElementById('error-display').classList.add('hidden');
+    document.getElementById('results').classList.add('hidden');
+
+    fetch('/trace/api/mixer/query', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({deposit_time: depositTime})
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('loading').classList.add('hidden');
+        if (data.success) {
+            queryResult = data;
+            saveToCache(data);
+            displayResults(data);
+        } else { showError(data.error || '分析失败'); }
+    })
+    .catch(error => {
+        document.getElementById('loading').classList.add('hidden');
+        showError('请求失败: ' + error.message);
+    });
+}
+
+function showError(message) {
+    document.getElementById('error-message').textContent = message;
+    document.getElementById('error-display').classList.remove('hidden');
+}
+
+function displayResults(data) {
+    document.getElementById('results').classList.remove('hidden');
+
+    document.getElementById('basic-info').innerHTML = `
+        <div class="card-inner p-3 rounded">
+            <span class="text-sm" style="color: var(--text-muted);">存款时间</span>
+            <p class="font-bold text-white text-sm">${data.deposit_time}</p>
+        </div>
+        <div class="card-inner p-3 rounded">
+            <span class="text-sm" style="color: var(--text-muted);">时间窗口</span>
+            <p class="font-bold text-white">${data.window_hours}小时</p>
+        </div>
+        <div class="card-inner p-3 rounded">
+            <span class="text-sm" style="color: var(--text-muted);">可疑提款</span>
+            <p class="font-bold text-white">${(data.suspicious_withdrawals || []).length}笔</p>
+        </div>
+    `;
+
+    displayWithdrawals(data.suspicious_withdrawals || []);
+    document.getElementById('diagram-content').textContent = data.flow_diagram || '无数据';
+}
+
+function displayWithdrawals(withdrawals) {
+    const container = document.getElementById('withdrawals-container');
+
+    if (withdrawals.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-muted);">未发现可疑提款记录</p>';
+        return;
+    }
+
+    container.innerHTML = withdrawals.map(wd => {
+        let bgClass = '';
+        let borderClass = '';
+        let badgeClass = '';
+
+        if (wd.confidence === 'HIGH') {
+            bgClass = 'alert-red';
+            badgeClass = 'background: var(--alert-red); color: #1A1A1A;';
+        } else if (wd.confidence === 'MEDIUM') {
+            bgClass = 'alert-yellow';
+            badgeClass = 'background: var(--alert-yellow); color: #1A1A1A;';
+        } else {
+            bgClass = 'card-inner';
+            badgeClass = 'background: var(--text-muted); color: var(--bg-dark);';
+        }
+
+        return `
+            <div class="${bgClass} rounded p-4">
+                <div class="flex justify-between items-start mb-2">
+                    <p class="font-bold text-white">接收地址: ${wd.recipient ? wd.recipient.slice(0, 12) + '...' : '未知'}</p>
+                    <span class="text-xs px-2 py-1 rounded" style="${badgeClass}">${wd.confidence || 'LOW'}</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2 text-sm">
+                    <div><span style="color: var(--text-muted);">混币池:</span> <span class="ml-1 text-white">${wd.pool || '未知'}</span></div>
+                    <div><span style="color: var(--text-muted);">提款时间:</span> <span class="ml-1 text-white">${wd.date || '未知'}</span></div>
+                    <div><span style="color: var(--text-muted);">手续费:</span> <span class="ml-1 text-white">${wd.fee || 0} ETH</span></div>
+                    <div><span style="color: var(--text-muted);">原因:</span> <span class="ml-1 text-xs">${wd.reason || '未知'}</span></div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function exportJSON() {
+    if (!queryResult) { alert('请先进行分析'); return; }
+    fetch('/trace/api/mixer/export/json', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({result: queryResult})
+    })
+    .then(response => {
+        const disposition = response.headers.get('Content-Disposition');
+        const filenameMatch = disposition && disposition.match(/filename="?([^"]+)"?/);
+        const filename = filenameMatch ? filenameMatch[1] : 'mixer_trace.json';
+        return response.blob().then(blob => ({ blob, filename }));
+    })
+    .then(({ blob, filename }) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
+        window.URL.revokeObjectURL(url);
+    })
+    .catch(error => alert('导出失败: ' + error.message));
+}
+
+function exportPDF() {
+    if (!queryResult) { alert('请先进行分析'); return; }
+    fetch('/docs/api/export/pdf', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ result: queryResult, tool_type: 'mixer' })
+    })
+    .then(response => {
+        const filename = response.headers.get('Content-Disposition').split('filename=')[1].replace(/"/g, '');
+        return response.blob().then(blob => ({ blob, filename }));
+    })
+    .then(({ blob, filename }) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
+        window.URL.revokeObjectURL(url);
+    })
+    .catch(error => alert('PDF导出失败: ' + error.message));
+}
+</script>
+{% endblock %}

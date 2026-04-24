@@ -2,149 +2,149 @@
 {% block title %}API密钥获取指南{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto">
+<div class="max-w-4xl mx-auto pb-16">
     <!-- Hero section -->
-    <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg p-8 mb-8 text-white">
-        <h1 class="text-3xl font-bold mb-4">API密钥获取指南</h1>
-        <p class="text-blue-100 mb-2">Tronscan、Etherscan、Blockstream API注册指南</p>
-        <p class="text-blue-200 text-sm">本指南帮助您获取各区块链数据API密钥，用于工具调用</p>
+    <div class="card p-8 mb-8">
+        <p class="terminal-header mb-4">api_key_guide.sh</p>
+        <p class="text-gray-400 mb-2">Tronscan、Etherscan、Blockstream API注册指南</p>
+        <p class="text-sm" style="color: var(--text-muted);">本指南帮助您获取各区块链数据API密钥，用于工具调用</p>
     </div>
 
     <!-- Tronscan Section -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 class="text-2xl font-bold text-gray-800 mb-4">Tronscan API</h2>
-        <p class="text-gray-600 mb-4">TRON区块链数据查询接口</p>
+    <div class="card p-6 mb-6">
+        <h2 class="text-xl font-bold mb-4" style="color: var(--accent-green);">>> Tronscan API</h2>
+        <p class="text-gray-400 mb-4">TRON区块链数据查询接口</p>
 
         <div class="space-y-4">
             <div>
-                <h3 class="text-lg font-semibold text-gray-700 mb-2">注册流程</h3>
-                <p class="text-gray-600">Tronscan提供免费API，无需注册即可使用。直接访问 <a href="https://tronscan.org" class="text-blue-600 hover:text-blue-800 underline" target="_blank">https://tronscan.org</a> 获取数据。</p>
+                <h3 class="font-semibold mb-2" style="color: var(--link-color);">注册流程</h3>
+                <p class="text-gray-300">Tronscan提供免费API，无需注册即可使用。直接访问 <a href="https://tronscan.org" class="underline" style="color: var(--link-color);" target="_blank">https://tronscan.org</a> 获取数据。</p>
             </div>
 
             <div>
-                <h3 class="text-lg font-semibold text-gray-700 mb-2">使用限制</h3>
-                <ul class="list-disc list-inside text-gray-600 space-y-1">
-                    <li>免费API，无需密钥</li>
-                    <li>建议适度请求频率，避免频繁调用</li>
-                    <li>API端点: https://apilist.tronscan.org/api</li>
+                <h3 class="font-semibold mb-2" style="color: var(--link-color);">使用限制</h3>
+                <ul class="space-y-1" style="color: var(--text-muted);">
+                    <li><span style="color: var(--accent-green);">>></span> 免费API，无需密钥</li>
+                    <li><span style="color: var(--accent-green);">>></span> 建议适度请求频率，避免频繁调用</li>
+                    <li><span style="color: var(--accent-green);">>></span> API端点: https://apilist.tronscan.org/api</li>
                 </ul>
             </div>
 
             <div>
-                <h3 class="text-lg font-semibold text-gray-700 mb-2">安全说明</h3>
-                <p class="text-gray-600">由于无需API密钥，安全风险较低。但仍需注意：</p>
-                <ul class="list-disc list-inside text-gray-600 space-y-1">
-                    <li>避免在公共网络环境下频繁查询敏感地址</li>
-                    <li>遵守Tronscan使用条款</li>
+                <h3 class="font-semibold mb-2" style="color: var(--link-color);">安全说明</h3>
+                <p class="text-gray-300">由于无需API密钥，安全风险较低。但仍需注意：</p>
+                <ul class="space-y-1" style="color: var(--text-muted);">
+                    <li><span style="color: var(--accent-green);">>></span> 避免在公共网络环境下频繁查询敏感地址</li>
+                    <li><span style="color: var(--accent-green);">>></span> 遵守Tronscan使用条款</li>
                 </ul>
             </div>
 
             <div>
-                <h3 class="text-lg font-semibold text-gray-700 mb-2">问题排查</h3>
-                <ul class="list-disc list-inside text-gray-600 space-y-1">
-                    <li>请求失败：检查网络连接，确认Tronscan服务正常</li>
-                    <li>数据延迟：区块链数据同步可能存在延迟</li>
-                    <li>速率限制：如遇限制，请降低请求频率</li>
+                <h3 class="font-semibold mb-2" style="color: var(--link-color);">问题排查</h3>
+                <ul class="space-y-1" style="color: var(--text-muted);">
+                    <li><span style="color: var(--accent-green);">>></span> 请求失败：检查网络连接，确认Tronscan服务正常</li>
+                    <li><span style="color: var(--accent-green);">>></span> 数据延迟：区块链数据同步可能存在延迟</li>
+                    <li><span style="color: var(--accent-green);">>></span> 速率限制：如遇限制，请降低请求频率</li>
                 </ul>
             </div>
         </div>
     </div>
 
     <!-- Etherscan Section -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 class="text-2xl font-bold text-gray-800 mb-4">Etherscan API</h2>
-        <p class="text-gray-600 mb-4">以太坊区块链数据查询接口</p>
+    <div class="card p-6 mb-6">
+        <h2 class="text-xl font-bold mb-4" style="color: var(--accent-green);">>> Etherscan API</h2>
+        <p class="text-gray-400 mb-4">以太坊区块链数据查询接口</p>
 
         <div class="space-y-4">
             <div>
-                <h3 class="text-lg font-semibold text-gray-700 mb-2">注册流程</h3>
-                <ol class="list-decimal list-inside text-gray-600 space-y-1">
-                    <li>访问 <a href="https://etherscan.io" class="text-blue-600 hover:text-blue-800 underline" target="_blank">https://etherscan.io</a></li>
-                    <li>注册账户并登录</li>
-                    <li>进入API-KEYs管理页面</li>
-                    <li>创建新的API密钥</li>
-                    <li>复制密钥并妥善保存</li>
+                <h3 class="font-semibold mb-2" style="color: var(--link-color);">注册流程</h3>
+                <ol class="space-y-1" style="color: var(--text-muted);">
+                    <li><span style="color: var(--accent-green);">1.</span> 访问 <a href="https://etherscan.io" class="underline" style="color: var(--link-color);" target="_blank">https://etherscan.io</a></li>
+                    <li><span style="color: var(--accent-green);">2.</span> 注册账户并登录</li>
+                    <li><span style="color: var(--accent-green);">3.</span> 进入API-KEYs管理页面</li>
+                    <li><span style="color: var(--accent-green);">4.</span> 创建新的API密钥</li>
+                    <li><span style="color: var(--accent-green);">5.</span> 复制密钥并妥善保存</li>
                 </ol>
             </div>
 
             <div>
-                <h3 class="text-lg font-semibold text-gray-700 mb-2">使用限制</h3>
-                <ul class="list-disc list-inside text-gray-600 space-y-1">
-                    <li>免费套餐限制: 5次调用/秒</li>
-                    <li>每日请求限制: 100,000次</li>
-                    <li>API端点: https://api.etherscan.io/api</li>
+                <h3 class="font-semibold mb-2" style="color: var(--link-color);">使用限制</h3>
+                <ul class="space-y-1" style="color: var(--text-muted);">
+                    <li><span style="color: var(--accent-green);">>></span> 免费套餐限制: 5次调用/秒</li>
+                    <li><span style="color: var(--accent-green);">>></span> 每日请求限制: 100,000次</li>
+                    <li><span style="color: var(--accent-green);">>></span> API端点: https://api.etherscan.io/api</li>
                 </ul>
             </div>
 
             <div>
-                <h3 class="text-lg font-semibold text-gray-700 mb-2">安全说明</h3>
-                <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-2">
-                    <p class="text-red-700 font-semibold">重要提示</p>
-                    <p class="text-red-600">API密钥相当于账户密码，请妥善保管！</p>
+                <h3 class="font-semibold mb-2" style="color: var(--alert-red);">安全说明</h3>
+                <div class="alert-red rounded p-4 mb-2">
+                    <p class="font-semibold" style="color: var(--alert-red);">重要提示</p>
+                    <p class="text-gray-300">API密钥相当于账户密码，请妥善保管！</p>
                 </div>
-                <ul class="list-disc list-inside text-gray-600 space-y-1">
-                    <li>切勿将密钥提交到代码仓库或公开分享</li>
-                    <li>建议为每个项目创建独立的API密钥</li>
-                    <li>如发现密钥泄露，立即在Etherscan后台撤销并重新生成</li>
-                    <li>不要在客户端代码中暴露API密钥</li>
+                <ul class="space-y-1" style="color: var(--text-muted);">
+                    <li><span style="color: var(--accent-green);">>></span> 切勿将密钥提交到代码仓库或公开分享</li>
+                    <li><span style="color: var(--accent-green);">>></span> 建议为每个项目创建独立的API密钥</li>
+                    <li><span style="color: var(--accent-green);">>></span> 如发现密钥泄露，立即在Etherscan后台撤销并重新生成</li>
+                    <li><span style="color: var(--accent-green);">>></span> 不要在客户端代码中暴露API密钥</li>
                 </ul>
             </div>
 
             <div>
-                <h3 class="text-lg font-semibold text-gray-700 mb-2">问题排查</h3>
-                <ul class="list-disc list-inside text-gray-600 space-y-1">
-                    <li>API密钥无效：检查是否正确复制，确认密钥状态为激活</li>
-                    <li>速率限制错误：降低请求频率，等待冷却时间</li>
-                    <li>每日限额用尽：升级套餐或等待次日重置</li>
-                    <li>账户问题：检查邮箱验证是否完成</li>
+                <h3 class="font-semibold mb-2" style="color: var(--link-color);">问题排查</h3>
+                <ul class="space-y-1" style="color: var(--text-muted);">
+                    <li><span style="color: var(--accent-green);">>></span> API密钥无效：检查是否正确复制，确认密钥状态为激活</li>
+                    <li><span style="color: var(--accent-green);">>></span> 速率限制错误：降低请求频率，等待冷却时间</li>
+                    <li><span style="color: var(--accent-green);">>></span> 每日限额用尽：升级套餐或等待次日重置</li>
+                    <li><span style="color: var(--accent-green);">>></span> 账户问题：检查邮箱验证是否完成</li>
                 </ul>
             </div>
         </div>
     </div>
 
     <!-- Blockstream Section -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 class="text-2xl font-bold text-gray-800 mb-4">Blockstream API</h2>
-        <p class="text-gray-600 mb-4">比特币区块链数据查询接口</p>
+    <div class="card p-6 mb-6">
+        <h2 class="text-xl font-bold mb-4" style="color: var(--accent-green);">>> Blockstream API</h2>
+        <p class="text-gray-400 mb-4">比特币区块链数据查询接口</p>
 
         <div class="space-y-4">
             <div>
-                <h3 class="text-lg font-semibold text-gray-700 mb-2">注册流程</h3>
-                <p class="text-gray-600">Blockstream提供免费API，无需注册即可使用。直接访问 <a href="https://blockstream.info" class="text-blue-600 hover:text-blue-800 underline" target="_blank">https://blockstream.info</a> 获取数据。</p>
+                <h3 class="font-semibold mb-2" style="color: var(--link-color);">注册流程</h3>
+                <p class="text-gray-300">Blockstream提供免费API，无需注册即可使用。直接访问 <a href="https://blockstream.info" class="underline" style="color: var(--link-color);" target="_blank">https://blockstream.info</a> 获取数据。</p>
             </div>
 
             <div>
-                <h3 class="text-lg font-semibold text-gray-700 mb-2">使用限制</h3>
-                <ul class="list-disc list-inside text-gray-600 space-y-1">
-                    <li>免费API，无需密钥</li>
-                    <li>建议适度请求频率，避免频繁调用</li>
-                    <li>API端点: https://blockstream.info/api</li>
+                <h3 class="font-semibold mb-2" style="color: var(--link-color);">使用限制</h3>
+                <ul class="space-y-1" style="color: var(--text-muted);">
+                    <li><span style="color: var(--accent-green);">>></span> 免费API，无需密钥</li>
+                    <li><span style="color: var(--accent-green);">>></span> 建议适度请求频率，避免频繁调用</li>
+                    <li><span style="color: var(--accent-green);">>></span> API端点: https://blockstream.info/api</li>
                 </ul>
             </div>
 
             <div>
-                <h3 class="text-lg font-semibold text-gray-700 mb-2">安全说明</h3>
-                <p class="text-gray-600">由于无需API密钥，安全风险较低。但仍需注意：</p>
-                <ul class="list-disc list-inside text-gray-600 space-y-1">
-                    <li>避免在公共网络环境下频繁查询敏感地址</li>
-                    <li>遵守Blockstream使用条款</li>
+                <h3 class="font-semibold mb-2" style="color: var(--link-color);">安全说明</h3>
+                <p class="text-gray-300">由于无需API密钥，安全风险较低。但仍需注意：</p>
+                <ul class="space-y-1" style="color: var(--text-muted);">
+                    <li><span style="color: var(--accent-green);">>></span> 避免在公共网络环境下频繁查询敏感地址</li>
+                    <li><span style="color: var(--accent-green);">>></span> 遵守Blockstream使用条款</li>
                 </ul>
             </div>
 
             <div>
-                <h3 class="text-lg font-semibold text-gray-700 mb-2">问题排查</h3>
-                <ul class="list-disc list-inside text-gray-600 space-y-1">
-                    <li>请求失败：检查网络连接，确认Blockstream服务正常</li>
-                    <li>数据延迟：比特币网络确认时间约10分钟/块</li>
-                    <li>速率限制：如遇限制，请降低请求频率</li>
+                <h3 class="font-semibold mb-2" style="color: var(--link-color);">问题排查</h3>
+                <ul class="space-y-1" style="color: var(--text-muted);">
+                    <li><span style="color: var(--accent-green);">>></span> 请求失败：检查网络连接，确认Blockstream服务正常</li>
+                    <li><span style="color: var(--accent-green);">>></span> 数据延迟：比特币网络确认时间约10分钟/块</li>
+                    <li><span style="color: var(--accent-green);">>></span> 速率限制：如遇限制，请降低请求频率</li>
                 </ul>
             </div>
         </div>
     </div>
 
-    <!-- Back to manuals link -->
-    <div class="mt-8 bg-gray-100 rounded-lg p-6 text-center">
-        <a href="/docs/manuals" class="text-blue-600 hover:text-blue-800 font-bold">
+    <!-- Back link -->
+    <div class="mt-8 card-inner rounded-lg p-6 text-center">
+        <a href="/docs/manuals" class="underline" style="color: var(--link-color); font-weight: bold;">
             返回使用手册目录
         </a>
     </div>

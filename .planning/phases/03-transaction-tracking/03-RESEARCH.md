@@ -374,17 +374,11 @@ def identify_address_type(address):
 | A2 | Tornado Cash合约仍可查询事件 | Mixer追踪 | 制裁后可能被节点屏蔽 |
 | A3 | Uniswap Router地址固定不变 | Uniswap | 仅V2版本，V3不同 |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Blockstream API vs Blockchain.info**
-   - What we know: Both provide BTC transaction data without API key
-   - What's unclear: 响应结构差异、稳定性对比
-   - Recommendation: 使用Blockstream作为主API，Blockchain.info作为备用
+1. **Blockstream API vs Blockchain.info** — RESOLVED: 使用Blockstream作为主API，Blockchain.info作为备用。Blockstream响应结构更清晰，无需API key，已在Plan 03采用。
 
-2. **Tornado Cash Pool Address Verification**
-   - What we know: 脚本中列出V1和V2地址
-   - What's unclear: 2022制裁后是否有新地址
-   - Recommendation: 使用tornado_pools.py配置文件，便于后续更新
+2. **Tornado Cash Pool Address Verification** — RESOLVED: 使用tornado_pools.py配置文件管理地址列表，便于后续更新。Plan 02实现了配置化混币池地址。
 
 ## Environment Availability
 
