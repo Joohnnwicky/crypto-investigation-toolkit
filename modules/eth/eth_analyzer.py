@@ -7,6 +7,8 @@ import requests
 from typing import Dict, Any, List
 from datetime import datetime
 
+from modules.core.api_client import get_eth_transactions, get_erc20_transfers
+
 # ============================================
 # Etherscan API V2 configuration
 # ============================================
@@ -17,10 +19,10 @@ ETH_CHAIN_ID = 1  # Ethereum mainnet
 # Bridge contract address library (Ethereum mainnet)
 # ============================================
 BRIDGE_ADDRESSES = {
-    # Stargate
-    "0xDef1C0ded9bec7F1a1670819833240f027b25EfF": "Stargate Router",
-    "0x3c2269811836af69497E5F486A85D7316753cf72": "Stargate Pool",
-    "0x150f94b4b5e760eb8ddd1b9f0f7f5f5f5f5f5f5f": "Stargate USDC Pool",
+    # NOTE: Stargate is detected via modules.eth.stargate_detector (correct
+    # addresses) and is NOT listed here. Fabricated placeholder addresses
+    # (repeating 0x7c7c.../0xf5f5... patterns) and a mislabeled entry
+    # (0xDef1C0... is CoW Protocol Settlement, not Stargate) were removed.
 
     # Hop Protocol
     "0x8656f2E847249B6AaF1f8aC616a2c06EA6EA06E": "Hop Bridge",
@@ -33,21 +35,15 @@ BRIDGE_ADDRESSES = {
 
     # cBridge (Celer)
     "0x5427FEcFA6beAF3523d6167F2B3B9f3F7a6B3b3B": "cBridge",
-    "0x841ce30F35b453d8f4e9d873c1d6b0d7c7c7c7c7": "Celer cBridge",
-
-    # Across Protocol
-    "0x4C36d2919e407f0Cc2Ee3c99cC16f4d5cC7c7c7c": "Across Bridge",
 
     # Synapse Protocol
     "0x1111111254EEB25477B68fb85Ed929f73A960582": "Synapse Router",
 
     # Polygon Bridge (PoS)
     "0xA0c68C638235ee32657e8f720a9cecc1da91B2A1": "Polygon PoS Bridge",
-    "0x86E4Dc95c7FBdBf52e33D563BbDB00823894C287": "Polygon MRC20 Bridge",
 
     # Arbitrum Bridge
     "0x011B6E24FfB0b5f5fCc564cf4183C5BBBc96Fb0a": "Arbitrum Inbox",
-    "0x4Dbd4fc535Ac27206064D68e839d34cB2d5F7F7F": "Arbitrum Outbox",
 
     # Optimism Bridge
     "0x25ace71c97B33Cc4729CF772ae268934F7ab5fA1": "Optimism L1 Bridge",
@@ -55,15 +51,9 @@ BRIDGE_ADDRESSES = {
     # zkSync Bridge
     "0xaBEA9132b05A70803a4E85094fD0e1800777fBEF": "zkSync Bridge",
 
-    # Base Bridge (Coinbase)
-    "0x3154Cf16ccdb4C6d9226276690b58284f7c7c7c7": "Base L1 Bridge",
-
     # Wormhole
     "0x3ee18B2214AFF97000D974cf647E7C347E8fa585": "Wormhole Core",
     "0xf92cD566Ea4864356C5491c177A430C222d7e678": "Wormhole Token Bridge",
-
-    # LayerZero
-    "0x66A71Dcef29A0fBFBDB9F0a7b7c7c7c7c7c7c7c7c": "LayerZero Endpoint",
 }
 
 # ============================================
@@ -75,77 +65,6 @@ TORNADO_POOLS = {
     "10 ETH": "0xA160CdAB225685dA1d56d342E7850264303fed3",
     "100 ETH": "0xD4B88Df4D29F5CedD6857912842cff3b20C8C0fd",
 }
-
-
-def get_eth_transactions(address: str, api_key: str, limit: int = 100) -> List[Dict]:
-    """
-    Get ETH transactions from Etherscan API V2.
-
-    Args:
-        address: ETH address (0x prefix, 40 hex chars)
-        api_key: User's Etherscan API key (per-request input)
-        limit: Maximum transactions to fetch
-
-    Returns:
-        List of transaction dicts
-    """
-    params = {
-        "chainid": ETH_CHAIN_ID,
-        "module": "account",
-        "action": "txlist",
-        "address": address,
-        "startblock": 0,
-        "endblock": 99999999,
-        "sort": "asc",  # Ascending, earliest first
-        "apikey": api_key
-    }
-
-    try:
-        response = requests.get(ETHERSCAN_BASE, params=params, timeout=10)
-        data = response.json()
-
-        if data.get("status") == "1":
-            result = data.get("result", [])
-            # Return last N transactions (most recent)
-            return result[-limit:] if len(result) > limit else result
-        else:
-            return []
-    except Exception:
-        return []
-
-
-def get_erc20_transfers(address: str, api_key: str, limit: int = 100) -> List[Dict]:
-    """
-    Get ERC20 token transfers from Etherscan API V2.
-
-    Args:
-        address: ETH address
-        api_key: Etherscan API key
-        limit: Maximum transfers to fetch
-
-    Returns:
-        List of transfer dicts with tokenSymbol, tokenName, etc.
-    """
-    params = {
-        "chainid": ETH_CHAIN_ID,
-        "module": "account",
-        "action": "tokentx",
-        "address": address,
-        "sort": "asc",
-        "apikey": api_key
-    }
-
-    try:
-        response = requests.get(ETHERSCAN_BASE, params=params, timeout=10)
-        data = response.json()
-
-        if data.get("status") == "1":
-            result = data.get("result", [])
-            return result[-limit:] if len(result) > limit else result
-        else:
-            return []
-    except Exception:
-        return []
 
 
 def get_transaction_logs(tx_hash: str, api_key: str) -> List[Dict]:

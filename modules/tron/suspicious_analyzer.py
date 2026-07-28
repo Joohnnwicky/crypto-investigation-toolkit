@@ -57,14 +57,28 @@ def detect_suspicious_features(address_info: Optional[Dict], trc20_transfers: Li
     total_tx = address_info.get('total_transaction_count', 0)
     create_time = address_info.get('create_time', 0)
 
-    # RED ALERT: Balance emptied (USDT = 0 but has transactions)
-    if usdt_balance == 0 and total_tx > 0:
+    # Whether this address ever received USDT (avoids false "余额清空" on
+    # TRX-only wallets that never held USDT).
+    ever_held_usdt = any(
+        t.get('to_address', '') == address_info['address']
+        for t in (trc20_transfers or [])
+    )
+
+    # RED ALERT: Balance emptied (previously held USDT, now zero)
+    if usdt_balance == 0 and ever_held_usdt:
         alerts['red'].append({
             'feature': '余额清空',
-            'detail': f'USDT已全部转出，当前余额: {usdt_balance:.2f} USDT',
-            'meaning': '资金已被转移，需追踪流向'
+            'detail': f'曾持有USDT，当前余额已清零: {usdt_balance:.2f} USDT',
+            'meaning': '资金已被转移，需追踪流向（仅供参考，非司法证据）'
         })
-        alerts['score'] += 30
+        alerts['score'] += 20
+
+    # YELLOW: coverage blind spot - only TRC20(USDT) is analyzed
+    alerts['yellow'].append({
+        'feature': '分析范围说明',
+        'detail': '本工具仅分析 TRC20(USDT) 转账记录',
+        'meaning': 'TRX/TRC10/内部合约交易未覆盖，存在盲区'
+    })
 
     # RED ALERT: Recently created address with transactions
     days_since_create = format_days_since_creation(create_time)
@@ -76,37 +90,50 @@ def detect_suspicious_features(address_info: Optional[Dict], trc20_transfers: Li
         })
         alerts['score'] += 25
 
-    # RED ALERT: Large transfer in + immediate transfer out
+    # RED ALERT: Large transfer in + immediate transfer out (快进快出)
+    # Sort ascending by timestamp so we can look FORWARD in time for the
+    # outgoing leg. The previous implementation iterated API (descending)
+    # order and computed time_diff backwards, so it never triggered.
     if trc20_transfers and len(trc20_transfers) >= 2:
         large_in_threshold = 1000  # USDT
         quick_transfer_hours = 24
 
-        for i, transfer in enumerate(trc20_transfers):
+        sorted_transfers = sorted(
+            trc20_transfers,
+            key=lambda x: x.get('block_timestamp', 0) or 0
+        )
+
+        found_fast_out = False
+        for i, transfer in enumerate(sorted_transfers):
             try:
                 amount = float(transfer.get('quant', 0)) / 1e6
                 to_addr = transfer.get('to_address', '')
-                timestamp = transfer.get('block_timestamp', 0)
+                in_timestamp = transfer.get('block_timestamp', 0)
 
-                # Check if this is a large incoming transfer
+                # Large incoming transfer to this address
                 if to_addr == address_info['address'] and amount >= large_in_threshold:
-                    # Look for outgoing transfer shortly after
-                    for j in range(i):
-                        prev_transfer = trc20_transfers[j]
-                        prev_from = prev_transfer.get('from_address', '')
-                        prev_amount = float(prev_transfer.get('quant', 0)) / 1e6
-                        prev_timestamp = prev_transfer.get('block_timestamp', 0)
+                    # Look FORWARD for an outgoing transfer within the window
+                    for j in range(i + 1, len(sorted_transfers)):
+                        later = sorted_transfers[j]
+                        if later.get('from_address', '') != address_info['address']:
+                            continue
+                        out_amount = float(later.get('quant', 0)) / 1e6
+                        if out_amount <= 0:
+                            continue
+                        out_timestamp = later.get('block_timestamp', 0)
+                        time_diff_hours = (out_timestamp - in_timestamp) / (1000 * 3600)
 
-                        if prev_from == address_info['address'] and prev_amount > 0:
-                            time_diff_hours = (timestamp - prev_timestamp) / (1000 * 3600)
-
-                            if 0 <= time_diff_hours <= quick_transfer_hours:
-                                alerts['red'].append({
-                                    'feature': '大额转入+立即转出',
-                                    'detail': f'转入 {amount:.2f} USDT 后 {time_diff_hours:.1f} 小时内转出 {prev_amount:.2f} USDT',
-                                    'meaning': '典型洗钱模式（快进快出）'
-                                })
-                                alerts['score'] += 35
-                                break
+                        if 0 < time_diff_hours <= quick_transfer_hours:
+                            alerts['red'].append({
+                                'feature': '大额转入+立即转出',
+                                'detail': f'转入 {amount:.2f} USDT 后 {time_diff_hours:.1f} 小时内转出 {out_amount:.2f} USDT',
+                                'meaning': '典型洗钱模式（快进快出），仅供参考，非司法证据'
+                            })
+                            alerts['score'] += 35
+                            found_fast_out = True
+                            break
+                    if found_fast_out:
+                        break
             except (ValueError, TypeError):
                 continue
 
@@ -177,6 +204,17 @@ def detect_suspicious_features(address_info: Optional[Dict], trc20_transfers: Li
 
     # Cap score at 100
     alerts['score'] = min(alerts['score'], 100)
+
+    # Map raw additive score to a coarse risk level. The score is an
+    # uncalibrated heuristic sum; expose it only as low/mid/high, not as a
+    # precise figure, to avoid false precision in a forensic context.
+    score = alerts['score']
+    if score >= 61:
+        alerts['risk_level'] = '高'
+    elif score >= 31:
+        alerts['risk_level'] = '中'
+    else:
+        alerts['risk_level'] = '低'
 
     return alerts
 

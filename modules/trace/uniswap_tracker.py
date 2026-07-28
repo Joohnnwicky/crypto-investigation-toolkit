@@ -2,7 +2,6 @@
 
 import logging
 import re
-import requests
 from datetime import datetime
 from typing import Dict, Any, List, Optional
 
@@ -14,13 +13,11 @@ except ImportError:
     Web3 = None
 
 from modules.core.eth_rpc_client import EthRpcClient
+from modules.core.api_client import get_eth_transactions
 
 # Configure logging
 logger = logging.getLogger(__name__)
 
-# Etherscan API configuration (V2 API with chainid)
-ETHERSCAN_API_URL = "https://api.etherscan.io/v2/api"
-ETH_CHAIN_ID = "1"
 
 # Major token addresses (from canonical script)
 TOKENS = {
@@ -35,6 +32,14 @@ TRANSFER_EVENT_SIG = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4d
 
 # Uniswap V2 Router address (from canonical script line 39)
 ROUTER_ADDRESS = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D"
+
+# All DEX router addresses recognized for Swap detection.
+# Modern swaps often go through V3 or the Universal Router, not just V2.
+DEX_ROUTER_ADDRESSES = {
+    "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",  # Uniswap V2
+    "0xE592427A0AEce92De3Edee1F18E0157C05861564",  # Uniswap V3 SwapRouter
+    "0x3fC91A3afd70395Cd496C647d5a6CC9D4B2b7FAD",  # Uniswap Universal Router
+}
 
 # Request timeout
 DEFAULT_TIMEOUT = 10
@@ -199,8 +204,9 @@ class UniswapTracker:
         if not logs:
             return "未知"
 
-        # Check if transaction is to Uniswap Router
-        if tx_info.get('to') and tx_info['to'].lower() == ROUTER_ADDRESS.lower():
+        router_lower = {r.lower() for r in DEX_ROUTER_ADDRESSES}
+        # Check if transaction is to a known DEX router
+        if tx_info.get('to') and tx_info['to'].lower() in router_lower:
             # Analyze token flow
             tokens_in = []
             tokens_out = []
@@ -212,10 +218,10 @@ class UniswapTracker:
                 amount = self.format_token_amount(log['value'], decimals)
 
                 # Token sent to router = token sold
-                if log['to'].lower() == ROUTER_ADDRESS.lower():
+                if log['to'].lower() in router_lower:
                     tokens_out.append(f"{amount} {token_name}")
                 # Token from router = token received
-                elif log['from'].lower() == ROUTER_ADDRESS.lower():
+                elif log['from'].lower() in router_lower:
                     tokens_in.append(f"{amount} {token_name}")
 
             # ETH swap (value > 0)
@@ -263,6 +269,10 @@ class UniswapTracker:
     def get_address_transactions(self, address: str, api_key: str, limit: int = 50) -> List[Dict]:
         """Get transactions for address and identify Swap transactions.
 
+        For each tx to a known DEX router, parse the receipt logs to recover
+        real token in/out amounts. Falls back to shallow labeling if the RPC
+        is unavailable or parsing fails.
+
         Args:
             address: ETH address to query
             api_key: Etherscan API key
@@ -273,36 +283,67 @@ class UniswapTracker:
         """
         swaps = []
         txs = get_eth_transactions(address, api_key, limit)
+        router_lower = {r.lower() for r in DEX_ROUTER_ADDRESSES}
+        rpc_available = self.rpc_client is not None
 
         for tx in txs:
-            # Check if transaction is to Uniswap Router
+            # Check if transaction is to a known DEX router
             to_addr = tx.get('to', '')
-            if to_addr and to_addr.lower() == ROUTER_ADDRESS.lower():
-                # Parse timestamp
-                ts = tx.get('timeStamp', '')
-                if ts:
-                    try:
-                        time_str = datetime.fromtimestamp(int(ts)).strftime("%Y-%m-%d %H:%M:%S")
-                    except Exception:
-                        time_str = "未知"
-                else:
+            if not (to_addr and to_addr.lower() in router_lower):
+                continue
+
+            # Parse timestamp
+            ts = tx.get('timeStamp', '')
+            if ts:
+                try:
+                    time_str = datetime.fromtimestamp(int(ts)).strftime("%Y-%m-%d %H:%M:%S")
+                except Exception:
                     time_str = "未知"
+            else:
+                time_str = "未知"
 
-                # Determine swap type based on value
-                value_eth = float(tx.get('value', 0)) / 1e18 if tx.get('value') else 0
+            tx_hash = tx.get('hash', '')
+            value_eth = float(tx.get('value', 0)) / 1e18 if tx.get('value') else 0
 
+            # Try to parse real token flow from receipt logs
+            parsed = None
+            if rpc_available:
+                try:
+                    parsed = self.parse_swap_transaction(tx_hash)
+                except Exception as e:
+                    logger.warning(f"parse_swap_transaction failed for {tx_hash}: {e}")
+                    parsed = None
+
+            if parsed and not parsed.get('error') and parsed.get('swap_type'):
+                swap_type = parsed['swap_type']
+                # swap_type is like "1.0 ETH -> 1234.56 USDT"
+                if ' -> ' in swap_type:
+                    amount_in, amount_out = swap_type.split(' -> ', 1)
+                else:
+                    amount_in, amount_out = swap_type, ''
+                from_token = 'ETH' if value_eth > 0 else 'Token'
+                swaps.append({
+                    "hash": tx_hash,
+                    "type": swap_type,
+                    "amount_in": amount_in.strip(),
+                    "amount_out": amount_out.strip(),
+                    "time": time_str,
+                    "from_token": from_token,
+                    "to_token": "Token"
+                })
+            else:
+                # Fallback: shallow labeling when RPC unavailable or parse failed
                 if value_eth > 0:
-                    swap_type = f"ETH -> Token"
+                    swap_type = "ETH -> Token"
                     amount_in = f"{value_eth:.4f} ETH"
                 else:
                     swap_type = "Token -> Token"
-                    amount_in = "查看详情"
-
+                    amount_in = "需解析日志"
                 swaps.append({
-                    "hash": tx.get('hash', ''),
+                    "hash": tx_hash,
                     "type": swap_type,
                     "amount_in": amount_in,
-                    "amount_out": "查看交易详情",
+                    "amount_out": "需解析日志" if value_eth == 0 else "查看交易详情",
                     "time": time_str,
                     "from_token": "ETH" if value_eth > 0 else "Token",
                     "to_token": "Token"
@@ -356,40 +397,3 @@ def trace_address_swaps_web(address: str, api_key: str = None) -> Dict[str, Any]
             "error": str(e),
             "address": address
         }
-
-
-def get_eth_transactions(address: str, api_key: str, limit: int = 100) -> List[Dict]:
-    """Get ETH transactions from Etherscan API.
-
-    Args:
-        address: ETH address
-        api_key: Etherscan API key
-        limit: Max transactions to fetch
-
-    Returns:
-        List of transaction dicts
-    """
-    params = {
-        "chainid": ETH_CHAIN_ID,
-        "module": "account",
-        "action": "txlist",
-        "address": address,
-        "apikey": api_key,
-        "page": 1,
-        "offset": limit,
-        "sort": "desc"
-    }
-
-    try:
-        response = requests.get(ETHERSCAN_API_URL, params=params, timeout=DEFAULT_TIMEOUT)
-        if response.status_code != 200:
-            return []
-
-        data = response.json()
-        if data.get('status') != '1':
-            return []
-
-        return data.get('result', [])
-    except Exception as e:
-        logger.error(f"Etherscan API error: {e}")
-        return []

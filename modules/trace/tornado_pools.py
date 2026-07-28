@@ -45,13 +45,3 @@ DEPOSIT_EVENT_ABI = {
     "name": "Deposit",
     "type": "event"
 }
-
-# Known exchange address prefixes (for confidence scoring)
-EXCHANGE_PREFIXES = {
-    "0xa9b1": "Coinbase",
-    "0x3b5d": "Coinbase",
-    "0x28c6": "Binance",
-    "0xfbb1": "Binance",
-    "0x2910": "Kraken",
-    "0x503d": "OKX",
-}

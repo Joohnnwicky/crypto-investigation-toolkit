@@ -131,6 +131,44 @@ def get_eth_transactions(address: str, api_key: str, limit: int = 100) -> List[D
         logger.warning(f"get_eth_transactions failed for {address}: {e}")
         return []
 
+def get_eth_balance(address: str, api_key: str) -> Optional[float]:
+    """Get current ETH balance (in ether) for an address from Etherscan API.
+
+    Uses the lightweight balance endpoint (single call, free-tier friendly)
+    instead of estimating from transaction history, which is unreliable
+    (no internal txs, no gas subtraction, limited window).
+
+    Args:
+        address: ETH wallet address (0x prefix, 40 hex chars)
+        api_key: User-provided Etherscan API key (per-query input, never stored)
+
+    Returns:
+        Balance in ETH, or None if the request fails.
+    """
+    params = {
+        "chainid": ETH_CHAIN_ID,
+        "module": "account",
+        "action": "balance",
+        "address": address,
+        "tag": "latest",
+        "apikey": api_key,
+    }
+
+    try:
+        response = requests.get(ETHERSCAN_BASE, params=params, headers=HEADERS, timeout=DEFAULT_TIMEOUT)
+        if response.status_code != 200:
+            logger.warning(f"Etherscan balance API returned {response.status_code} for {address}")
+            return None
+        data = response.json()
+        if data.get('status') != '1':
+            logger.info(f"Etherscan balance returned non-success for {address}: {data.get('message', '')}")
+            return None
+        return int(data.get('result', 0)) / 1e18
+    except Exception as e:
+        logger.warning(f"get_eth_balance failed for {address}: {e}")
+        return None
+
+
 def get_erc20_transfers(address: str, api_key: str, limit: int = 100) -> List[Dict]:
     """Get ERC20 token transfers for an address from Etherscan API.
 

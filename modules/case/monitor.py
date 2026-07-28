@@ -6,7 +6,7 @@ from typing import Dict, List, Any, Optional
 from datetime import datetime
 
 from modules.cross.chain_detector import detect_chain_type, get_chain_requirements
-from modules.core.api_client import get_account_info, get_trc20_transfers, get_eth_transactions
+from modules.core.api_client import get_account_info, get_trc20_transfers, get_eth_transactions, get_eth_balance
 
 logger = logging.getLogger(__name__)
 
@@ -124,31 +124,32 @@ def monitor_addresses_web(addresses: List[str], eth_key: str = '') -> Dict[str, 
                         card['last_active'] = datetime.fromtimestamp(account_info['create_time'] / 1000).strftime('%Y-%m-%d')
 
             elif chain == 'eth':
-                # ETH: Use Etherscan API
+                # ETH: Use Etherscan balance endpoint for the real on-chain
+                # balance. The previous implementation estimated balance by
+                # summing the last 100 normal txs (no internal txs, no gas,
+                # truncated window) which could be off by orders of magnitude.
+                balance = get_eth_balance(addr, eth_key)
+                if balance is not None:
+                    card['balance'] = balance
+                    card['balance_note'] = '链上余额'
+                else:
+                    card['balance'] = None
+                    card['balance_note'] = 'API查询失败'
+
+                # tx_count: Etherscan free API has no direct count endpoint;
+                # approximate from a small recent-tx fetch and label it.
                 eth_txs = get_eth_transactions(addr, eth_key, limit=100)
                 if eth_txs:
-                    # Calculate balance from transaction values
-                    balance = 0.0
-                    for tx in eth_txs:
-                        value = int(tx.get('value', 0)) / 1e18
-                        if tx.get('to', '').lower() == addr.lower():
-                            balance += value
-                        elif tx.get('from', '').lower() == addr.lower():
-                            balance -= value
-
-                    # Balance is an estimate from recent tx history (Etherscan
-                    # free API has no balance endpoint); label it in the UI.
-                    card['balance'] = balance
-                    card['balance_note'] = '估算值'
                     card['tx_count'] = len(eth_txs)
+                    card['tx_count_note'] = '近期记录数(非总数)'
 
-                    # Last active from most recent transaction
+                    # Last active from most recent transaction (sort=desc => [0])
                     first_tx = eth_txs[0]
                     ts = int(first_tx.get('timeStamp', 0))
                     if ts > 0:
                         card['last_active'] = datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M')
                 else:
-                    # No transactions found
+                    card['tx_count'] = 0
                     card['last_active'] = '无交易记录'
 
             elif chain == 'btc':

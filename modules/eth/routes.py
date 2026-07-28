@@ -148,17 +148,17 @@ def export_eth_csv(data: dict) -> str:
             ''
         ])
 
-    # Write Stargate events
-    stargate_events = data.get('stargate_events', [])
-    for event in stargate_events:
+    # Write bridge events (analyzer returns bridge_events, not stargate_events)
+    bridge_events = data.get('bridge_events', [])
+    for event in bridge_events:
         writer.writerow([
-            'Stargate跨链',
+            event.get('bridge', '跨链桥'),
             event.get('tx_hash', ''),
-            event.get('timestamp', ''),
-            event.get('from_address', ''),
-            event.get('to_address', ''),
-            event.get('value', '0'),
-            event.get('contract_type', '')
+            event.get('time', ''),
+            event.get('from', ''),
+            event.get('to', ''),
+            event.get('amount', '0'),
+            ''
         ])
 
     return output.getvalue()

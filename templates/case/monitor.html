@@ -153,10 +153,13 @@ function displayStatusCard(card) {
 }
 
 function formatBalance(balance, chain) {
-    if (chain === 'tron') return balance.toFixed(2) + ' TRX';
-    if (chain === 'eth') return balance.toFixed(4) + ' ETH';
-    if (chain === 'btc') return balance.toFixed(6) + ' BTC';
-    return balance.toString();
+    if (balance === null || balance === undefined || balance === '') return '不可得';
+    const n = Number(balance);
+    if (isNaN(n)) return '不可得';
+    if (chain === 'tron') return n.toFixed(2) + ' TRX';
+    if (chain === 'eth') return n.toFixed(4) + ' ETH';
+    if (chain === 'btc') return n.toFixed(6) + ' BTC';
+    return n.toString();
 }
 
 async function exportJSON() {

@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 DEX_ROUTERS = {
     'uniswap_v2': '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
     'uniswap_v3': '0xE592427A0AEce92De3Edee1F18E0157C05861564',
+    'universal': '0x3fC91A3afd70395Cd496C647d5a6CC9D4B2b7FAD',
     'sushiswap': '0xd9e1cE17f2641f24AE83637ab58a1aFa2493E64',
 }
 
@@ -19,10 +20,14 @@ DUST_THRESHOLD = 0.001  # ETH
 
 
 def detect_sandwich_attack(txs: List[Dict]) -> List[Dict]:
-    """Detect Sandwich attack patterns (per D-14, D-20).
+    """Detect possible sandwich participation (per D-14, D-20).
 
-    Signature: Same block contains frontrun + victim + backrun transactions
-    to same DEX router with price manipulation.
+    A sandwich attack involves three transactions (frontrun, victim, backrun)
+    across *different* addresses, which cannot be confirmed from a single
+    address's history. We conservatively flag only when the analyzed
+    address itself makes mixed-direction swaps (ETH-in and token-out) to
+    the same DEX router within one block - a possible self-sandwich
+    pattern that still needs manual confirmation.
 
     Args:
         txs: List of ETH transaction dicts
@@ -37,39 +42,42 @@ def detect_sandwich_attack(txs: List[Dict]) -> List[Dict]:
     for tx in txs:
         block = tx.get('blockNumber')
         if block:
-            if block not in block_groups:
-                block_groups[block] = []
-            block_groups[block].append(tx)
+            block_groups.setdefault(block, []).append(tx)
 
-    # Check blocks with multiple DEX transactions
     dex_addresses_lower = [addr.lower() for addr in DEX_ROUTERS.values()]
 
     for block, block_txs in block_groups.items():
-        # Filter DEX transactions
         dex_txs = [t for t in block_txs if t.get('to', '').lower() in dex_addresses_lower]
 
-        if len(dex_txs) >= 3:
-            # Potential sandwich: front-victim-back pattern
-            attacks.append({
-                'type': 'Sandwich',
-                'confidence': 'MEDIUM',
-                'block': block,
-                'tx_count': len(dex_txs),
-                'details': f'区块 {block} 内有 {len(dex_txs)} 笔DEX交易，可能存在三明治攻击'
-            })
+        if len(dex_txs) >= 2:
+            has_eth_in = any(int(t.get('value', 0)) > 0 for t in dex_txs)
+            has_token_swap = any(int(t.get('value', 0)) == 0 for t in dex_txs)
+
+            # Mixed directions in one block to the same router
+            if has_eth_in and has_token_swap:
+                attacks.append({
+                    'type': '疑似三明治参与(待复核)',
+                    'confidence': 'LOW',
+                    'block': block,
+                    'tx_count': len(dex_txs),
+                    'details': f'区块 {block} 内该地址对同一 DEX 路由有混合方向 Swap（ETH入+代币出）。单地址视角无法确认三明治，需结合受害地址与多地址关联复核。'
+                })
 
     return attacks
 
 
 def detect_flash_loan_attack(txs: List[Dict], api_key: str) -> List[Dict]:
-    """Detect Flash Loan attack patterns (per D-15, D-19).
+    """Flag high-value transactions for manual flash-loan review.
 
-    Signature: Single transaction with borrow + manipulate + repay.
-    High value transactions with rapid protocol interactions.
+    A flash loan is a borrow-repay within a single transaction and cannot
+    be identified by ETH value alone (net ETH movement is often zero).
+    The previous "value > 100 ETH => Flash Loan HIGH" was a false positive
+    generator. We now only flag large-value txs for review, not as
+    confirmed flash loans.
 
     Args:
         txs: List of ETH transaction dicts
-        api_key: Etherscan API key for log queries
+        api_key: Etherscan API key (reserved; log analysis not implemented)
 
     Returns:
         List of attack dicts with type, confidence, details
@@ -79,14 +87,14 @@ def detect_flash_loan_attack(txs: List[Dict], api_key: str) -> List[Dict]:
     for tx in txs:
         value = int(tx.get('value', 0)) / 1e18
 
-        # Check for high value transactions (> 100 ETH)
+        # High value transactions (> 100 ETH) - review candidate only
         if value > 100:
             attacks.append({
-                'type': 'Flash Loan',
-                'confidence': 'HIGH',
+                'type': '大额交易(待复核)',
+                'confidence': 'LOW',
                 'tx_hash': tx.get('hash', ''),
                 'value': value,
-                'details': f'交易内含大额借贷操作，金额 {value:.2f} ETH'
+                'details': f'交易金额 {value:.2f} ETH，金额较大。是否涉及闪贷需解析交易日志（借贷协议调用+同笔归还）确认，不可仅凭金额判定。'
             })
 
     return attacks
@@ -95,8 +103,9 @@ def detect_flash_loan_attack(txs: List[Dict], api_key: str) -> List[Dict]:
 def detect_dusting_attack(txs: List[Dict]) -> List[Dict]:
     """Detect Dusting attack patterns (per D-16, D-21).
 
-    Signature: Many outgoing transactions with tiny amounts (< 0.001 ETH)
-    to many different addresses for tracking.
+    Flags many outgoing ETH transfers with tiny amounts to many different
+    addresses. Note: ERC20 token dusting is NOT visible here because
+    Etherscan normal txs carry value=0 for token transfers.
 
     Args:
         txs: List of ETH transaction dicts
@@ -106,7 +115,7 @@ def detect_dusting_attack(txs: List[Dict]) -> List[Dict]:
     """
     attacks = []
 
-    # Filter outgoing transactions with tiny values
+    # Filter outgoing ETH transactions with tiny values
     dust_txs = []
     for tx in txs:
         value = int(tx.get('value', 0)) / 1e18
@@ -124,16 +133,17 @@ def detect_dusting_attack(txs: List[Dict]) -> List[Dict]:
                 'confidence': confidence,
                 'tx_count': len(dust_txs),
                 'recipients': len(unique_recipients),
-                'details': f'发现 {len(dust_txs)} 笔小额转账，涉及 {len(unique_recipients)} 个地址'
+                'details': f'发现 {len(dust_txs)} 笔小额 ETH 转账，涉及 {len(unique_recipients)} 个地址。仅覆盖 ETH 转账，ERC20 代币粉尘未纳入。'
             })
 
     return attacks
 
 
 def detect_protocol_vulnerability(txs: List[Dict]) -> List[Dict]:
-    """Detect Protocol vulnerability exploitation (per D-17, D-22).
+    """Flag failed high-value transactions for review (per D-17, D-22).
 
-    Signature: Failed transactions with high value, abnormal patterns.
+    A failed high-value transaction may indicate a protocol exploit attempt,
+    but failure alone is not confirmation. Flagged for manual review only.
 
     Args:
         txs: List of ETH transaction dicts
@@ -149,10 +159,11 @@ def detect_protocol_vulnerability(txs: List[Dict]) -> List[Dict]:
             value = int(tx.get('value', 0)) / 1e18
             if value > 10:
                 attacks.append({
-                    'type': 'Protocol Vulnerability',
+                    'type': '失败交易(待复核)',
                     'confidence': 'LOW',
                     'tx_hash': tx.get('hash', ''),
-                    'details': f'高价值交易失败，可能涉及协议漏洞尝试'
+                    'value': value,
+                    'details': f'高价值交易失败（{value:.2f} ETH），可能涉及协议漏洞尝试，需结合交易日志与合约状态复核。'
                 })
 
     return attacks

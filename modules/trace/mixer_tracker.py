@@ -13,7 +13,7 @@ except ImportError:
     Web3 = None
 
 from modules.core.eth_rpc_client import EthRpcClient
-from .tornado_pools import TORNADO_POOLS, WITHDRAWAL_EVENT_ABI, EXCHANGE_PREFIXES
+from .tornado_pools import TORNADO_POOLS, WITHDRAWAL_EVENT_ABI
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -113,20 +113,17 @@ class TornadoCashTracker:
             logger.error(f"Failed to get withdrawals from {pool_address}: {e}")
             return []
 
-    def identify_exchange(self, address: str) -> Optional[str]:
-        """Identify if address belongs to known exchange.
-
-        Args:
-            address: ETH address
-
-        Returns:
-            Exchange name or None
-        """
-        prefix = address[:6].lower()
-        return EXCHANGE_PREFIXES.get(prefix)
-
     def calculate_confidence(self, withdrawal: Dict, deposit_ts: float) -> tuple:
-        """Calculate confidence level for withdrawal.
+        """Calculate a conservative confidence level for a withdrawal.
+
+        The only input available is the deposit *time* (no deposit note or
+        deposit address), so confidence is at most a weak timing signal.
+        Time-window overlap alone cannot link a withdrawal to a specific
+        deposit.
+
+        The previous exchange-prefix check was removed: a 3-byte address
+        prefix cannot reliably identify an exchange, and a Tornado
+        withdrawal recipient is a fresh address, not an exchange wallet.
 
         Args:
             withdrawal: Withdrawal event dict
@@ -135,20 +132,15 @@ class TornadoCashTracker:
         Returns:
             (confidence, reason) tuple
         """
-        # Check if withdrawal goes to exchange
-        exchange = self.identify_exchange(withdrawal['recipient'])
-        if exchange:
-            return "HIGH", f"立即转入{exchange}交易所，高度可疑"
-
-        # Check withdrawal timing
         withdraw_ts = withdrawal['timestamp']
         hours_diff = (withdraw_ts - deposit_ts) / 3600
 
-        if hours_diff < 6:
-            return "MEDIUM", f"存款后 {hours_diff:.1f} 小时即提款，较可疑"
-        elif hours_diff < 24:
+        if hours_diff < 0:
+            return "LOW", "提款早于存款时间，可能无关联"
+        if hours_diff < 1:
+            return "MEDIUM", f"存款后 {hours_diff:.1f} 小时即提款（仅时间接近，弱信号）"
+        if hours_diff < 24:
             return "LOW", f"存款后 {hours_diff:.1f} 小时提款"
-
         return "LOW", "时间窗口边缘提款"
 
     def search_all_pools(self, deposit_time: str, window_hours: int = DEFAULT_WINDOW_HOURS) -> List[Dict]:
@@ -175,27 +167,32 @@ class TornadoCashTracker:
         end_block = self._block_from_timestamp(end_ts)
 
         suspicious_withdrawals = []
+        chunk_size = 2000  # keep get_logs ranges RPC-friendly
 
         # Search all pools (per D-11: auto-search all pools)
         for pool_name, pool_address in TORNADO_POOLS.items():
-            withdrawals = self.get_withdrawals(pool_address, start_block, end_block)
+            block = max(0, start_block)
+            while block <= end_block:
+                chunk_end = min(block + chunk_size - 1, end_block)
+                withdrawals = self.get_withdrawals(pool_address, block, chunk_end)
 
-            for wd in withdrawals:
-                wd_ts = wd['timestamp']
+                for wd in withdrawals:
+                    wd_ts = wd['timestamp']
 
-                # Check if within time window
-                if start_ts <= wd_ts <= end_ts:
-                    confidence, reason = self.calculate_confidence(wd, deposit_ts)
+                    # Check if within time window
+                    if start_ts <= wd_ts <= end_ts:
+                        confidence, reason = self.calculate_confidence(wd, deposit_ts)
 
-                    suspicious_withdrawals.append({
-                        "pool": pool_name,
-                        "recipient": wd['recipient'],
-                        "fee": wd['fee'],
-                        "date": wd['date'],
-                        "tx_hash": wd['transaction_hash'],
-                        "confidence": confidence,
-                        "reason": reason
-                    })
+                        suspicious_withdrawals.append({
+                            "pool": pool_name,
+                            "recipient": wd['recipient'],
+                            "fee": wd['fee'],
+                            "date": wd['date'],
+                            "tx_hash": wd['transaction_hash'],
+                            "confidence": confidence,
+                            "reason": reason
+                        })
+                block = chunk_end + 1
 
         return suspicious_withdrawals
 
@@ -211,7 +208,7 @@ class TornadoCashTracker:
         """
         diagram = f"""
 ┌─────────────────────────────────────────────────────────────┐
-│  混币器追踪流程                                               │
+│  混币器提款参考列表（时间窗）                                   │
 ├─────────────────────────────────────────────────────────────┤
 │  存款时间: {deposit_time}                                     │
 │  时间窗口: {DEFAULT_WINDOW_HOURS}小时                         │
@@ -262,7 +259,8 @@ def time_window_analysis_web(deposit_time: str) -> Dict[str, Any]:
             "deposit_time": deposit_time,
             "window_hours": DEFAULT_WINDOW_HOURS,
             "suspicious_withdrawals": suspicious_withdrawals,
-            "flow_diagram": tracker.generate_flow_diagram(deposit_time, suspicious_withdrawals)
+            "flow_diagram": tracker.generate_flow_diagram(deposit_time, suspicious_withdrawals),
+            "note": "以下为存款时间后时间窗内的提款参考列表。仅凭时间窗口无法将某笔提款关联到特定存款，需配合存款面额与 deposit-note 匹配才能确认关联。"
         }
 
     except Exception as e:
