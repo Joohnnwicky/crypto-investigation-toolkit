@@ -6,7 +6,7 @@
     <title>{% block title %}BLOCKSHADE{% endblock %}</title>
     <!-- Tailwind CSS v4 browser build (local copy for offline use, from @tailwindcss/browser@4.3.3) -->
     <script src="/static/tailwind.browser.js"></script>
-    <!-- Hacker theme styles inspired by terminal aesthetic -->
+    <!-- Anduril design system: dark canvas, lime accent, flat, square corners -->
     <!-- Chinese font: 字魂凹凸世界体 (商用授权) -->
     <style>
         @font-face {
@@ -17,41 +17,62 @@
         }
 
         :root {
-            --bg-dark: #1A1A1A;
-            --bg-sidebar: #121212;
-            --bg-card: #1E1E1E;
-            --bg-card-inner: #252525;
-            --accent-green: #B5E853;
-            --accent-green-dim: rgba(181, 232, 83, 0.3);
-            --accent-green-bright: rgba(181, 232, 83, 0.15);
-            --text-light: #FFFFFF;
-            --text-muted: #CCCCCC;
-            --link-color: #6CBDEC;
-            --keyword-color: #E867E8;
+            /* Anduril tokens */
+            --canvas: #010101;
+            --ink: #ffffff;
+            --ink-soft: #8e9291;
+            --hairline: #6c6e6b;
+            --lime: #dff140;
+            --cloud: #505544;
+
+            /* Backwards-compatible aliases — existing var() refs across all templates follow these */
+            --bg-dark: var(--canvas);
+            --bg-sidebar: var(--canvas);
+            --bg-card: var(--canvas);
+            --bg-card-inner: var(--canvas);
+            --accent-green: var(--lime);
+            --accent-green-dim: rgba(108, 110, 107, 0.3);
+            --text-light: var(--ink);
+            --text-muted: var(--ink-soft);
+            --link-color: var(--ink);
+            --keyword-color: var(--ink);
+
+            /* Semantic alert colors — functional risk grading, retained */
             --alert-red: #E86E6E;
             --alert-yellow: #E8D86E;
             --alert-green: #6EE86E;
+
             --font-chinese: 'ZiHunAoTu', sans-serif;
+            --font-sans: 'HelveticaNowDisplay', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif;
             --font-mono: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
             --font-size-base: 18px;
         }
 
+        /* Anduril hard rules: flat (no shadow) + square corners (no radius) everywhere.
+           These override Tailwind rounded-* utilities and inline dashed borders on every page. */
         * {
+            border-radius: 0 !important;
+            box-shadow: none !important;
             font-size: inherit;
+        }
+        [style*="dashed"] {
+            border-style: solid !important;
+        }
+        /* Spinner is a motion element, not a UI container — keep it round. */
+        .animate-spin {
+            border-radius: 50% !important;
         }
 
         body {
-            font-family: var(--font-chinese), var(--font-mono);
-            background: var(--bg-dark);
-            color: var(--text-light);
+            font-family: var(--font-sans);
+            background: var(--canvas);
+            color: var(--ink);
             font-size: var(--font-size-base);
             line-height: 1.6;
         }
 
-        /* Increase all font sizes by 1.25x */
-        h1, h2, h3, h4, h5, h6, p, span, div, li, a, input, textarea, select, button {
-            font-size: 1em;
-        }
+        a { cursor: pointer; transition: color 0.2s ease-out; }
+        a:hover { color: var(--lime); }
 
         h1 { font-size: 1.5rem; }
         h2 { font-size: 1.25rem; }
@@ -83,9 +104,9 @@
             display: inline-block;
         }
 
-        /* All gray text becomes white for better readability */
+        /* Secondary text stays readable on the dark canvas */
         .text-gray-400, .text-gray-500, .text-gray-600 {
-            color: var(--text-light) !important;
+            color: var(--ink) !important;
         }
 
         /* Terminal/code elements use monospace */
@@ -93,28 +114,22 @@
             font-family: var(--font-mono);
         }
 
-        /* Chinese title uses Chinese font */
-        .terminal-title {
-            font-family: var(--font-chinese);
-        }
-
         .sidebar {
-            background: var(--bg-sidebar);
-            border-right: 2px dashed var(--accent-green);
+            background: var(--canvas);
+            border-right: 1px solid var(--hairline);
             width: 280px;
         }
 
         .brand-header {
             padding: 1.25rem;
-            border-bottom: 2px dashed var(--accent-green);
+            border-bottom: 1px solid var(--hairline);
         }
 
         .brand-logo {
             width: 48px;
             height: 48px;
-            border-radius: 8px;
             overflow: hidden;
-            border: 2px dashed var(--accent-green);
+            border: 1px solid var(--hairline);
         }
 
         .brand-logo img {
@@ -123,56 +138,60 @@
             object-fit: cover;
         }
 
+        /* Chinese brand title keeps its display font */
         .terminal-title {
-            color: var(--accent-green);
+            font-family: var(--font-chinese);
+            color: var(--ink);
             font-weight: bold;
             font-size: 1.3rem;
         }
 
+        /* English subtitle: Times New Roman decorative label */
         .terminal-subtitle {
-            color: var(--accent-green);
+            font-family: 'Times New Roman', serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--ink-soft);
             font-size: 1rem;
         }
 
-        /* Navigation section divider - full width green dashed line */
+        /* Navigation section divider */
         .nav-section-title {
-            color: var(--accent-green);
-            font-size: 1.1rem;
+            color: var(--ink-soft);
+            font-size: 0.8rem;
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 2px;
             padding: 12px 16px;
             margin-top: 16px;
-            border-top: 2px dashed var(--accent-green);
-            border-bottom: 1px dashed var(--accent-green-dim);
-            background: rgba(181, 232, 83, 0.08);
+            border-top: 1px solid var(--hairline);
         }
 
-        /* First section doesn't need top border */
         .nav-section-title:first-of-type {
             border-top: none;
+            margin-top: 0;
         }
 
         /* Nav links styling */
         .nav-link {
             display: block;
             padding: 10px 16px;
-            color: var(--link-color);
-            transition: all 0.2s ease;
+            color: var(--ink-soft);
+            transition: color 0.2s ease-out;
             position: relative;
             font-size: 1rem;
+            cursor: pointer;
         }
 
         .nav-link::before {
             content: ">> ";
-            color: var(--accent-green);
+            color: var(--lime);
             opacity: 0;
             transition: opacity 0.2s;
         }
 
         .nav-link:hover {
-            color: var(--accent-green);
-            background: rgba(181, 232, 83, 0.1);
+            color: var(--lime);
         }
 
         .nav-link:hover::before {
@@ -180,9 +199,8 @@
         }
 
         .nav-link.active {
-            color: var(--accent-green);
-            border-left: 2px dashed var(--accent-green);
-            background: rgba(181, 232, 83, 0.15);
+            color: var(--lime);
+            border-left: 2px solid var(--lime);
         }
 
         .nav-link.active::before {
@@ -190,90 +208,91 @@
         }
 
         .card {
-            background: var(--bg-card);
-            border: 2px dashed var(--accent-green);
-            border-radius: 6px;
+            background: var(--canvas);
+            border: 1px solid var(--hairline);
             padding: 1.25rem;
             margin-bottom: 1.5rem;
+            transition: border-color 0.2s ease-out;
+            animation: cardFadeIn 0.4s ease-out;
         }
 
         .card:hover {
-            background: var(--accent-green-bright);
-            border-color: var(--accent-green);
+            border-color: var(--lime);
         }
 
         .card-inner {
-            background: var(--bg-card-inner);
-            border: 1px dashed var(--accent-green);
-            border-radius: 4px;
+            background: var(--canvas);
+            border: 1px solid var(--hairline);
             padding: 0.75rem;
+            transition: border-color 0.2s ease-out;
         }
 
-        /* Grid containers - visible green dashed borders */
+        .card-inner:hover {
+            border-color: var(--lime);
+        }
+
+        /* Grid containers */
         .grid {
             border-collapse: separate;
             border-spacing: 0.5rem;
         }
 
         .grid > div {
-            border: 1px dashed var(--accent-green);
-            border-radius: 4px;
+            border: 1px solid var(--hairline);
             padding: 0.75rem;
-            background: var(--bg-card-inner);
+            background: var(--canvas);
         }
 
-        /* Form grid - make borders more visible */
+        /* Form grid */
         .grid-cols-2 > div, .grid-cols-3 > div, .grid-cols-4 > div {
-            border: 1px dashed var(--accent-green);
-            background: var(--bg-card-inner);
+            border: 1px solid var(--hairline);
+            background: var(--canvas);
             padding: 0.75rem;
-            border-radius: 4px;
         }
 
+        /* Primary button: transparent base + lime border; fills lime on hover */
         .btn-primary {
-            background: var(--accent-green);
-            color: var(--bg-dark);
+            background: transparent;
+            color: var(--lime);
             font-weight: bold;
             font-size: 1rem;
-            border: none;
+            border: 1px solid var(--lime);
             padding: 10px 20px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: background 0.2s, color 0.2s;
         }
 
         .btn-primary:hover {
-            background: #C8F070;
-            box-shadow: 0 0 12px rgba(181, 232, 83, 0.5);
-            transform: translateY(-1px);
+            background: var(--lime);
+            color: var(--canvas);
         }
 
         .btn-secondary {
-            background: var(--bg-sidebar);
-            color: var(--text-light);
-            border: 2px dashed var(--accent-green);
+            background: transparent;
+            color: var(--ink);
+            border: 1px solid var(--hairline);
             font-size: 1rem;
             padding: 10px 20px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: border-color 0.2s, color 0.2s;
         }
 
         .btn-secondary:hover {
-            background: var(--accent-green-bright);
-            border-color: var(--accent-green);
-            transform: translateY(-1px);
+            border-color: var(--lime);
+            color: var(--lime);
         }
 
         .footer-dark {
-            background: var(--bg-sidebar);
-            border-top: 2px dashed var(--accent-green);
-            color: var(--text-light);
+            background: var(--canvas);
+            border-top: 1px solid var(--hairline);
+            color: var(--ink-soft);
             font-size: 1rem;
             padding: 1rem;
         }
 
         /* Terminal-style headers */
         .terminal-header {
-            color: var(--accent-green);
+            color: var(--ink-soft);
             font-weight: bold;
             font-size: 1.25rem;
         }
@@ -282,20 +301,20 @@
             content: "$ ./";
         }
 
-        /* Input styling - larger and clearer */
+        /* Input styling */
         input[type="text"], textarea, select {
-            background: var(--bg-sidebar);
-            color: var(--text-light);
-            border: 2px dashed var(--accent-green);
+            background: var(--canvas);
+            color: var(--ink);
+            border: 1px solid var(--hairline);
             padding: 10px 14px;
             font-family: var(--font-mono);
             font-size: 1rem;
+            transition: border-color 0.2s;
         }
 
         input[type="text"]:focus, textarea:focus, select:focus {
             outline: none;
-            border-color: var(--accent-green);
-            box-shadow: 0 0 8px rgba(181, 232, 83, 0.4);
+            border-color: var(--lime);
         }
 
         /* Scrollbar styling */
@@ -304,67 +323,49 @@
         }
 
         ::-webkit-scrollbar-track {
-            background: var(--bg-dark);
+            background: var(--canvas);
         }
 
         ::-webkit-scrollbar-thumb {
-            background: var(--accent-green-dim);
-            border-radius: 4px;
+            background: var(--hairline);
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: var(--accent-green);
+            background: var(--lime);
         }
 
-        /* Alert sections - more visible */
+        /* Alert sections — semantic risk colors retained */
         .alert-red {
-            background: rgba(232, 110, 110, 0.15);
-            border: 2px dashed var(--alert-red);
+            background: rgba(232, 110, 110, 0.12);
+            border: 1px solid var(--alert-red);
             border-left: 6px solid var(--alert-red);
         }
 
         .alert-yellow {
-            background: rgba(232, 216, 110, 0.15);
-            border: 2px dashed var(--alert-yellow);
+            background: rgba(232, 216, 110, 0.12);
+            border: 1px solid var(--alert-yellow);
             border-left: 6px solid var(--alert-yellow);
         }
 
         .alert-green {
-            background: rgba(110, 232, 110, 0.15);
-            border: 2px dashed var(--alert-green);
+            background: rgba(110, 232, 110, 0.12);
+            border: 1px solid var(--alert-green);
             border-left: 6px solid var(--alert-green);
         }
 
-        /* Smooth page transitions */
+        /* Smooth page transitions (opacity only, per Anduril motion rules) */
         main {
             animation: fadeIn 0.3s ease-out;
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Cards animate in smoothly */
-        .card {
-            animation: cardFadeIn 0.4s ease-out;
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         @keyframes cardFadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(15px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
 </head>
@@ -372,13 +373,13 @@
     <!-- Sidebar navigation -->
     {% block sidebar %}
     <aside class="sidebar fixed h-full overflow-y-auto" style="width: 280px;">
-        <!-- Brand header with terminal style -->
+        <!-- Brand header -->
         <div class="brand-header">
             <div class="flex items-center space-x-3">
-                <div class="brand-logo rounded"><img src="/static/logo.png" alt="Logo"></div>
+                <div class="brand-logo"><img src="/static/logo.png" alt="Logo"></div>
                 <div>
                     <h1 class="terminal-title">区块猎影</h1>
-                    <p class="terminal-subtitle font-mono">BLOCKSHADE</p>
+                    <p class="terminal-subtitle">BLOCKSHADE</p>
                 </div>
             </div>
         </div>

@@ -188,17 +188,17 @@ function displayResults(data) {
 
     if (score >= 70) {
         scoreCircle.style.background = 'var(--alert-red)';
-        scoreCircle.style.color = '#1A1A1A';
+        scoreCircle.style.color = '#010101';
         scoreLabel.textContent = '高风险';
         scoreLabel.style.color = 'var(--alert-red)';
     } else if (score >= 40) {
         scoreCircle.style.background = 'var(--alert-yellow)';
-        scoreCircle.style.color = '#1A1A1A';
+        scoreCircle.style.color = '#010101';
         scoreLabel.textContent = '中等风险';
         scoreLabel.style.color = 'var(--alert-yellow)';
     } else {
         scoreCircle.style.background = 'var(--alert-green)';
-        scoreCircle.style.color = '#1A1A1A';
+        scoreCircle.style.color = '#010101';
         scoreLabel.textContent = '低风险';
         scoreLabel.style.color = 'var(--alert-green)';
     }

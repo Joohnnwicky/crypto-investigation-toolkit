@@ -115,9 +115,9 @@ function displayResults(data) {
     html += `<button onclick="exportJSON()" class="btn-primary">导出JSON</button>`;
     html += `<button onclick="exportCSV()" class="btn-secondary">导出CSV</button>`;
     html += `<button onclick="exportPDF()" class="btn-secondary">导出PDF</button>`;
-    html += `<button onclick="exportToTron()" class="btn-secondary" style="border-color: var(--link-color);">导出到TRON分析</button>`;
-    html += `<button onclick="exportToCluster()" class="btn-secondary" style="border-color: var(--keyword-color);">导出到聚类</button>`;
-    html += `<button onclick="exportToFreeze()" class="btn-secondary" style="border-color: var(--alert-red);">导出到资产追回</button>`;
+    html += `<button onclick="exportToTron()" class="btn-secondary">导出到TRON分析</button>`;
+    html += `<button onclick="exportToCluster()" class="btn-secondary">导出到聚类</button>`;
+    html += `<button onclick="exportToFreeze()" class="btn-secondary">导出到资产追回</button>`;
     html += '</div></div>';
 
     resultsDiv.innerHTML = html;

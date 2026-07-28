@@ -63,7 +63,7 @@
         </div>
 
         <!-- Stargate events -->
-        <div id="stargate-events" class="hidden rounded-lg p-6 mb-6" style="background: rgba(108, 190, 236, 0.1); border-left: 4px solid var(--link-color);">
+        <div id="stargate-events" class="hidden rounded-lg p-6 mb-6" style="background: rgba(80, 85, 68, 0.12); border-left: 4px solid var(--hairline);">
             <h2 class="text-lg font-bold mb-4 flex items-center" style="color: var(--link-color);">
                 <span class="mr-2">></span> Stargate跨链桥事件
             </h2>
@@ -204,7 +204,7 @@ function displayTransactions(type, transactions) {
     list.innerHTML = `
         <table class="min-w-full text-sm">
             <thead>
-                <tr style="border-bottom: 1px dashed var(--accent-green);">
+                <tr style="border-bottom: 1px solid var(--hairline);">
                     <th class="px-4 py-2 text-left" style="color: var(--text-muted);">交易哈希</th>
                     <th class="px-4 py-2 text-left" style="color: var(--text-muted);">时间</th>
                     <th class="px-4 py-2 text-left" style="color: var(--text-muted);">发送方</th>
@@ -214,7 +214,7 @@ function displayTransactions(type, transactions) {
             </thead>
             <tbody>
                 ${transactions.slice(0, 20).map(tx => `
-                    <tr style="border-bottom: 1px dashed rgba(181,232,83,0.3);">
+                    <tr style="border-bottom: 1px solid var(--hairline);">
                         <td class="px-4 py-2 text-xs" style="color: var(--link-color);">
                             <a href="https://etherscan.io/tx/${tx.hash}" target="_blank">${tx.hash ? tx.hash.slice(0, 10) + '...' + tx.hash.slice(-8) : '未知'}</a>
                         </td>
@@ -240,7 +240,7 @@ function displayERC20Transfers(transfers) {
     list.innerHTML = `
         <table class="min-w-full text-sm">
             <thead>
-                <tr style="border-bottom: 1px dashed var(--accent-green);">
+                <tr style="border-bottom: 1px solid var(--hairline);">
                     <th class="px-4 py-2 text-left" style="color: var(--text-muted);">交易哈希</th>
                     <th class="px-4 py-2 text-left" style="color: var(--text-muted);">时间</th>
                     <th class="px-4 py-2 text-left" style="color: var(--text-muted);">代币</th>
@@ -255,7 +255,7 @@ function displayERC20Transfers(transfers) {
                     const value = parseFloat(tx.value || 0) / Math.pow(10, decimals);
                     const symbol = tx.tokenSymbol || '未知';
                     return `
-                        <tr style="border-bottom: 1px dashed rgba(181,232,83,0.3);">
+                        <tr style="border-bottom: 1px solid var(--hairline);">
                             <td class="px-4 py-2 text-xs" style="color: var(--link-color);">
                                 <a href="https://etherscan.io/tx/${tx.hash}" target="_blank">${tx.hash ? tx.hash.slice(0, 10) + '...' + tx.hash.slice(-8) : '未知'}</a>
                             </td>
@@ -318,7 +318,7 @@ function displayMixerStatus(deposits, address) {
     }
 
     content.innerHTML = deposits.map(deposit => `
-        <div class="card-inner rounded p-4" style="border: 1px dashed var(--keyword-color);">
+        <div class="card-inner rounded p-4">
             <div class="flex justify-between items-start mb-2">
                 <p class="font-bold" style="color: var(--keyword-color);">混币池存款: ${deposit.pool || '未知'}</p>
                 <span class="text-xs" style="color: var(--text-muted);">${deposit.time || '未知'}</span>
@@ -327,7 +327,7 @@ function displayMixerStatus(deposits, address) {
                 <div><span style="color: var(--text-muted);">交易哈希:</span> <a href="https://etherscan.io/tx/${deposit.tx_hash}" target="_blank" class="ml-1 text-xs" style="color: var(--keyword-color);">${deposit.tx_hash ? deposit.tx_hash.slice(0, 10) + '...' : '未知'}</a></div>
                 <div><span style="color: var(--text-muted);">存款金额:</span> <span class="ml-1 font-medium">${deposit.amount || 0} ETH</span></div>
             </div>
-            <button onclick="traceMixer('${deposit.time}', '${address}')" class="btn-secondary" style="border-color: var(--keyword-color);">
+            <button onclick="traceMixer('${deposit.time}', '${address}')" class="btn-secondary">
                 追踪混币提款
             </button>
         </div>
