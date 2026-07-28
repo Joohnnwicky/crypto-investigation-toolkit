@@ -1,5 +1,6 @@
 """Flask application entry point for Crypto Investigation Toolkit"""
 
+import os
 from flask import Flask, render_template
 from modules.tron.routes import tron_bp
 from modules.eth.routes import eth_bp
@@ -32,4 +33,5 @@ def tron_suspicious_analyzer():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='127.0.0.1', port=5000)
+    # Debug mode is opt-in via FLASK_DEBUG=1; off by default for safety
+    app.run(debug=os.environ.get('FLASK_DEBUG', '0') == '1', host='127.0.0.1', port=5000)

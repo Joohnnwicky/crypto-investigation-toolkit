@@ -19,7 +19,7 @@ def analyze():
         "alerts": {"red": [], "yellow": [], "green": [], "score": int}
     }
     """
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data:
         return jsonify({'success': False, 'error': '请提供JSON数据'}), 400
 
@@ -52,7 +52,7 @@ def export_json_endpoint():
     Request JSON body: {"result": analysis_result_dict}
     Response: JSON file download with Content-Disposition header
     """
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data or 'result' not in data:
         return jsonify({'error': '请提供分析结果数据'}), 400
 
@@ -60,8 +60,6 @@ def export_json_endpoint():
     address = result.get('address', 'unknown')
 
     json_content = export_json(result)
-
-    from modules.core.exporter import get_export_filename
     filename = get_export_filename(address, 'json')
 
     response = Response(
@@ -78,7 +76,7 @@ def export_csv_endpoint():
     Request JSON body: {"result": analysis_result_dict}
     Response: CSV file download with Content-Disposition header
     """
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data or 'result' not in data:
         return jsonify({'error': '请提供分析结果数据'}), 400
 
@@ -123,7 +121,7 @@ def analyze_behavior():
         }
     }
     """
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data:
         return jsonify({'success': False, 'error': '请提供JSON数据'}), 400
 
@@ -145,7 +143,7 @@ def export_behavior_json():
     Request JSON body: {"result": behavior_analysis_result_dict}
     Response: JSON file download with Content-Disposition header
     """
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data or 'result' not in data:
         return jsonify({'error': '请提供分析结果数据'}), 400
 
@@ -170,7 +168,7 @@ def export_behavior_csv():
     Request JSON body: {"result": behavior_analysis_result_dict}
     Response: CSV file download with Content-Disposition header
     """
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data or 'result' not in data:
         return jsonify({'error': '请提供分析结果数据'}), 400
 

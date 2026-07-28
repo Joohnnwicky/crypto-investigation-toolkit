@@ -1,7 +1,10 @@
 """Tronscan and Etherscan API clients for blockchain queries"""
 
+import logging
 import requests
 from typing import Optional, Dict, List
+
+logger = logging.getLogger(__name__)
 
 # Tronscan API configuration
 TRONSCAN_BASE = "https://api.tronscan.org/api"
@@ -33,6 +36,7 @@ def get_account_info(address: str) -> Optional[Dict]:
     try:
         response = requests.get(url, params=params, headers=HEADERS, timeout=DEFAULT_TIMEOUT)
         if response.status_code != 200:
+            logger.warning(f"Tronscan account API returned {response.status_code} for {address}")
             return None
         data = response.json()
 
@@ -53,7 +57,8 @@ def get_account_info(address: str) -> Optional[Dict]:
             'token_transfers': trc20_tokens,
             'raw_data': data
         }
-    except Exception:
+    except Exception as e:
+        logger.warning(f"get_account_info failed for {address}: {e}")
         return None
 
 def get_trc20_transfers(address: str, limit: int = 50) -> List[Dict]:
@@ -77,10 +82,12 @@ def get_trc20_transfers(address: str, limit: int = 50) -> List[Dict]:
     try:
         response = requests.get(url, params=params, headers=HEADERS, timeout=DEFAULT_TIMEOUT)
         if response.status_code != 200:
+            logger.warning(f"Tronscan trc20 API returned {response.status_code} for {address}")
             return []
         data = response.json()
         return data.get('token_transfers', [])
-    except Exception:
+    except Exception as e:
+        logger.warning(f"get_trc20_transfers failed for {address}: {e}")
         return []
 
 def get_eth_transactions(address: str, api_key: str, limit: int = 100) -> List[Dict]:
@@ -110,15 +117,18 @@ def get_eth_transactions(address: str, api_key: str, limit: int = 100) -> List[D
     try:
         response = requests.get(ETHERSCAN_BASE, params=params, headers=HEADERS, timeout=DEFAULT_TIMEOUT)
         if response.status_code != 200:
+            logger.warning(f"Etherscan txlist API returned {response.status_code} for {address}")
             return []
         data = response.json()
 
         # Etherscan returns status='1' for success, '0' for error/no results
         if data.get('status') != '1':
+            logger.info(f"Etherscan txlist returned no results for {address}: {data.get('message', '')}")
             return []
 
         return data.get('result', [])
-    except Exception:
+    except Exception as e:
+        logger.warning(f"get_eth_transactions failed for {address}: {e}")
         return []
 
 def get_erc20_transfers(address: str, api_key: str, limit: int = 100) -> List[Dict]:
@@ -149,13 +159,16 @@ def get_erc20_transfers(address: str, api_key: str, limit: int = 100) -> List[Di
     try:
         response = requests.get(ETHERSCAN_BASE, params=params, headers=HEADERS, timeout=DEFAULT_TIMEOUT)
         if response.status_code != 200:
+            logger.warning(f"Etherscan tokentx API returned {response.status_code} for {address}")
             return []
         data = response.json()
 
         # Etherscan returns status='1' for success, '0' for error/no results
         if data.get('status') != '1':
+            logger.info(f"Etherscan tokentx returned no results for {address}: {data.get('message', '')}")
             return []
 
         return data.get('result', [])
-    except Exception:
+    except Exception as e:
+        logger.warning(f"get_erc20_transfers failed for {address}: {e}")
         return []

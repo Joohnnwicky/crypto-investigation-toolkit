@@ -12,7 +12,7 @@ def export_pdf_endpoint():
     Request JSON body: {"result": analysis_result_dict, "tool_type": str}
     Response: PDF file download with Content-Disposition header
     """
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data or 'result' not in data or 'tool_type' not in data:
         return jsonify({'error': '请提供分析结果和工具类型'}), 400
 

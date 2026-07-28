@@ -142,7 +142,8 @@ function displayStatusCard(card) {
     html += `</div>`;
 
     html += `<div class="grid grid-cols-3 gap-4 mt-2">`;
-    html += `<div><span class="text-sm" style="color: var(--text-muted);">余额:</span><p class="font-semibold text-white">${formatBalance(card.balance, card.chain)}</p></div>`;
+    const balanceNote = card.balance_note ? ` <span class="text-xs" style="color: var(--alert-yellow);">(${card.balance_note})</span>` : '';
+    html += `<div><span class="text-sm" style="color: var(--text-muted);">余额:</span><p class="font-semibold text-white">${formatBalance(card.balance, card.chain)}${balanceNote}</p></div>`;
     html += `<div><span class="text-sm" style="color: var(--text-muted);">交易数:</span><p class="font-semibold text-white">${card.tx_count}</p></div>`;
     html += `<div><span class="text-sm" style="color: var(--text-muted);">最后活跃:</span><p class="font-semibold text-sm text-white">${card.last_active}</p></div>`;
     html += `</div>`;

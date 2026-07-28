@@ -2,7 +2,7 @@
 
 from flask import Blueprint, jsonify, request, Response, render_template
 from .eth_analyzer import query_eth_transactions_web, is_valid_eth_address
-from modules.core.exporter import export_json, export_csv, get_export_filename
+from modules.core.exporter import export_json, export_csv, get_export_filename, build_export_filename
 
 eth_bp = Blueprint('eth', __name__, url_prefix='/eth')
 
@@ -21,7 +21,7 @@ def query():
 
     Note: API key is passed per-request per ADDR-05, never stored.
     """
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data:
         return jsonify({'success': False, 'error': '请提供JSON数据'}), 400
 
@@ -59,7 +59,7 @@ def export_json_endpoint():
     Request JSON body: {"result": analysis_result_dict}
     Response: JSON file download with Content-Disposition header
     """
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data or 'result' not in data:
         return jsonify({'error': '请提供查询结果数据'}), 400
 
@@ -67,11 +67,7 @@ def export_json_endpoint():
     address = result.get('address', 'unknown')
 
     json_content = export_json(result)
-
-    # Generate filename for ETH export
-    date_str = __import__('datetime').datetime.now().strftime('%Y%m%d')
-    addr_short = address[:8] + address[-4:] if len(address) > 12 else address
-    filename = f"eth_query_{addr_short}_{date_str}.json"
+    filename = build_export_filename('eth_query', address, 'json')
 
     response = Response(
         json_content,
@@ -88,7 +84,7 @@ def export_csv_endpoint():
     Request JSON body: {"result": analysis_result_dict}
     Response: CSV file download with Content-Disposition header
     """
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data or 'result' not in data:
         return jsonify({'error': '请提供查询结果数据'}), 400
 
@@ -97,11 +93,7 @@ def export_csv_endpoint():
 
     # Export ETH-specific CSV format (transactions + stargate events)
     csv_content = export_eth_csv(result)
-
-    # Generate filename for ETH export
-    date_str = __import__('datetime').datetime.now().strftime('%Y%m%d')
-    addr_short = address[:8] + address[-4:] if len(address) > 12 else address
-    filename = f"eth_query_{addr_short}_{date_str}.csv"
+    filename = build_export_filename('eth_query', address, 'csv')
 
     response = Response(
         csv_content,

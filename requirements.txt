@@ -9,5 +9,5 @@ requests>=2.32.0
 # web3 for Ethereum RPC queries (Uniswap, Tornado Cash tracing)
 web3==7.15.0
 
-# pandas is already installed (3.0.1) but listed for future tools
-pandas>=3.0.0
+# reportlab for PDF export (pure Python, no native dependencies)
+reportlab>=5.0.0

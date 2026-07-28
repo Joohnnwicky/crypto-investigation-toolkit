@@ -1,8 +1,7 @@
 """Flask Blueprint routes for case handling tools"""
 
 from flask import Blueprint, jsonify, request, Response, render_template
-from modules.core.exporter import export_json
-import datetime
+from modules.core.exporter import export_json, build_export_filename
 import csv
 from io import StringIO
 
@@ -36,7 +35,7 @@ def monitor_query():
     Request JSON body: {"addresses": ["..."], "eth_key": "..."}
     Response JSON: {"success": bool, "addresses": [...], "status_cards": [...], "total_count": N}
     """
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data:
         return jsonify({'success': False, 'error': '请提供JSON数据'}), 400
 
@@ -56,15 +55,13 @@ def monitor_query():
 @case_bp.route('/api/monitor/export/json', methods=['POST'])
 def monitor_export_json():
     """Export monitor result as JSON file."""
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data or 'result' not in data:
         return jsonify({'error': '请提供查询结果数据'}), 400
 
     result = data['result']
     json_content = export_json(result)
-
-    date_str = datetime.datetime.now().strftime('%Y%m%d')
-    filename = f"monitor_result_{date_str}.json"
+    filename = build_export_filename('monitor_result', format_type='json')
 
     response = Response(
         json_content,
@@ -77,7 +74,7 @@ def monitor_export_json():
 @case_bp.route('/api/monitor/export/csv', methods=['POST'])
 def monitor_export_csv():
     """Export monitor result as CSV file."""
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data or 'result' not in data:
         return jsonify({'error': '请提供查询结果数据'}), 400
 
@@ -100,8 +97,7 @@ def monitor_export_csv():
             card.get('last_active', '未知')
         ])
 
-    date_str = datetime.datetime.now().strftime('%Y%m%d')
-    filename = f"monitor_result_{date_str}.csv"
+    filename = build_export_filename('monitor_result', format_type='csv')
 
     response = Response(
         output.getvalue(),
@@ -134,7 +130,7 @@ def obfuscation_detect():
     Request JSON body: {"address": "...", "eth_key": "..."}
     Response JSON: {"success": bool, "address": "...", "attack_cards": [...], "message": "..."}
     """
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data:
         return jsonify({'success': False, 'error': '请提供JSON数据'}), 400
 
@@ -154,15 +150,13 @@ def obfuscation_detect():
 @case_bp.route('/api/obfuscation/export/json', methods=['POST'])
 def obfuscation_export_json():
     """Export detection result as JSON file."""
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data or 'result' not in data:
         return jsonify({'error': '请提供查询结果数据'}), 400
 
     result = data['result']
     json_content = export_json(result)
-
-    date_str = datetime.datetime.now().strftime('%Y%m%d')
-    filename = f"obfuscation_result_{date_str}.json"
+    filename = build_export_filename('obfuscation_result', format_type='json')
 
     response = Response(
         json_content,
@@ -175,7 +169,7 @@ def obfuscation_export_json():
 @case_bp.route('/api/obfuscation/export/csv', methods=['POST'])
 def obfuscation_export_csv():
     """Export detection result as CSV file."""
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data or 'result' not in data:
         return jsonify({'error': '请提供查询结果数据'}), 400
 
@@ -197,8 +191,7 @@ def obfuscation_export_csv():
             card.get('details', '')
         ])
 
-    date_str = datetime.datetime.now().strftime('%Y%m%d')
-    filename = f"obfuscation_result_{date_str}.csv"
+    filename = build_export_filename('obfuscation_result', format_type='csv')
 
     response = Response(
         output.getvalue(),
@@ -223,7 +216,7 @@ def asset_freeze_generate():
     Request JSON body: {"case_number": "...", "addresses": [...], ...}
     Response JSON: {"success": bool, "template_data": {...}, "plain_text": "..."}
     """
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data:
         return jsonify({'success': False, 'error': '请提供JSON数据'}), 400
 

@@ -1,7 +1,7 @@
 """Flask Blueprint routes for transaction tracing tools"""
 
 from flask import Blueprint, jsonify, request, Response, render_template
-from modules.core.exporter import export_json
+from modules.core.exporter import export_json, build_export_filename
 
 # Create Blueprint for transaction tracing tools
 trace_bp = Blueprint('trace', __name__, url_prefix='/trace')
@@ -21,7 +21,7 @@ def uniswap_query():
     Request JSON body: {"address": "ETH_ADDRESS", "api_key": "ETHERSCAN_API_KEY"}
     Response JSON: {"success": bool, "address": str, "swaps": list, "flow_diagram": str}
     """
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data:
         return jsonify({'success': False, 'error': '请提供JSON数据'}), 400
 
@@ -59,7 +59,7 @@ def uniswap_sample():
 @trace_bp.route('/api/uniswap/export/json', methods=['POST'])
 def uniswap_export_json():
     """Export Uniswap trace result as JSON file."""
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data or 'result' not in data:
         return jsonify({'error': '请提供查询结果数据'}), 400
 
@@ -67,11 +67,7 @@ def uniswap_export_json():
     address = result.get('address', 'unknown')
 
     json_content = export_json(result)
-
-    import datetime
-    date_str = datetime.datetime.now().strftime('%Y%m%d')
-    addr_short = address[:8] + address[-4:] if len(address) > 12 else address
-    filename = f"uniswap_trace_{addr_short}_{date_str}.json"
+    filename = build_export_filename('uniswap_trace', address, 'json')
 
     response = Response(
         json_content,
@@ -84,7 +80,7 @@ def uniswap_export_json():
 @trace_bp.route('/api/uniswap/export/csv', methods=['POST'])
 def uniswap_export_csv():
     """Export Uniswap swaps as CSV file."""
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data or 'result' not in data:
         return jsonify({'error': '请提供查询结果数据'}), 400
 
@@ -110,9 +106,7 @@ def uniswap_export_csv():
         ])
 
     address = result.get('address', 'unknown')
-    import datetime
-    date_str = datetime.datetime.now().strftime('%Y%m%d')
-    filename = f"uniswap_trace_{address[:8]}_{date_str}.csv"
+    filename = build_export_filename('uniswap_trace', address, 'csv')
 
     response = Response(
         output.getvalue(),
@@ -131,7 +125,7 @@ def mixer_query():
     Request JSON body: {"deposit_time": "YYYY-MM-DD HH:MM:SS"}
     Response JSON: {"success": bool, "deposit_time": str, "suspicious_withdrawals": list}
     """
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data:
         return jsonify({'success': False, 'error': '请提供JSON数据'}), 400
 
@@ -164,17 +158,14 @@ def mixer_sample():
 @trace_bp.route('/api/mixer/export/json', methods=['POST'])
 def mixer_export_json():
     """Export mixer trace result as JSON file."""
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data or 'result' not in data:
         return jsonify({'error': '请提供查询结果数据'}), 400
 
     result = data['result']
 
     json_content = export_json(result)
-
-    import datetime
-    date_str = datetime.datetime.now().strftime('%Y%m%d')
-    filename = f"mixer_trace_{date_str}.json"
+    filename = build_export_filename('mixer_trace', format_type='json')
 
     response = Response(
         json_content,
@@ -193,7 +184,7 @@ def btc_query():
     Request JSON body: {"tx_hash": "64_HEX_CHARS"}
     Response JSON: {"success": bool, "tx_hash": str, "transaction": dict}
     """
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data:
         return jsonify({'success': False, 'error': '请提供JSON数据'}), 400
 
@@ -226,7 +217,7 @@ def btc_sample():
 @trace_bp.route('/api/btc/export/json', methods=['POST'])
 def btc_export_json():
     """Export BTC analysis result as JSON file."""
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data or 'result' not in data:
         return jsonify({'error': '请提供查询结果数据'}), 400
 
@@ -234,10 +225,7 @@ def btc_export_json():
     tx_hash = result.get('tx_hash', 'unknown')
 
     json_content = export_json(result)
-
-    import datetime
-    date_str = datetime.datetime.now().strftime('%Y%m%d')
-    filename = f"btc_analysis_{tx_hash[:8]}_{date_str}.json"
+    filename = build_export_filename('btc_analysis', tx_hash, 'json')
 
     response = Response(
         json_content,
@@ -250,7 +238,7 @@ def btc_export_json():
 @trace_bp.route('/api/btc/export/csv', methods=['POST'])
 def btc_export_csv():
     """Export BTC transaction details as CSV file."""
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data or 'result' not in data:
         return jsonify({'error': '请提供查询结果数据'}), 400
 
@@ -276,9 +264,7 @@ def btc_export_csv():
         ])
 
     tx_hash = result.get('tx_hash', 'unknown')
-    import datetime
-    date_str = datetime.datetime.now().strftime('%Y%m%d')
-    filename = f"btc_analysis_{tx_hash[:8]}_{date_str}.csv"
+    filename = build_export_filename('btc_analysis', tx_hash, 'csv')
 
     response = Response(
         output.getvalue(),

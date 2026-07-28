@@ -136,7 +136,10 @@ def monitor_addresses_web(addresses: List[str], eth_key: str = '') -> Dict[str, 
                         elif tx.get('from', '').lower() == addr.lower():
                             balance -= value
 
+                    # Balance is an estimate from recent tx history (Etherscan
+                    # free API has no balance endpoint); label it in the UI.
                     card['balance'] = balance
+                    card['balance_note'] = '估算值'
                     card['tx_count'] = len(eth_txs)
 
                     # Last active from most recent transaction

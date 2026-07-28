@@ -283,7 +283,7 @@ class UniswapTracker:
                 if ts:
                     try:
                         time_str = datetime.fromtimestamp(int(ts)).strftime("%Y-%m-%d %H:%M:%S")
-                    except:
+                    except Exception:
                         time_str = "未知"
                 else:
                     time_str = "未知"

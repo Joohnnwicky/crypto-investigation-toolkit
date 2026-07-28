@@ -1,8 +1,7 @@
 """Flask Blueprint routes for cross-chain analysis tools"""
 
 from flask import Blueprint, jsonify, request, Response, render_template
-from modules.core.exporter import export_json
-import datetime
+from modules.core.exporter import export_json, build_export_filename
 import csv
 from io import StringIO
 
@@ -24,7 +23,7 @@ def cluster_query():
     Request JSON body: {"addresses": ["..."], "eth_key": "..."}
     Response JSON: {"success": bool, "addresses": [...], "clusters": [...], "unassociated": [...]}
     """
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data:
         return jsonify({'success': False, 'error': '请提供JSON数据'}), 400
 
@@ -68,15 +67,13 @@ def cluster_sample():
 @cross_bp.route('/api/cluster/export/json', methods=['POST'])
 def cluster_export_json():
     """Export cluster result as JSON file."""
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data or 'result' not in data:
         return jsonify({'error': '请提供查询结果数据'}), 400
 
     result = data['result']
     json_content = export_json(result)
-
-    date_str = datetime.datetime.now().strftime('%Y%m%d')
-    filename = f"cluster_result_{date_str}.json"
+    filename = build_export_filename('cluster_result', format_type='json')
 
     response = Response(
         json_content,
@@ -89,7 +86,7 @@ def cluster_export_json():
 @cross_bp.route('/api/cluster/export/csv', methods=['POST'])
 def cluster_export_csv():
     """Export cluster result as CSV file."""
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data or 'result' not in data:
         return jsonify({'error': '请提供查询结果数据'}), 400
 
@@ -119,8 +116,7 @@ def cluster_export_csv():
     for addr in unassociated:
         writer.writerow(['无', addr, 'unknown', '无关联'])
 
-    date_str = datetime.datetime.now().strftime('%Y%m%d')
-    filename = f"cluster_result_{date_str}.csv"
+    filename = build_export_filename('cluster_result', format_type='csv')
 
     response = Response(
         output.getvalue(),
@@ -139,7 +135,7 @@ def cross_border_generate():
     Request JSON body: {"case_number": "...", "agency": "...", ...}
     Response JSON: {"success": bool, "template_data": {...}, "plain_text": "..."}
     """
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data:
         return jsonify({'success': False, 'error': '请提供JSON数据'}), 400
 
